@@ -7,8 +7,8 @@ import { getStudentRegistrationsAction } from "@/actions/registration";
 import type { Registration } from "@/types";
 
 const statusColors: Record<string, string> = {
-  REGISTERED: "bg-green-100 text-green-700",
-  WAITLISTED: "bg-yellow-100 text-yellow-700",
+  REGISTERED: "bg-[#73FFFF] text-[#051B1D]",
+  WAITLISTED: "bg-yellow-100 text-yellow-800",
   CANCELLED: "bg-red-100 text-red-600",
 };
 
@@ -22,14 +22,14 @@ function RegistrationCard({
   return (
     <div
       onClick={onClick}
-      className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all cursor-pointer"
+      className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-3 mb-3">
-        <h3 className="font-black text-black leading-tight">
+        <h3 className="font-black text-[#051B1D] leading-tight text-sm sm:text-base break-words">
           {reg.eventTitle}
         </h3>
         <span
-          className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${statusColors[reg.status]}`}
+          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 ${statusColors[reg.status] || "bg-gray-100 text-[#051B1D]"}`}
         >
           {reg.status}
         </span>
@@ -84,7 +84,7 @@ export default function StudentRegistrationsPage() {
         registrations: items,
         lastId,
         hasMore,
-      } = await getStudentRegistrationsAction(registrations.lastDoc as any);
+      } = await getStudentRegistrationsAction(registrations.lastId as any);
       appendRegistrations(items, lastId as any, hasMore);
     } catch {
       setError("Failed to load more");
@@ -94,27 +94,27 @@ export default function StudentRegistrationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <button
             onClick={() => router.back()}
-            className="mb-4 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+            className="mb-3 sm:mb-4 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
           >
             ← Back
           </button>
-          <h1 className="text-3xl font-black text-black">My Registrations</h1>
-          <p className="text-gray-500 text-sm mt-1">All your event sign-ups</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D]">My Registrations</h1>
+          <p className="text-gray-500 text-xs sm:text-sm mt-0.5">All your event sign-ups</p>
         </div>
 
         {error && (
-          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium">
             {error}
           </div>
         )}
 
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
@@ -123,21 +123,21 @@ export default function StudentRegistrationsPage() {
             ))}
           </div>
         ) : registrations.items.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-4xl mb-3">📋</p>
-            <p className="font-bold text-black">No registrations yet</p>
-            <p className="text-gray-500 text-sm mt-1">
+          <div className="text-center py-12 sm:py-16">
+            <p className="text-3xl sm:text-4xl mb-3">📋</p>
+            <p className="font-bold text-[#051B1D] text-sm sm:text-base">No registrations yet</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               Browse events and register
             </p>
             <button
               onClick={() => router.push("/student/events")}
-              className="mt-4 bg-[#0d9488] text-white border-2 border-black rounded-xl px-6 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+              className="mt-4 bg-[#00666B] text-white border-2 border-black rounded-xl px-6 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-xs sm:text-sm"
             >
               Browse Events
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {registrations.items.map((reg) => (
               <RegistrationCard
                 key={reg.id}
@@ -153,7 +153,7 @@ export default function StudentRegistrationsPage() {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="bg-white border-2 border-black rounded-xl px-6 py-3 font-bold text-black shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+              className="bg-white border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
             >
               {loadingMore ? "Loading..." : "Load More"}
             </button>

@@ -43,7 +43,7 @@ export default function VolunteerEventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
           <div className="h-8 w-32 bg-gray-200 rounded-xl animate-pulse" />
           <div className="h-48 bg-white border-2 border-black rounded-2xl animate-pulse" />
@@ -54,33 +54,35 @@ export default function VolunteerEventDetailPage() {
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] flex items-center justify-center">
-        <p className="font-bold text-black">Event not found</p>
+      <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
+        <p className="font-bold text-[#051B1D]">Event not found</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
         >
           ← Back
         </button>
 
-        <div className="bg-white border-2 border-black rounded-2xl p-6 shadow-[4px_4px_0px_#000] mb-4">
+        <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
           <div className="flex items-start justify-between gap-2 mb-4">
-            <h1 className="text-2xl font-black text-black">{event.title}</h1>
+            <h1 className="text-xl sm:text-2xl font-black text-[#051B1D] leading-tight break-words">
+              {event.title}
+            </h1>
             <span
-              className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${event.status === "ONGOING" ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}
+              className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 ${event.status === "ONGOING" ? "bg-[#73FFFF] text-[#051B1D]" : "bg-[#39A8AD]/20 text-[#00666B]"}`}
             >
               {event.status}
             </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-4 sm:mb-6">
             {[
               {
                 label: "Date",
@@ -96,10 +98,10 @@ export default function VolunteerEventDetailPage() {
             ].map(({ label, value }) => (
               <div
                 key={label}
-                className="bg-[#f0faf8] border-2 border-black rounded-xl p-3"
+                className="bg-[#F7F7F8] border-2 border-black rounded-xl p-2.5 sm:p-3 min-w-0"
               >
-                <p className="text-xs text-gray-500 font-medium">{label}</p>
-                <p className="text-sm font-bold text-black">{value}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium truncate">{label}</p>
+                <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">{value}</p>
               </div>
             ))}
           </div>
@@ -108,7 +110,7 @@ export default function VolunteerEventDetailPage() {
             onClick={() =>
               router.push(`/volunteer/attendance?eventId=${event.id}`)
             }
-            className="w-full bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+            className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
           >
             📷 Open Scanner for this Event
           </button>
@@ -116,7 +118,7 @@ export default function VolunteerEventDetailPage() {
 
         {event.sessions?.length > 0 && (
           <div>
-            <h2 className="text-lg font-black text-black mb-4">
+            <h2 className="text-base sm:text-lg font-black text-[#051B1D] mb-3 sm:mb-4">
               Sessions & Attendance
             </h2>
             <div className="space-y-3">
@@ -127,23 +129,23 @@ export default function VolunteerEventDetailPage() {
                     key={session.id}
                     className="bg-white border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]"
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-black text-black text-sm">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-black text-[#051B1D] text-sm truncate">
                           {session.title}
                         </h3>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-400 mt-0.5">
                           {new Date(session.startTime).toLocaleTimeString(
                             "en-IN",
                             { hour: "2-digit", minute: "2-digit" },
                           )}
                         </p>
                       </div>
-                      <div className="text-right">
-                        <p className="text-2xl font-black text-[#0d9488]">
+                      <div className="text-right shrink-0">
+                        <p className="text-xl sm:text-2xl font-black text-[#00666B]">
                           {count}
                         </p>
-                        <p className="text-xs text-gray-400">checked in</p>
+                        <p className="text-[10px] text-gray-400">checked in</p>
                       </div>
                     </div>
                   </div>

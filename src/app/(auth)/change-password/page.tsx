@@ -31,42 +31,42 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] flex items-center justify-center px-4">
+    <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-black rounded-2xl p-8 shadow-[6px_6px_0px_#000]">
+        <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6">
-            <h2 className="text-2xl font-black text-black">Set New Password</h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <h2 className="text-xl sm:text-2xl font-black text-[#051B1D]">Set New Password</h2>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">
               Your admin has reset your password. Set a new one to continue.
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
               {error}
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-bold text-black block mb-1">
+              <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                 New Password
               </label>
               <input
                 type="password"
-                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                 placeholder="Min. 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <div>
-              <label className="text-sm font-bold text-black block mb-1">
+              <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                 Confirm Password
               </label>
               <input
                 type="password"
-                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                 placeholder="Repeat password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
@@ -75,7 +75,7 @@ export default function ChangePasswordPage() {
             <button
               onClick={handleSubmit}
               disabled={loading || !password || !confirm}
-              className="w-full bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold border-2 border-black shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Saving..." : "Set Password →"}
             </button>

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { getAdminEventsAction } from "@/actions/admin";
 
 const statusColors: Record<string, string> = {
-  UPCOMING: "bg-blue-100 text-blue-700",
-  ONGOING: "bg-green-100 text-green-700",
+  UPCOMING: "bg-[#39A8AD]/20 text-[#00666B]",
+  ONGOING: "bg-[#73FFFF] text-[#051B1D]",
   COMPLETED: "bg-gray-100 text-gray-600",
   CANCELLED: "bg-red-100 text-red-600",
 };
@@ -52,7 +52,7 @@ export default function AdminEventsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto space-y-3">
           {[...Array(5)].map((_, i) => (
             <div
@@ -66,33 +66,33 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex items-center justify-between mb-6 gap-3">
+          <div className="min-w-0">
             <button
               onClick={() => router.back()}
-              className="text-sm font-bold text-gray-500 hover:text-black mb-1 block"
+              className="text-xs sm:text-sm font-bold text-gray-500 hover:text-[#051B1D] mb-1 block"
             >
               ← Back
             </button>
-            <h1 className="text-3xl font-black text-black">All Events</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">All Events</h1>
           </div>
           <button
             onClick={() => router.push("/admin/events/new")}
-            className="bg-[#0d9488] text-white border-2 border-black rounded-xl px-5 py-3 font-black text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className="bg-[#00666B] text-white border-2 border-black rounded-xl px-3.5 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all shrink-0"
           >
             + New
           </button>
         </div>
 
         {events.length === 0 ? (
-          <div className="bg-white border-2 border-black rounded-2xl p-8 text-center shadow-[4px_4px_0px_#000]">
+          <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <p className="text-3xl mb-2">📭</p>
-            <p className="font-bold text-black">No events yet</p>
+            <p className="font-bold text-[#051B1D] text-sm sm:text-base">No events yet</p>
             <button
               onClick={() => router.push("/admin/events/new")}
-              className="mt-4 bg-[#0d9488] text-white border-2 border-black rounded-xl px-5 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+              className="mt-4 bg-[#00666B] text-white border-2 border-black rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
             >
               Create first event
             </button>
@@ -103,29 +103,29 @@ export default function AdminEventsPage() {
               <div
                 key={event.id}
                 onClick={() => router.push(`/admin/events/${event.id}`)}
-                className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all cursor-pointer"
+                className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-black text-black leading-tight">
+                    <h3 className="font-black text-[#051B1D] text-sm sm:text-base leading-tight break-words line-clamp-1">
                       {event.title}
                     </h3>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-gray-400 mt-1 truncate">
                       {new Date(event.date).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}{" "}
-                      · {event.venue}
+                      {event.venue ? `· ${event.venue}` : ""}
                     </p>
                   </div>
-                  <div className="flex flex-col items-end gap-2 shrink-0">
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
                     <span
-                      className={`text-xs font-bold px-2 py-1 rounded-full ${statusColors[event.status]}`}
+                      className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full ${statusColors[event.status] || "bg-gray-100 text-[#051B1D]"}`}
                     >
                       {event.status}
                     </span>
-                    <span className="text-xs text-gray-500 font-medium">
+                    <span className="text-[10px] sm:text-xs text-gray-500 font-medium">
                       {event.registrationCount ?? 0} registered
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export default function AdminEventsPage() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="w-full bg-white border-2 border-black rounded-2xl py-4 font-bold text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50"
+                className="w-full bg-white text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
               >
                 {loadingMore ? "Loading..." : "Load more"}
               </button>

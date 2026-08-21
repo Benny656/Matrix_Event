@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAdminEventsAction } from "@/actions/admin";
-import { getEventAttendanceAction } from "@/actions/admin";
+import { getAdminEventsAction, getEventAttendanceAction } from "@/actions/admin";
 
 export default function AdminReportsPage() {
   const router = useRouter();
@@ -40,7 +39,8 @@ export default function AdminReportsPage() {
       const data = await getEventAttendanceAction(selectedEventId);
       const byMethod: Record<string, number> = {};
       data.forEach((a: any) => {
-        byMethod[a.checkInMethod] = (byMethod[a.checkInMethod] ?? 0) + 1;
+        const method = a.checkInMethod || a.method || "SCANNED";
+        byMethod[method] = (byMethod[method] ?? 0) + 1;
       });
       setStats({ total: data.length, byMethod });
     } catch (e) {
@@ -75,23 +75,23 @@ export default function AdminReportsPage() {
   const selectedEvent = events.find((e) => e.id === selectedEventId);
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
         >
           ← Back
         </button>
 
-        <h1 className="text-3xl font-black text-black mb-2">Reports</h1>
-        <p className="text-sm text-gray-500 font-medium mb-8">
+        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-2">Reports</h1>
+        <p className="text-xs sm:text-sm text-gray-500 font-medium mb-6 sm:mb-8">
           Select an event to view stats and export data
         </p>
 
         {/* Event Selector */}
-        <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] mb-6">
-          <label className="text-sm font-bold text-black block mb-2">
+        <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+          <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
             Select Event
           </label>
           {loading ? (
@@ -100,11 +100,11 @@ export default function AdminReportsPage() {
             <select
               value={selectedEventId}
               onChange={(e) => setSelectedEventId(e.target.value)}
-              className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488] bg-white"
+              className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
             >
-              <option value="">Choose an event...</option>
+              <option value="" className="text-[#051B1D]">Choose an event...</option>
               {events.map((e) => (
-                <option key={e.id} value={e.id}>
+                <option key={e.id} value={e.id} className="text-[#051B1D]">
                   {e.title} —{" "}
                   {new Date(e.date).toLocaleDateString("en-IN", {
                     day: "numeric",
@@ -120,8 +120,8 @@ export default function AdminReportsPage() {
         {selectedEvent && (
           <>
             {/* Stats */}
-            <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000] mb-6">
-              <h2 className="font-black text-black mb-4">Attendance Summary</h2>
+            <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+              <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Attendance Summary</h2>
               {loadingStats ? (
                 <div className="space-y-2">
                   {[...Array(3)].map((_, i) => (
@@ -132,50 +132,50 @@ export default function AdminReportsPage() {
                   ))}
                 </div>
               ) : stats ? (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between bg-[#f0faf8] border-2 border-black rounded-xl px-4 py-3">
-                    <p className="text-sm font-bold text-black">
+                <div className="space-y-2.5 sm:space-y-3">
+                  <div className="flex items-center justify-between bg-[#73FFFF]/20 border-2 border-black rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3">
+                    <p className="text-xs sm:text-sm font-bold text-[#051B1D]">
                       Total Check-ins
                     </p>
-                    <p className="text-2xl font-black text-[#0d9488]">
+                    <p className="text-xl sm:text-2xl font-black text-[#00666B]">
                       {stats.total}
                     </p>
                   </div>
                   {Object.entries(stats.byMethod).map(([method, count]) => (
                     <div
                       key={method}
-                      className="flex items-center justify-between bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3"
+                      className="flex items-center justify-between bg-gray-50 border-2 border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3"
                     >
-                      <p className="text-sm font-bold text-gray-600">
+                      <p className="text-xs sm:text-sm font-bold text-gray-600">
                         {method}
                       </p>
-                      <p className="text-lg font-black text-black">{count}</p>
+                      <p className="text-base sm:text-lg font-black text-[#051B1D]">{count}</p>
                     </div>
                   ))}
-                  <div className="flex items-center justify-between bg-gray-50 border-2 border-gray-200 rounded-xl px-4 py-3">
-                    <p className="text-sm font-bold text-gray-600">
+                  <div className="flex items-center justify-between bg-gray-50 border-2 border-gray-200 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3">
+                    <p className="text-xs sm:text-sm font-bold text-gray-600">
                       Registrations
                     </p>
-                    <p className="text-lg font-black text-black">
+                    <p className="text-base sm:text-lg font-black text-[#051B1D]">
                       {selectedEvent.registrationCount ?? 0}
                     </p>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 font-medium">
+                <p className="text-xs sm:text-sm text-gray-400 font-medium">
                   No attendance data yet
                 </p>
               )}
             </div>
 
             {/* Export Buttons */}
-            <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000]">
-              <h2 className="font-black text-black mb-4">Export Data</h2>
+            <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Export Data</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => handleExport("registrations")}
                   disabled={downloading !== null}
-                  className="w-full bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {downloading === "registrations"
                     ? "Downloading..."
@@ -184,7 +184,7 @@ export default function AdminReportsPage() {
                 <button
                   onClick={() => handleExport("attendance")}
                   disabled={downloading !== null}
-                  className="w-full bg-white text-black border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full bg-white text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                 >
                   {downloading === "attendance"
                     ? "Downloading..."

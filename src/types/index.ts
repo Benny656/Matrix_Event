@@ -24,6 +24,7 @@ export interface Event {
   description: string
   posterUrl: string | null
   date: string
+  venue?: string | null
   category: string
   coordinatorName: string
   status: "UPCOMING" | "ONGOING" | "COMPLETED" | "ARCHIVED"

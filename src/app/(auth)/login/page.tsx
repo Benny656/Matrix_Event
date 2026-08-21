@@ -25,34 +25,49 @@ export default function LoginPage() {
         photoURL || "",
         idToken,
       );
-      router.push("/onboarding");
+
+      const verifyRes = await fetch("/api/auth/verify");
+      if (verifyRes.ok) {
+        const { role, onboardingCompleted } = await verifyRes.json();
+        if (role === "ADMIN") {
+          router.push("/admin");
+        } else if (role === "VOLUNTEER") {
+          router.push("/volunteer");
+        } else if (!onboardingCompleted) {
+          router.push("/onboarding");
+        } else {
+          router.push("/student");
+        }
+      } else {
+        router.push("/onboarding");
+      }
     } catch (e: any) {
-      setError("Sign in failed. Use your Karunya college email.");
+      setError(e.message || "Sign in failed. Use your Karunya college email.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] flex items-center justify-center px-4">
+    <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-black rounded-2xl p-8 shadow-[6px_6px_0px_#000]">
-          <div className="mb-8">
-            <span className="inline-block bg-[#0d9488] text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
+        <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+          <div className="mb-6 sm:mb-8">
+            <span className="inline-block bg-[#00666B] text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
               AIML · Karunya University
             </span>
-            <h1 className="text-3xl font-black text-black leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] leading-tight">
               Welcome to
               <br />
-              <span className="text-[#0d9488]">Matrix.</span>
+              <span className="text-[#00666B]">Matrix.</span>
             </h1>
-            <p className="text-gray-500 mt-2 text-sm">
+            <p className="text-gray-500 mt-2 text-xs sm:text-sm">
               Sign in with your Karunya college email to continue.
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
               {error}
             </div>
           )}
@@ -60,12 +75,12 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-black rounded-xl px-4 py-3 font-bold text-black hover:bg-[#0d9488] hover:text-white hover:border-[#0d9488] transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base text-[#051B1D] hover:bg-[#00666B] hover:text-white hover:border-[#00666B] transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
-              <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+              <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
             ) : (
-              <svg className="w-5 h-5" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -84,10 +99,10 @@ export default function LoginPage() {
                 />
               </svg>
             )}
-            {loading ? "Signing in..." : "Continue with Google"}
+            <span>{loading ? "Signing in..." : "Continue with Google"}</span>
           </button>
 
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="text-center text-xs text-gray-400 mt-6 break-words">
             Only @karunya.edu.in and @karunya.edu emails are allowed
           </p>
         </div>

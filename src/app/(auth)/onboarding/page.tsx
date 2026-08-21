@@ -2,13 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { auth } from "@/lib/firebase";
 import { completeOnboardingAction } from "@/actions/auth";
 
-const DEPARTMENTS = ["AI", "AIML", "CSE", "ECE", "MECH", "CIVIL", "EEE"];
+const DEPARTMENTS = ["AI", "AIML"];
 const PROGRAM_TYPES = ["UG", "PG"];
 const YEARS = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
-const DEGREES = ["B.Tech AI & ML", "B.Tech CSE", "M.Tech AI", "MCA", "MBA"];
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -19,7 +17,6 @@ export default function OnboardingPage() {
     name: "",
     rollNumber: "",
     programType: "",
-    degree: "",
     department: "",
     yearOfStudy: "",
     phoneNumber: "",
@@ -48,26 +45,26 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] flex items-center justify-center px-4">
+    <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-black rounded-2xl p-8 shadow-[6px_6px_0px_#000]">
+        <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6">
             <div className="flex gap-2 mb-4">
               {[1, 2].map((s) => (
                 <div
                   key={s}
-                  className={`h-2 flex-1 rounded-full transition-all ${s <= step ? "bg-[#0d9488]" : "bg-gray-200"}`}
+                  className={`h-2 flex-1 rounded-full transition-all ${s <= step ? "bg-[#00666B]" : "bg-gray-200"}`}
                 />
               ))}
             </div>
-            <h2 className="text-2xl font-black text-black">
+            <h2 className="text-xl sm:text-2xl font-black text-[#051B1D]">
               {step === 1 ? "Your Identity" : "Academic Details"}
             </h2>
-            <p className="text-gray-500 text-sm mt-1">Step {step} of 2</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">Step {step} of 2</p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
               {error}
             </div>
           )}
@@ -75,22 +72,22 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className="space-y-4">
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Full Name
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                   placeholder="Your full name"
                   value={form.name}
                   onChange={(e) => update("name", e.target.value)}
                 />
               </div>
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Roll Number
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] uppercase bg-white text-[#051B1D] placeholder:text-gray-400"
                   placeholder="e.g. URK22AI001"
                   value={form.rollNumber}
                   onChange={(e) =>
@@ -99,11 +96,12 @@ export default function OnboardingPage() {
                 />
               </div>
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Phone Number
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                  type="tel"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                   placeholder="10-digit mobile number"
                   value={form.phoneNumber}
                   onChange={(e) => update("phoneNumber", e.target.value)}
@@ -111,8 +109,8 @@ export default function OnboardingPage() {
               </div>
               <button
                 onClick={() => setStep(2)}
-                disabled={!form.name || !form.rollNumber || !form.phoneNumber}
-                className="w-full bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!form.name.trim() || !form.rollNumber.trim() || !form.phoneNumber.trim()}
+                className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next →
               </button>
@@ -137,43 +135,43 @@ export default function OnboardingPage() {
                   field: "yearOfStudy",
                   options: YEARS,
                 },
-                { label: "Degree", field: "degree", options: DEGREES },
               ].map(({ label, field, options }) => (
                 <div key={field}>
-                  <label className="text-sm font-bold text-black block mb-1">
+                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                     {label}
                   </label>
                   <select
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488] bg-white"
+                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
                     value={form[field as keyof typeof form]}
                     onChange={(e) => update(field, e.target.value)}
                   >
-                    <option value="">Select {label}</option>
+                    <option value="" className="text-[#051B1D]">Select {label}</option>
                     {options.map((o) => (
-                      <option key={o} value={o}>
+                      <option key={o} value={o} className="text-[#051B1D]">
                         {o}
                       </option>
                     ))}
                   </select>
                 </div>
               ))}
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <button
+                  type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 bg-white border-2 border-black rounded-xl px-4 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+                  className="flex-1 bg-white text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
                 >
                   ← Back
                 </button>
                 <button
+                  type="button"
                   onClick={handleSubmit}
                   disabled={
                     loading ||
                     !form.programType ||
                     !form.department ||
-                    !form.yearOfStudy ||
-                    !form.degree
+                    !form.yearOfStudy
                   }
-                  className="flex-1 bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? "Saving..." : "Complete →"}
                 </button>

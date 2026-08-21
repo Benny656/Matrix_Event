@@ -14,10 +14,10 @@ function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000]">
-      <p className="text-3xl font-black text-[#0d9488]">{value}</p>
-      <p className="text-sm font-bold text-gray-700 mt-1">{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+    <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
+      <p className="text-2xl sm:text-3xl font-black text-[#00666B]">{value}</p>
+      <p className="text-xs sm:text-sm font-bold text-[#051B1D] mt-1 truncate">{label}</p>
+      {sub && <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 truncate">{sub}</p>}
     </div>
   );
 }
@@ -39,10 +39,10 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto space-y-4">
           <div className="h-8 w-48 bg-gray-200 rounded-xl animate-pulse" />
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[...Array(2)].map((_, i) => (
               <div
                 key={i}
@@ -56,24 +56,24 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-bold text-[#0d9488] uppercase tracking-widest">
+        <div className="mb-6 sm:mb-8 flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm font-bold text-[#00666B] uppercase tracking-widest truncate">
               Matrix Admin
             </p>
-            <h1 className="text-3xl font-black text-black">Dashboard</h1>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">Dashboard</h1>
           </div>
           <button
             onClick={() => router.push("/admin/events/new")}
-            className="bg-[#0d9488] text-white border-2 border-black rounded-xl px-5 py-3 font-black text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className="bg-[#00666B] text-white border-2 border-black rounded-xl px-3 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all shrink-0"
           >
             + New Event
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <StatCard
             label="Active Events"
             value={data?.activeEvents.length ?? 0}
@@ -87,12 +87,12 @@ export default function AdminDashboard() {
         </div>
 
         {/* Active Events */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-black">Active Events</h2>
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-base sm:text-lg font-black text-[#051B1D]">Active Events</h2>
             <button
               onClick={() => router.push("/admin/events")}
-              className="text-sm font-bold text-[#0d9488] hover:underline"
+              className="text-xs sm:text-sm font-bold text-[#00666B] hover:underline"
             >
               Manage all →
             </button>
@@ -100,10 +100,10 @@ export default function AdminDashboard() {
           {data?.activeEvents.length === 0 ? (
             <div className="bg-white border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-2">📭</p>
-              <p className="font-bold text-black text-sm">No active events</p>
+              <p className="font-bold text-[#051B1D] text-sm">No active events</p>
               <button
                 onClick={() => router.push("/admin/events/new")}
-                className="mt-3 text-sm font-bold text-[#0d9488] hover:underline"
+                className="mt-3 text-xs sm:text-sm font-bold text-[#00666B] hover:underline"
               >
                 Create one →
               </button>
@@ -116,12 +116,12 @@ export default function AdminDashboard() {
                   onClick={() => router.push(`/admin/events/${event.id}`)}
                   className="bg-white border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <h3 className="font-black text-black text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-black text-[#051B1D] text-sm break-words line-clamp-1">
                         {event.title}
                       </h3>
-                      <p className="text-xs text-gray-400 mt-0.5">
+                      <p className="text-xs text-gray-400 mt-0.5 truncate">
                         {new Date(event.date).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",
@@ -130,10 +130,10 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-lg font-black text-[#0d9488]">
+                      <p className="text-base sm:text-lg font-black text-[#00666B]">
                         {event.registrationCount ?? 0}
                       </p>
-                      <p className="text-xs text-gray-400">registered</p>
+                      <p className="text-[10px] sm:text-xs text-gray-400">registered</p>
                     </div>
                   </div>
                 </div>
@@ -143,9 +143,9 @@ export default function AdminDashboard() {
         </div>
 
         {/* Recent Registrations */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-black text-black">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-base sm:text-lg font-black text-[#051B1D]">
               Recent Registrations
             </h2>
           </div>
@@ -153,20 +153,20 @@ export default function AdminDashboard() {
             {data?.recentRegistrations.map((reg) => (
               <div
                 key={reg.id}
-                className="bg-white border-2 border-black rounded-xl px-4 py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between"
+                className="bg-white border-2 border-black rounded-xl px-4 py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-3"
               >
-                <div>
-                  <p className="text-sm font-bold text-black">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-[#051B1D] truncate">
                     {reg.studentName}
                   </p>
-                  <p className="text-xs text-gray-400">{reg.eventTitle}</p>
+                  <p className="text-xs text-gray-400 truncate">{reg.eventTitle}</p>
                 </div>
                 <span
-                  className={`text-xs font-bold px-2 py-1 rounded-full ${
+                  className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
                     reg.status === "REGISTERED"
-                      ? "bg-green-100 text-green-700"
+                      ? "bg-[#73FFFF] text-[#051B1D]"
                       : reg.status === "WAITLISTED"
-                        ? "bg-yellow-100 text-yellow-700"
+                        ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-600"
                   }`}
                 >
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Nav */}
-        <div className="grid grid-cols-3 gap-3 mt-8">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6 sm:mt-8">
           {[
             { label: "Events", path: "/admin/events" },
             { label: "Users", path: "/admin/users" },
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
             <button
               key={path}
               onClick={() => router.push(path)}
-              className="bg-white text-black border-2 border-black rounded-2xl px-4 py-4 font-black text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+              className="bg-white text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
             >
               {label}
             </button>

@@ -1,153 +1,195 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { useStore } from "@/store/user-store"
-import { getEventByIdAction, getStudentRegistrationAction, registerForEventAction, cancelRegistrationAction } from "@/actions/event"
-import type { Event, Registration } from "@/types"
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { useStore } from "@/store/user-store";
+import {
+  getEventByIdAction,
+  getStudentRegistrationAction,
+  registerForEventAction,
+  cancelRegistrationAction,
+} from "@/actions/event";
+import type { Event, Registration } from "@/types";
 
 export default function EventDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const router = useRouter()
-  const { invalidateEvents, invalidateRegistrations } = useStore()
-  const [event, setEvent] = useState<Event | null>(null)
-  const [registration, setRegistration] = useState<Registration | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [actionLoading, setActionLoading] = useState(false)
-  const [error, setError] = useState("")
-  const [success, setSuccess] = useState("")
+  const { id } = useParams<{ id: string }>();
+  const router = useRouter();
+  const { invalidateEvents, invalidateRegistrations } = useStore();
+  const [event, setEvent] = useState<Event | null>(null);
+  const [registration, setRegistration] = useState<Registration | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    fetchData()
-  }, [id])
+    fetchData();
+  }, [id]);
 
   async function fetchData() {
     try {
-      setLoading(true)
+      setLoading(true);
       const [ev, reg] = await Promise.all([
         getEventByIdAction(id),
         getStudentRegistrationAction(id),
-      ])
-      setEvent(ev)
-      setRegistration(reg)
+      ]);
+      setEvent(ev);
+      setRegistration(reg);
     } catch {
-      setError("Failed to load event")
+      setError("Failed to load event");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
   async function handleRegister() {
     try {
-      setActionLoading(true)
-      setError("")
-      const result = await registerForEventAction(id)
-      setSuccess(result.status === "WAITLISTED" ? "Added to waitlist!" : "Registered successfully!")
-      invalidateEvents()
-      invalidateRegistrations()
-      fetchData()
+      setActionLoading(true);
+      setError("");
+      const result = await registerForEventAction(id);
+      setSuccess(
+        result.status === "WAITLISTED"
+          ? "Added to waitlist!"
+          : "Registered successfully!",
+      );
+      invalidateEvents();
+      invalidateRegistrations();
+      fetchData();
     } catch (e: any) {
-      setError(e.message || "Registration failed")
+      setError(e.message || "Registration failed");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
   }
 
   async function handleCancel() {
-    if (!registration) return
+    if (!registration) return;
     try {
-      setActionLoading(true)
-      setError("")
-      await cancelRegistrationAction(registration.id, id)
-      setSuccess("Registration cancelled")
-      invalidateEvents()
-      invalidateRegistrations()
-      fetchData()
+      setActionLoading(true);
+      setError("");
+      await cancelRegistrationAction(registration.id, id);
+      setSuccess("Registration cancelled");
+      invalidateEvents();
+      invalidateRegistrations();
+      fetchData();
     } catch {
-      setError("Failed to cancel registration")
+      setError("Failed to cancel registration");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
   }
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
           <div className="h-8 w-32 bg-gray-200 rounded-xl animate-pulse" />
           <div className="bg-white border-2 border-black rounded-2xl p-6 h-64 animate-pulse" />
         </div>
       </main>
-    )
+    );
   }
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#f0faf8] flex items-center justify-center">
-        <p className="font-bold text-black">Event not found</p>
+      <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
+        <p className="font-bold text-[#051B1D]">Event not found</p>
       </main>
-    )
+    );
   }
 
-  const isRegistered = registration?.status === "REGISTERED"
-  const isWaitlisted = registration?.status === "WAITLISTED"
-  const isCancelled = registration?.status === "CANCELLED" || !registration
+  const isRegistered = registration?.status === "REGISTERED";
+  const isWaitlisted = registration?.status === "WAITLISTED";
+  const isCancelled = registration?.status === "CANCELLED" || !registration;
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
         >
           ← Back
         </button>
 
         {error && (
-          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 text-green-600 text-sm font-medium">
+          <div className="mb-4 bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 text-green-700 text-xs sm:text-sm font-medium break-words">
             {success}
           </div>
         )}
 
-        <div className="bg-white border-2 border-black rounded-2xl p-6 shadow-[4px_4px_0px_#000] mb-4">
+        <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
           <div className="flex items-start justify-between gap-2 mb-4">
-            <span className="text-xs font-bold px-2 py-1 rounded-full bg-[#0d9488] text-white">
+            <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-[#73FFFF] text-[#051B1D] border border-black">
               {event.status}
             </span>
-            <span className="text-xs text-gray-400 font-medium">{event.category}</span>
+            <span className="text-[10px] sm:text-xs text-gray-400 font-medium truncate">
+              {event.category}
+            </span>
           </div>
 
-          <h1 className="text-2xl font-black text-black mb-2">{event.title}</h1>
-          <p className="text-gray-600 text-sm leading-relaxed mb-6">{event.description}</p>
+          <h1 className="text-xl sm:text-2xl font-black text-[#051B1D] mb-2 leading-tight break-words">
+            {event.title}
+          </h1>
+          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed mb-6 break-words">
+            {event.description}
+          </p>
 
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-6">
             {[
-              { label: "Date", value: new Date(event.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) },
+              {
+                label: "Date",
+                value: new Date(event.date).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                }),
+              },
               { label: "Coordinator", value: event.coordinatorName },
-              { label: "Registered", value: `${event.registrationCount}${event.maxParticipants ? ` / ${event.maxParticipants}` : ""}` },
+              {
+                label: "Registered",
+                value: `${event.registrationCount}${event.maxParticipants ? ` / ${event.maxParticipants}` : ""}`,
+              },
               { label: "Category", value: event.category },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-[#f0faf8] border-2 border-black rounded-xl p-3">
-                <p className="text-xs text-gray-500 font-medium">{label}</p>
-                <p className="text-sm font-bold text-black">{value}</p>
+              <div
+                key={label}
+                className="bg-[#F7F7F8] border-2 border-black rounded-xl p-2.5 sm:p-3 min-w-0"
+              >
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium truncate">
+                  {label}
+                </p>
+                <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
+                  {value}
+                </p>
               </div>
             ))}
           </div>
 
           {event.sessions && event.sessions.length > 0 && (
             <div className="mb-6">
-              <h3 className="font-black text-black mb-3">Sessions</h3>
+              <h3 className="font-black text-[#051B1D] text-sm sm:text-base mb-3">Sessions</h3>
               <div className="space-y-2">
                 {event.sessions.map((s) => (
-                  <div key={s.id} className="flex items-center justify-between bg-[#f0faf8] border-2 border-black rounded-xl px-4 py-3">
-                    <span className="text-sm font-bold text-black">{s.title}</span>
-                    <span className="text-xs text-gray-500">{new Date(s.startTime).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</span>
+                  <div
+                    key={s.id}
+                    className="flex items-center justify-between bg-[#F7F7F8] border-2 border-black rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2"
+                  >
+                    <span className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
+                      {s.title}
+                    </span>
+                    <span className="text-[10px] sm:text-xs text-gray-500 shrink-0">
+                      {new Date(s.startTime).toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -159,7 +201,7 @@ export default function EventDetailPage() {
               href={event.whatsappInviteLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-green-500 text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all mb-3"
+              className="w-full flex items-center justify-center gap-2 bg-green-500 text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all mb-3"
             >
               Join WhatsApp Group
             </a>
@@ -169,27 +211,27 @@ export default function EventDetailPage() {
             <button
               onClick={handleRegister}
               disabled={actionLoading}
-              className="w-full bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-bold shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+              className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
             >
               {actionLoading ? "Registering..." : "Register Now"}
             </button>
           )}
 
           {isWaitlisted && (
-            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl px-4 py-3 text-yellow-700 text-sm font-bold text-center">
+            <div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl px-4 py-3 text-yellow-800 text-xs sm:text-sm font-bold text-center">
               You are on the waitlist
             </div>
           )}
 
           {isRegistered && (
             <div className="space-y-3">
-              <div className="bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 text-green-700 text-sm font-bold text-center">
+              <div className="bg-green-50 border-2 border-green-400 rounded-xl px-4 py-3 text-green-700 text-xs sm:text-sm font-bold text-center">
                 ✓ You are registered
               </div>
               <button
                 onClick={handleCancel}
                 disabled={actionLoading}
-                className="w-full bg-white text-red-500 border-2 border-red-400 rounded-xl px-4 py-3 font-bold hover:bg-red-50 transition-all disabled:opacity-50"
+                className="w-full bg-white text-red-500 border-2 border-red-400 rounded-xl px-4 py-3 font-bold text-xs sm:text-sm hover:bg-red-50 transition-all disabled:opacity-50"
               >
                 {actionLoading ? "Cancelling..." : "Cancel Registration"}
               </button>
@@ -197,12 +239,12 @@ export default function EventDetailPage() {
           )}
 
           {!event.registrationOpen && isCancelled && (
-            <div className="bg-gray-50 border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-500 text-sm font-bold text-center">
+            <div className="bg-gray-50 border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-500 text-xs sm:text-sm font-bold text-center">
               Registration is closed
             </div>
           )}
         </div>
       </div>
     </main>
-  )
+  );
 }

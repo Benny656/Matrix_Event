@@ -2,18 +2,33 @@
 
 import { adminAuth, adminDb } from "@/lib/firebase-admin"
 import { createSession, destroySession } from "@/lib/auth-session"
-import { FieldValue } from "firebase-admin/firestore"
 
-const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "").split(",").map((e) => e.trim())
+const HARDCODED_ADMIN_EMAILS = [
+  "bennymanuel2020@gmail.com",
+  "matrixkarunya@gmail.com",
+]
 
-export async function syncGoogleUserAction(uid: string, email: string, name: string, image: string, idToken: string) {
+const ADMIN_EMAILS = [
+  ...HARDCODED_ADMIN_EMAILS,
+  ...(process.env.ADMIN_EMAILS || "").split(",").map((e) => e.trim().toLowerCase()),
+].filter(Boolean)
+
+export async function syncGoogleUserAction(
+  uid: string,
+  email: string,
+  name: string,
+  image: string,
+  idToken: string,
+) {
+  const normalizedEmail = email.toLowerCase().trim()
   const ref = adminDb.collection("users").doc(uid)
   const snap = await ref.get()
 
+  const isAdmin = ADMIN_EMAILS.includes(normalizedEmail)
+
   if (!snap.exists) {
-    const isAdmin = ADMIN_EMAILS.includes(email)
-    const isFaculty = email.endsWith("@karunya.edu")
-    const isStudent = email.endsWith("@karunya.edu.in")
+    const isFaculty = normalizedEmail.endsWith("@karunya.edu")
+    const isStudent = normalizedEmail.endsWith("@karunya.edu.in")
 
     if (!isAdmin && !isFaculty && !isStudent) {
       throw new Error("Use your Karunya college email to sign in")
@@ -22,7 +37,7 @@ export async function syncGoogleUserAction(uid: string, email: string, name: str
     await ref.set({
       id: uid,
       name,
-      email,
+      email: normalizedEmail,
       emailVerified: true,
       image,
       rollNumber: null,
@@ -38,24 +53,38 @@ export async function syncGoogleUserAction(uid: string, email: string, name: str
       createdAt: new Date().toISOString(),
       updatedAt: null,
     })
+  } else if (isAdmin) {
+    const data = snap.data()
+    if (data?.role !== "ADMIN" || !data?.onboardingCompleted) {
+      await ref.update({
+        role: "ADMIN",
+        onboardingCompleted: true,
+        updatedAt: new Date().toISOString(),
+      })
+    }
   }
 
   await createSession(idToken)
 }
+
 export async function signOutAction() {
   await destroySession()
 }
 
-export async function completeOnboardingAction(uid: string, data: {
-  name: string
-  rollNumber: string
-  programType: string
-  degree: string
-  department: string
-  yearOfStudy: string
-  phoneNumber: string
-}) {
-  const duplicate = await adminDb.collection("users")
+export async function completeOnboardingAction(
+  uid: string,
+  data: {
+    name: string
+    rollNumber: string
+    programType: string
+    degree?: string
+    department: string
+    yearOfStudy: string
+    phoneNumber: string
+  },
+) {
+  const duplicate = await adminDb
+    .collection("users")
     .where("rollNumber", "==", data.rollNumber)
     .limit(2)
     .get()
@@ -63,11 +92,14 @@ export async function completeOnboardingAction(uid: string, data: {
   const others = duplicate.docs.filter((d) => d.id !== uid)
   if (others.length > 0) throw new Error("Roll number already in use")
 
-  await adminDb.collection("users").doc(uid).update({
-    ...data,
-    onboardingCompleted: true,
-    updatedAt: new Date().toISOString(),
-  })
+  await adminDb
+    .collection("users")
+    .doc(uid)
+    .update({
+      ...data,
+      onboardingCompleted: true,
+      updatedAt: new Date().toISOString(),
+    })
 }
 
 export async function changePasswordAction(uid: string, newPassword: string) {

@@ -19,7 +19,6 @@ const CATEGORIES = [
   "Seminar",
   "Other",
 ];
-const STATUS_OPTIONS = ["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"];
 
 export default function NewEventPage() {
   const router = useRouter();
@@ -102,30 +101,30 @@ export default function NewEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
         >
           ← Back
         </button>
 
-        <h1 className="text-3xl font-black text-black mb-8">Create Event</h1>
+        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6 sm:mb-8">Create Event</h1>
 
         {error && (
-          <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-sm font-medium">
+          <div className="mb-6 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
             {error}
           </div>
         )}
 
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5">
           {/* Title */}
-          <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000]">
-            <h2 className="font-black text-black mb-4">Basic Info</h2>
-            <div className="space-y-4">
+          <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Basic Info</h2>
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Event Title <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -133,13 +132,13 @@ export default function NewEventPage() {
                   value={form.title}
                   onChange={handleChange}
                   placeholder="e.g. Tech Fest 2025"
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="text-sm font-bold text-black block mb-1">
+                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                     Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -147,22 +146,22 @@ export default function NewEventPage() {
                     name="date"
                     value={form.date}
                     onChange={handleChange}
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-bold text-black block mb-1">
+                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                     Category <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="category"
                     value={form.category}
                     onChange={handleChange}
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488] bg-white"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
                   >
-                    <option value="">Select...</option>
+                    <option value="" className="text-[#051B1D]">Select category...</option>
                     {CATEGORIES.map((c) => (
-                      <option key={c} value={c}>
+                      <option key={c} value={c} className="text-[#051B1D]">
                         {c}
                       </option>
                     ))}
@@ -171,7 +170,7 @@ export default function NewEventPage() {
               </div>
 
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Venue <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -179,13 +178,13 @@ export default function NewEventPage() {
                   value={form.venue}
                   onChange={handleChange}
                   placeholder="e.g. Main Auditorium"
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
-                  <label className="text-sm font-bold text-black block mb-1">
+                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                     Coordinator Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -193,11 +192,11 @@ export default function NewEventPage() {
                     value={form.coordinatorName}
                     onChange={handleChange}
                     placeholder="e.g. Dr. Ramesh"
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-bold text-black block mb-1">
+                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                     Capacity
                   </label>
                   <input
@@ -207,13 +206,13 @@ export default function NewEventPage() {
                     onChange={handleChange}
                     placeholder="e.g. 200"
                     min={0}
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-sm font-bold text-black block mb-1">
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                   Description
                 </label>
                 <textarea
@@ -222,19 +221,20 @@ export default function NewEventPage() {
                   onChange={handleChange}
                   rows={3}
                   placeholder="Brief description of the event..."
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#0d9488] resize-none"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] resize-none bg-white text-[#051B1D] placeholder:text-gray-400"
                 />
               </div>
             </div>
           </div>
 
           {/* Sessions */}
-          <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000]">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-black text-black">Sessions</h2>
+          <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h2 className="font-black text-[#051B1D] text-base sm:text-lg">Sessions</h2>
               <button
+                type="button"
                 onClick={addSession}
-                className="text-sm font-bold text-[#0d9488] border-2 border-[#0d9488] rounded-xl px-3 py-1.5 hover:bg-[#0d9488] hover:text-white transition-all"
+                className="text-xs sm:text-sm font-bold text-[#00666B] border-2 border-[#00666B] rounded-xl px-2.5 sm:px-3 py-1 sm:py-1.5 hover:bg-[#00666B] hover:text-white transition-all"
               >
                 + Add Session
               </button>
@@ -244,14 +244,15 @@ export default function NewEventPage() {
               {sessions.map((session, index) => (
                 <div
                   key={session.id}
-                  className="border-2 border-gray-200 rounded-xl p-4 bg-[#f9fafb]"
+                  className="border-2 border-gray-200 rounded-xl p-3 sm:p-4 bg-[#f9fafb]"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-black text-gray-500 uppercase tracking-widest">
+                  <div className="flex items-center justify-between mb-2 sm:mb-3">
+                    <p className="text-[10px] sm:text-xs font-black text-gray-500 uppercase tracking-widest">
                       Session {index + 1}
                     </p>
                     {sessions.length > 1 && (
                       <button
+                        type="button"
                         onClick={() => removeSession(session.id)}
                         className="text-xs text-red-500 font-bold hover:underline"
                       >
@@ -259,9 +260,9 @@ export default function NewEventPage() {
                       </button>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     <div>
-                      <label className="text-xs font-bold text-black block mb-1">
+                      <label className="text-[10px] sm:text-xs font-bold text-[#051B1D] block mb-1">
                         Title
                       </label>
                       <input
@@ -270,11 +271,11 @@ export default function NewEventPage() {
                           updateSession(session.id, "title", e.target.value)
                         }
                         placeholder="e.g. Morning Session"
-                        className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                        className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-black block mb-1">
+                      <label className="text-[10px] sm:text-xs font-bold text-[#051B1D] block mb-1">
                         Start Time
                       </label>
                       <input
@@ -283,7 +284,7 @@ export default function NewEventPage() {
                         onChange={(e) =>
                           updateSession(session.id, "startTime", e.target.value)
                         }
-                        className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#0d9488]"
+                        className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
                       />
                     </div>
                   </div>
@@ -296,7 +297,7 @@ export default function NewEventPage() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="w-full bg-[#0d9488] text-white border-2 border-black rounded-2xl px-4 py-4 font-black text-base shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50"
+            className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-4 py-3.5 sm:py-4 font-black text-sm sm:text-base shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
           >
             {submitting ? "Creating Event..." : "Create Event →"}
           </button>

@@ -13,8 +13,8 @@ import {
 type Tab = "registrations" | "attendance" | "settings";
 
 const statusColors: Record<string, string> = {
-  REGISTERED: "bg-green-100 text-green-700",
-  WAITLISTED: "bg-yellow-100 text-yellow-700",
+  REGISTERED: "bg-[#73FFFF] text-[#051B1D]",
+  WAITLISTED: "bg-yellow-100 text-yellow-800",
   CANCELLED: "bg-red-100 text-red-600",
 };
 
@@ -144,27 +144,27 @@ export default function AdminEventDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f0faf8] px-4 py-8">
+    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
         <button
           onClick={() => router.back()}
-          className="mb-6 flex items-center gap-2 text-sm font-bold text-black hover:text-[#0d9488] transition-colors"
+          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
         >
           ← Back
         </button>
 
-        <h1 className="text-3xl font-black text-black mb-6">Event Detail</h1>
+        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-4 sm:mb-6 truncate">Event Detail</h1>
 
         {/* Tabs */}
-        <div className="flex gap-2 mb-6 border-b-2 border-black pb-2">
+        <div className="flex flex-wrap gap-2 mb-6 border-b-2 border-black pb-3">
           {(["registrations", "attendance", "settings"] as Tab[]).map((t) => (
             <button
               key={t}
               onClick={() => handleTabChange(t)}
-              className={`px-4 py-2 rounded-xl font-bold text-sm border-2 border-black transition-all capitalize ${
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all capitalize ${
                 tab === t
-                  ? "bg-[#0d9488] text-white shadow-[2px_2px_0px_#000]"
-                  : "bg-white text-black hover:bg-gray-50"
+                  ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000]"
+                  : "bg-white text-[#051B1D] hover:bg-gray-50"
               }`}
             >
               {t}
@@ -175,7 +175,7 @@ export default function AdminEventDetailPage() {
         {/* ── Registrations Tab ── */}
         {tab === "registrations" && (
           <div>
-            <p className="text-sm text-gray-500 font-medium mb-4">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium mb-4">
               {registrations.length} loaded
             </p>
             {loadingReg ? (
@@ -188,34 +188,34 @@ export default function AdminEventDetailPage() {
                 ))}
               </div>
             ) : registrations.length === 0 ? (
-              <div className="bg-white border-2 border-black rounded-2xl p-8 text-center shadow-[4px_4px_0px_#000]">
+              <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                 <p className="text-2xl mb-2">📋</p>
-                <p className="font-bold text-black">No registrations yet</p>
+                <p className="font-bold text-[#051B1D] text-sm sm:text-base">No registrations yet</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {registrations.map((reg) => (
                   <div
                     key={reg.id}
-                    className="bg-white border-2 border-black rounded-2xl px-5 py-4 shadow-[3px_3px_0px_#000] flex items-center justify-between gap-3"
+                    className="bg-white border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000] flex items-center justify-between gap-2 sm:gap-3"
                   >
-                    <div className="min-w-0">
-                      <p className="font-black text-black text-sm">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-black text-[#051B1D] text-sm sm:text-base truncate">
                         {reg.studentName}
                       </p>
-                      <p className="text-xs text-gray-400">
-                        {reg.rollNumber} · {reg.department}
+                      <p className="text-xs text-gray-400 truncate">
+                        {reg.rollNumber} {reg.department ? `· ${reg.department}` : ""}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       <span
-                        className={`text-xs font-bold px-2 py-1 rounded-full ${statusColors[reg.status]}`}
+                        className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full ${statusColors[reg.status] || "bg-gray-100 text-[#051B1D]"}`}
                       >
                         {reg.status}
                       </span>
                       <button
                         onClick={() => toggleRegStatus(reg.id, reg.status)}
-                        className="text-xs font-bold text-gray-500 border border-gray-300 rounded-lg px-2 py-1 hover:border-black transition-colors"
+                        className="text-[10px] sm:text-xs font-bold text-gray-500 border border-gray-300 rounded-lg px-2 py-1 hover:border-black transition-colors"
                       >
                         Toggle
                       </button>
@@ -227,7 +227,7 @@ export default function AdminEventDetailPage() {
                   <button
                     onClick={loadMoreRegistrations}
                     disabled={loadingMoreReg}
-                    className="w-full bg-white border-2 border-black rounded-2xl py-4 font-bold text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50"
+                    className="w-full bg-white text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
                   >
                     {loadingMoreReg ? "Loading..." : "Load more"}
                   </button>
@@ -251,23 +251,23 @@ export default function AdminEventDetailPage() {
               </div>
             ) : (
               <>
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-500 font-medium">
+                <div className="flex items-center justify-between mb-4 gap-2">
+                  <p className="text-xs sm:text-sm text-gray-500 font-medium">
                     {attendance.length} records
                   </p>
                   {attendance.length > 0 && (
                     <button
                       onClick={exportCSV}
-                      className="bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-2 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+                      className="bg-[#00666B] text-white border-2 border-black rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                     >
                       Export CSV
                     </button>
                   )}
                 </div>
                 {attendance.length === 0 ? (
-                  <div className="bg-white border-2 border-black rounded-2xl p-8 text-center shadow-[4px_4px_0px_#000]">
+                  <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                     <p className="text-2xl mb-2">📊</p>
-                    <p className="font-bold text-black">
+                    <p className="font-bold text-[#051B1D] text-sm sm:text-base">
                       No attendance recorded yet
                     </p>
                   </div>
@@ -276,21 +276,21 @@ export default function AdminEventDetailPage() {
                     {attendance.map((a) => (
                       <div
                         key={a.id}
-                        className="bg-white border-2 border-black rounded-xl px-4 py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between"
+                        className="bg-white border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-2"
                       >
-                        <div>
-                          <p className="text-sm font-bold text-black">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-bold text-[#051B1D] truncate">
                             {a.studentName}
                           </p>
-                          <p className="text-xs text-gray-400">
-                            {a.rollNumber} · {a.department}
+                          <p className="text-xs text-gray-400 truncate">
+                            {a.rollNumber} {a.department ? `· ${a.department}` : ""}
                           </p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-xs font-bold text-gray-500">
+                          <p className="text-[10px] sm:text-xs font-bold text-gray-500">
                             {a.method}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-[10px] sm:text-xs text-gray-400">
                             {new Date(a.timestamp).toLocaleTimeString("en-IN", {
                               hour: "2-digit",
                               minute: "2-digit",
@@ -309,29 +309,29 @@ export default function AdminEventDetailPage() {
         {/* ── Settings Tab ── */}
         {tab === "settings" && (
           <div className="space-y-4">
-            <div className="bg-white border-2 border-black rounded-2xl p-5 shadow-[4px_4px_0px_#000]">
-              <h3 className="font-black text-black mb-4">Update Status</h3>
+            <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <h3 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Update Status</h3>
               <div className="grid grid-cols-2 gap-2">
                 {["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"].map((s) => (
                   <button
                     key={s}
                     onClick={() => handleStatusUpdate(s)}
                     disabled={statusUpdating}
-                    className="border-2 border-black rounded-xl px-4 py-3 font-bold text-sm hover:bg-[#0d9488] hover:text-white transition-all disabled:opacity-50"
+                    className="border-2 border-black rounded-xl px-2 sm:px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm hover:bg-[#00666B] hover:text-white transition-all disabled:opacity-50 text-center"
                   >
                     {s}
                   </button>
                 ))}
               </div>
               {eventStatus && (
-                <p className="text-xs text-green-600 font-bold mt-3">
+                <p className="text-xs text-[#00666B] font-bold mt-3">
                   Status updated to {eventStatus}
                 </p>
               )}
             </div>
 
-            <div className="bg-white border-2 border-red-400 rounded-2xl p-5 shadow-[4px_4px_0px_#f87171]">
-              <h3 className="font-black text-red-600 mb-2">Danger Zone</h3>
+            <div className="bg-white border-2 border-red-400 rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#f87171] sm:shadow-[4px_4px_0px_#f87171]">
+              <h3 className="font-black text-red-600 text-base sm:text-lg mb-2">Danger Zone</h3>
               <p className="text-xs text-gray-500 mb-4">
                 Deleting an event is permanent. Registrations and attendance
                 records are not automatically removed.
@@ -339,7 +339,7 @@ export default function AdminEventDetailPage() {
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="w-full bg-red-500 text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+                className="w-full bg-red-500 text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
               >
                 {deleting ? "Deleting..." : "Delete Event"}
               </button>
