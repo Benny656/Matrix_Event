@@ -49,11 +49,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6 sm:mb-8">
-            <span className="inline-block bg-[#00666B] text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
+            <span className="inline-block bg-[#00666B] text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest border border-black">
               AIML · Karunya University
             </span>
             <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] leading-tight">
@@ -61,13 +61,13 @@ export default function LoginPage() {
               <br />
               <span className="text-[#00666B]">Matrix.</span>
             </h1>
-            <p className="text-gray-500 mt-2 text-xs sm:text-sm">
+            <p className="text-gray-700 mt-2 text-xs sm:text-sm font-medium">
               Sign in with your Karunya college email to continue.
             </p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
+            <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
               {error}
             </div>
           )}
@@ -75,7 +75,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base text-[#051B1D] hover:bg-[#00666B] hover:text-white hover:border-[#00666B] transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 bg-[#D3D3D3] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base text-[#051B1D] hover:bg-[#00666B] hover:text-white hover:border-black transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
@@ -102,7 +102,7 @@ export default function LoginPage() {
             <span>{loading ? "Signing in..." : "Continue with Google"}</span>
           </button>
 
-          <p className="text-center text-xs text-gray-400 mt-6 break-words">
+          <p className="text-center text-xs text-gray-700 font-medium mt-6 break-words">
             Only @karunya.edu.in and @karunya.edu emails are allowed
           </p>
         </div>

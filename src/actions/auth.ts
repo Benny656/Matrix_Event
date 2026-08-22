@@ -1,7 +1,7 @@
-"use server";
+"use server"
 
 import { adminAuth, adminDb } from "@/lib/firebase-admin"
-import { createSession, destroySession } from "@/lib/auth-session"
+import { createSession, destroySession, refreshSession } from "@/lib/auth-session"
 
 const HARDCODED_ADMIN_EMAILS = [
   "bennymanuel2020@gmail.com",
@@ -100,6 +100,8 @@ export async function completeOnboardingAction(
       onboardingCompleted: true,
       updatedAt: new Date().toISOString(),
     })
+
+  await refreshSession()
 }
 
 export async function changePasswordAction(uid: string, newPassword: string) {
@@ -108,4 +110,5 @@ export async function changePasswordAction(uid: string, newPassword: string) {
     mustChangePassword: false,
     updatedAt: new Date().toISOString(),
   })
+  await refreshSession()
 }

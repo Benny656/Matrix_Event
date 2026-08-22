@@ -24,7 +24,7 @@ export default function VolunteerEventDetailPage() {
       const ev = await getEventByIdAction(id);
       setEvent(ev);
 
-      if (ev.sessions?.length > 0) {
+      if (ev.sessions && ev.sessions.length > 0) {
         const results = await Promise.all(
           ev.sessions.map((s) => getSessionAttendanceAction(s.id)),
         );
@@ -43,10 +43,10 @@ export default function VolunteerEventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
-          <div className="h-8 w-32 bg-gray-200 rounded-xl animate-pulse" />
-          <div className="h-48 bg-white border-2 border-black rounded-2xl animate-pulse" />
+          <div className="h-8 w-32 bg-gray-400 rounded-xl animate-pulse" />
+          <div className="h-48 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse" />
         </div>
       </main>
     );
@@ -54,14 +54,14 @@ export default function VolunteerEventDetailPage() {
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
+      <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
         <p className="font-bold text-[#051B1D]">Event not found</p>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
@@ -70,13 +70,13 @@ export default function VolunteerEventDetailPage() {
           ← Back
         </button>
 
-        <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
+        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
           <div className="flex items-start justify-between gap-2 mb-4">
             <h1 className="text-xl sm:text-2xl font-black text-[#051B1D] leading-tight break-words">
               {event.title}
             </h1>
             <span
-              className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 ${event.status === "ONGOING" ? "bg-[#73FFFF] text-[#051B1D]" : "bg-[#39A8AD]/20 text-[#00666B]"}`}
+              className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black shrink-0 ${event.status === "ONGOING" ? "bg-[#73FFFF] text-[#051B1D]" : "bg-[#39A8AD]/20 text-[#00666B]"}`}
             >
               {event.status}
             </span>
@@ -94,14 +94,13 @@ export default function VolunteerEventDetailPage() {
               },
               { label: "Registered", value: event.registrationCount },
               { label: "Category", value: event.category },
-              { label: "Coordinator", value: event.coordinatorName },
             ].map(({ label, value }) => (
               <div
                 key={label}
-                className="bg-[#F7F7F8] border-2 border-black rounded-xl p-2.5 sm:p-3 min-w-0"
+                className="bg-[#c8c8c8] border-2 border-black rounded-xl p-2.5 sm:p-3 min-w-0"
               >
-                <p className="text-[10px] sm:text-xs text-gray-500 font-medium truncate">{label}</p>
-                <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">{value}</p>
+                <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">{label}</p>
+                <p className="text-xs sm:text-sm font-black text-[#051B1D] truncate">{value}</p>
               </div>
             ))}
           </div>
@@ -116,7 +115,7 @@ export default function VolunteerEventDetailPage() {
           </button>
         </div>
 
-        {event.sessions?.length > 0 && (
+        {event.sessions && event.sessions.length > 0 && (
           <div>
             <h2 className="text-base sm:text-lg font-black text-[#051B1D] mb-3 sm:mb-4">
               Sessions & Attendance
@@ -127,25 +126,22 @@ export default function VolunteerEventDetailPage() {
                 return (
                   <div
                     key={session.id}
-                    className="bg-white border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]"
+                    className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <h3 className="font-black text-[#051B1D] text-sm truncate">
                           {session.title}
                         </h3>
-                        <p className="text-xs text-gray-400 mt-0.5">
-                          {new Date(session.startTime).toLocaleTimeString(
-                            "en-IN",
-                            { hour: "2-digit", minute: "2-digit" },
-                          )}
+                        <p className="text-xs text-gray-700 font-bold mt-0.5">
+                          {session.startTime}
                         </p>
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-xl sm:text-2xl font-black text-[#00666B]">
                           {count}
                         </p>
-                        <p className="text-[10px] text-gray-400">checked in</p>
+                        <p className="text-[10px] text-gray-700 font-bold">checked in</p>
                       </div>
                     </div>
                   </div>

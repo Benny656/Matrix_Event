@@ -11,7 +11,7 @@ import {
 const roleColors: Record<string, string> = {
   ADMIN: "bg-[#73FFFF] text-[#051B1D]",
   VOLUNTEER: "bg-[#39A8AD]/20 text-[#00666B]",
-  STUDENT: "bg-gray-100 text-[#051B1D]",
+  STUDENT: "bg-gray-200 text-[#051B1D]",
 };
 
 const ROLES = ["STUDENT", "VOLUNTEER", "ADMIN"] as const;
@@ -96,7 +96,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
         <button
           onClick={() => router.back()}
@@ -108,14 +108,14 @@ export default function AdminUsersPage() {
         <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6">Users</h1>
 
         {/* Search */}
-        <div className="bg-white border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search by roll number..."
-              className="w-full sm:flex-1 border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
+              className="w-full sm:flex-1 border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
             />
             <div className="flex gap-2">
               <button
@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                     setSearchQuery("");
                     fetchUsers();
                   }}
-                  className="bg-white text-[#051B1D] border-2 border-black rounded-xl px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   Clear
                 </button>
@@ -146,12 +146,12 @@ export default function AdminUsersPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 bg-white border-2 border-black rounded-2xl animate-pulse"
+                className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
         ) : users.length === 0 ? (
-          <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <p className="text-2xl mb-2">👤</p>
             <p className="font-bold text-[#051B1D] text-sm sm:text-base">No users found</p>
           </div>
@@ -160,36 +160,36 @@ export default function AdminUsersPage() {
             {users.map((user) => (
               <div
                 key={user.id}
-                className="bg-white border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000]"
+                className="bg-[#D3D3D3] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000]"
               >
                 <div className="flex items-start justify-between gap-2 sm:gap-3">
                   <div className="min-w-0 flex-1">
                     <p className="font-black text-[#051B1D] leading-tight text-sm sm:text-base truncate">
                       {user.name}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5 truncate">
+                    <p className="text-xs text-gray-700 font-medium mt-0.5 truncate">
                       {user.rollNumber} {user.department ? `· ${user.department}` : ""}
                     </p>
-                    <p className="text-xs text-gray-400 break-all">{user.email}</p>
+                    <p className="text-xs text-gray-700 font-medium break-all">{user.email}</p>
                   </div>
                   <span
-                    className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 ${roleColors[user.role] || "bg-gray-100 text-[#051B1D]"}`}
+                    className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 border border-black ${roleColors[user.role] || "bg-gray-200 text-[#051B1D]"}`}
                   >
                     {user.role}
                   </span>
                 </div>
 
                 {/* Role switcher */}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3 pt-2 border-t border-gray-100">
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3 pt-2 border-t border-gray-400">
                   {ROLES.map((role) => (
                     <button
                       key={role}
                       onClick={() => handleRoleChange(user.id, role)}
                       disabled={user.role === role || updatingId === user.id}
-                      className={`text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2 transition-all disabled:opacity-40 ${
+                      className={`text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2 border-black transition-all disabled:opacity-40 ${
                         user.role === role
-                          ? "border-[#00666B] text-[#00666B] bg-[#73FFFF]/20"
-                          : "border-gray-300 text-gray-500 hover:border-black hover:text-black"
+                          ? "text-[#00666B] bg-[#73FFFF] shadow-[1px_1px_0px_#000]"
+                          : "text-gray-800 bg-[#c8c8c8] hover:bg-[#00666B] hover:text-white"
                       }`}
                     >
                       {updatingId === user.id && user.role !== role
@@ -205,7 +205,7 @@ export default function AdminUsersPage() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="w-full bg-white text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+                className="w-full bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
               >
                 {loadingMore ? "Loading..." : "Load more"}
               </button>

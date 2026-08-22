@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useStore } from "@/store/user-store";
 import {
@@ -50,7 +50,7 @@ function playBeep(type: "success" | "duplicate" | "error") {
   }
 }
 
-export default function AttendanceScannerPage() {
+function AttendanceScannerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedEventId = searchParams.get("eventId");
@@ -392,7 +392,7 @@ export default function AttendanceScannerPage() {
     : [];
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
           onClick={() => router.back()}
@@ -406,19 +406,19 @@ export default function AttendanceScannerPage() {
         </h1>
 
         {error && (
-          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
+          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
             {error}
           </div>
         )}
 
         {!studentsLoaded ? (
-          <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] space-y-4">
+          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] space-y-4">
             <div>
               <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
                 Select Event
               </label>
               <select
-                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
+                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
                 value={selectedEventId}
                 onChange={(e) => {
                   setSelectedEventId(e.target.value);
@@ -440,7 +440,7 @@ export default function AttendanceScannerPage() {
                   Select Session
                 </label>
                 <select
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
                   value={selectedSessionId}
                   onChange={(e) => setSelectedSessionId(e.target.value)}
                 >
@@ -469,10 +469,10 @@ export default function AttendanceScannerPage() {
         ) : (
           <div className="space-y-4">
             {/* Stats bar */}
-            <div className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <p className="text-[10px] sm:text-xs text-gray-500 font-medium">
+                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">
                     Loaded
                   </p>
                   <p className="text-xl sm:text-2xl font-black text-[#00666B]">
@@ -480,13 +480,13 @@ export default function AttendanceScannerPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Scanned</p>
+                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">Scanned</p>
                   <p className="text-xl sm:text-2xl font-black text-[#051B1D]">
                     {scannedIds.size}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[10px] sm:text-xs text-gray-500 font-medium">Remaining</p>
+                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">Remaining</p>
                   <p className="text-xl sm:text-2xl font-black text-[#051B1D]">
                     {scannerStudents.length - scannedIds.size}
                   </p>
@@ -495,7 +495,7 @@ export default function AttendanceScannerPage() {
 
               {lastScan && (
                 <div
-                  className={`mt-3 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-center border-2 ${lastScan.success ? "bg-green-50 border-green-400 text-green-700" : "bg-red-50 border-red-400 text-red-600"}`}
+                  className={`mt-3 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-center border-2 ${lastScan.success ? "bg-green-100 border-green-600 text-green-800" : "bg-red-100 border-red-500 text-red-700"}`}
                 >
                   {lastScan.success ? "✓" : "✗"} {lastScan.name}
                 </div>
@@ -511,7 +511,7 @@ export default function AttendanceScannerPage() {
                   className={`py-2.5 sm:py-3 rounded-xl border-2 border-black font-bold text-xs sm:text-sm transition-all ${
                     activeTab === tab
                       ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000]"
-                      : "bg-white text-[#051B1D] shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+                      : "bg-[#D3D3D3] text-[#051B1D] shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
                   }`}
                 >
                   {tab === "SCANNER" ? "📷 Camera" : "⌨️ Manual / Search"}
@@ -521,7 +521,7 @@ export default function AttendanceScannerPage() {
 
             {/* Camera Viewfinder */}
             {activeTab === "SCANNER" && (
-              <div className="bg-white border-2 border-black rounded-2xl overflow-hidden shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl overflow-hidden shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                 <div className="relative w-full aspect-square bg-[#051B1D]">
                   <div
                     id="reader-container"
@@ -565,13 +565,13 @@ export default function AttendanceScannerPage() {
             )}
 
             {/* Quick Roll Form */}
-            <div className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
                 Barcode / Roll Input
               </label>
               <input
                 ref={inputRef}
-                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400 uppercase"
+                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600 uppercase"
                 placeholder="Point scanner or type roll number..."
                 value={barcodeInput}
                 onChange={(e) => setBarcodeInput(e.target.value)}
@@ -581,19 +581,19 @@ export default function AttendanceScannerPage() {
                   }
                 }}
               />
-              <p className="text-[10px] sm:text-xs text-gray-400 mt-1">
+              <p className="text-[10px] sm:text-xs text-gray-700 font-bold mt-1">
                 Press Enter or scan barcode to mark attendance
               </p>
             </div>
 
             {/* Manual Search */}
             {activeTab === "MANUAL" && (
-              <div className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                 <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
                   Manual Search
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="Search by name or roll number..."
                   value={manualSearch}
                   onChange={(e) => setManualSearch(e.target.value)}
@@ -604,16 +604,16 @@ export default function AttendanceScannerPage() {
                       <div
                         key={s.studentId}
                         onClick={() => handleManualAdd(s)}
-                        className={`flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 cursor-pointer transition-all gap-2 ${scannedIds.has(s.studentId) ? "border-green-400 bg-green-50" : "border-black hover:border-[#39A8AD]"}`}
+                        className={`flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 cursor-pointer transition-all gap-2 ${scannedIds.has(s.studentId) ? "border-green-600 bg-green-100" : "border-black hover:border-[#39A8AD]"}`}
                       >
                         <div className="min-w-0 flex-1">
                           <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
                             {s.studentName}
                           </p>
-                          <p className="text-[10px] sm:text-xs text-gray-400 truncate">{s.rollNumber}</p>
+                          <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">{s.rollNumber}</p>
                         </div>
                         {scannedIds.has(s.studentId) ? (
-                          <span className="text-green-600 font-bold text-xs sm:text-sm shrink-0">
+                          <span className="text-green-700 font-bold text-xs sm:text-sm shrink-0">
                             ✓
                           </span>
                         ) : (
@@ -630,7 +630,7 @@ export default function AttendanceScannerPage() {
 
             {/* Scanned List */}
             {scannedList.length > 0 && (
-              <div className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                 <h3 className="font-black text-[#051B1D] text-sm sm:text-base mb-2 sm:mb-3">
                   Scanned ({scannedList.length})
                 </h3>
@@ -638,15 +638,15 @@ export default function AttendanceScannerPage() {
                   {scannedList.map((s) => (
                     <div
                       key={s.studentId}
-                      className="flex items-center justify-between px-3 py-2 bg-green-50 border border-green-200 rounded-xl gap-2"
+                      className="flex items-center justify-between px-3 py-2 bg-green-100 border border-green-400 rounded-xl gap-2"
                     >
                       <div className="min-w-0 flex-1">
                         <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
                           {s.studentName}
                         </p>
-                        <p className="text-[10px] sm:text-xs text-gray-400 truncate">{s.rollNumber}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">{s.rollNumber}</p>
                       </div>
-                      <span className="text-[10px] sm:text-xs text-gray-400 shrink-0">{s.method}</span>
+                      <span className="text-[10px] sm:text-xs text-gray-700 font-bold shrink-0">{s.method}</span>
                     </div>
                   ))}
                 </div>
@@ -667,5 +667,19 @@ export default function AttendanceScannerPage() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function AttendanceScannerPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black" />
+        </main>
+      }
+    >
+      <AttendanceScannerContent />
+    </Suspense>
   );
 }

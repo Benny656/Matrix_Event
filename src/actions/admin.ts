@@ -43,18 +43,26 @@ export async function createEventAction(data: {
   date: string
   category: string
   description: string
-  venue: string
-  capacity: number
-  coordinatorName: string
-  sessions: { id: string; title: string; startTime: string }[]
+  capacity?: number
+  whatsappInviteLink?: string
+  sessions?: { id: string; title: string; startTime: string; endTime?: string | null }[]
 }) {
   await requireAdmin()
 
   const ref = adminDb.collection("events").doc()
   await ref.set({
-    ...data,
+    title: data.title,
+    date: data.date,
+    category: data.category,
+    description: data.description,
+    capacity: data.capacity || 0,
+    maxParticipants: data.capacity || null,
+    whatsappInviteLink: data.whatsappInviteLink || null,
+    sessions: data.sessions || [],
     status: "UPCOMING",
+    registrationOpen: true,
     registrationCount: 0,
+    eligibilityTokens: ["AUDIENCE_ALL", "AUDIENCE_STUDENTS"],
     createdAt: new Date().toISOString(),
   })
   return { id: ref.id }
@@ -67,11 +75,12 @@ export async function updateEventAction(
     date: string
     category: string
     description: string
-    venue: string
     capacity: number
-    coordinatorName: string
+    maxParticipants: number | null
     status: string
-    sessions: { id: string; title: string; startTime: string }[]
+    registrationOpen: boolean
+    whatsappInviteLink: string | null
+    sessions: { id: string; title: string; startTime: string; endTime?: string | null }[]
   }>
 ) {
   await requireAdmin()

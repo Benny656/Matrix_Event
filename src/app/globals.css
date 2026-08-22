@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #F7F7F8;
+  --background: #D3D3D3;
   --foreground: #051B1D;
   color-scheme: light;
 }
@@ -14,7 +14,7 @@ html, body {
   max-width: 100vw;
   overflow-x: hidden;
   position: relative;
-  background-color: #F7F7F8;
+  background-color: #D3D3D3;
   color: #051B1D;
 }
 
@@ -23,14 +23,14 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Ensure all input, select, and textarea elements have dark teal black text */
+/* Ensure all input, select, and textarea elements have dark teal black text and light gray background */
 input, select, textarea {
   color: #051B1D !important;
-  background-color: #ffffff !important;
+  background-color: #D3D3D3 !important;
 }
 
 input::placeholder, textarea::placeholder {
-  color: #6b7280 !important;
+  color: #4b5563 !important;
   opacity: 1;
 }
 
@@ -44,6 +44,24 @@ select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   -webkit-text-fill-color: #051B1D !important;
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-box-shadow: 0 0 0px 1000px #D3D3D3 inset !important;
   transition: background-color 5000s ease-in-out 0s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

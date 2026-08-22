@@ -26,23 +26,23 @@ export interface Event {
   date: string
   venue?: string | null
   category: string
-  coordinatorName: string
+  coordinatorName?: string | null
   status: "UPCOMING" | "ONGOING" | "COMPLETED" | "ARCHIVED"
   registrationOpen: boolean
-  maxParticipants: number | null
+  maxParticipants?: number | null
   registrationCount: number
-  eligibility: {
+  eligibility?: {
     targetAudience: string
     degrees: string[] | null
     years: string[] | null
     departments: string[] | null
   }
-  eligibilityTokens: string[]
-  sessions: { id: string; title: string; startTime: string; endTime: string }[]
-  whatsappInviteLink: string | null
-  createdById: string
+  eligibilityTokens?: string[]
+  sessions?: { id: string; title: string; startTime: string; endTime?: string | null }[]
+  whatsappInviteLink?: string | null
+  createdById?: string
   createdAt: string
-  updatedAt: string
+  updatedAt?: string
 }
 
 export interface Session {

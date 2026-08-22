@@ -12,62 +12,45 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get("type") // "registrations" | "attendance"
   const eventId = searchParams.get("eventId")
 
-  if (!type || !eventId) {
-    return NextResponse.json({ error: "Missing type or eventId" }, { status: 400 })
+  if (!eventId) {
+    return NextResponse.json({ error: "Missing eventId" }, { status: 400 })
   }
 
   try {
     let rows: Record<string, string>[] = []
-    let filename = ""
+    let filename = `attendance-${eventId}.csv`
 
-    if (type === "registrations") {
-      const snap = await adminDb
-        .collection("registrations")
-        .where("eventId", "==", eventId)
-        .orderBy("createdAt", "asc")
-        .get()
+    const snap = await adminDb
+      .collection("attendances")
+      .where("eventId", "==", eventId)
+      .orderBy("checkInTime", "asc")
+      .get()
 
-      rows = snap.docs.map((d) => {
-        const data = d.data()
-        return {
-          Name: data.studentName ?? "",
-          Email: data.email ?? "",
-          "Roll Number": data.rollNumber ?? "",
-          Department: data.department ?? "",
-          Status: data.status ?? "",
-          "Event Role": data.eventRole ?? "",
-          "Registered At": data.createdAt
-            ? new Date(data.createdAt).toLocaleString("en-IN")
-            : "",
-        }
-      })
-      filename = `registrations-${eventId}.csv`
-    }
+    rows = snap.docs.map((d) => {
+      const data = d.data()
+      const checkInDateObj = data.checkInTime ? new Date(data.checkInTime) : null
+      const formattedCheckIn = checkInDateObj
+        ? checkInDateObj.toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          })
+        : ""
 
-    if (type === "attendance") {
-      const snap = await adminDb
-        .collection("attendances")
-        .where("eventId", "==", eventId)
-        .orderBy("checkInTime", "asc")
-        .get()
-
-      rows = snap.docs.map((d) => {
-        const data = d.data()
-        return {
-          Name: data.studentName ?? "",
-          "Roll Number": data.rollNumber ?? "",
-          Department: data.department ?? "",
-          "Year of Study": data.yearOfStudy ?? "",
-          "Program Type": data.programType ?? "",
-          "Check-in Method": data.checkInMethod ?? "",
-          "Check-in Time": data.checkInTime
-            ? new Date(data.checkInTime).toLocaleString("en-IN")
-            : "",
-          Session: data.sessionId ?? "",
-        }
-      })
-      filename = `attendance-${eventId}.csv`
-    }
+      return {
+        Name: data.studentName ?? "",
+        "Roll Number": data.rollNumber ?? "",
+        Department: data.department ?? "",
+        "Year of Study": data.yearOfStudy ?? "",
+        "Program Type": data.programType ?? "",
+        "Check-in Time": formattedCheckIn,
+        Session: data.sessionId ?? "",
+      }
+    })
 
     if (rows.length === 0) {
       return NextResponse.json({ error: "No data found" }, { status: 404 })

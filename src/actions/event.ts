@@ -89,7 +89,7 @@ export async function registerForEventAction(eventId: string) {
 
   if (!existing.empty) throw new Error("Already registered")
 
-  const isWaitlisted = event.maxParticipants !== null && event.registrationCount >= event.maxParticipants
+  const isWaitlisted = typeof event.maxParticipants === "number" && event.maxParticipants > 0 && event.registrationCount >= event.maxParticipants
   const ref = adminDb.collection("registrations").doc()
 
   const batch = adminDb.batch()

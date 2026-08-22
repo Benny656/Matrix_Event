@@ -10,31 +10,31 @@ function EventCard({ event, onClick }: { event: Event; onClick: () => void }) {
   const statusColors: Record<string, string> = {
     UPCOMING: "bg-[#39A8AD]/20 text-[#00666B]",
     ONGOING: "bg-[#73FFFF] text-[#051B1D]",
-    COMPLETED: "bg-gray-100 text-gray-500",
+    COMPLETED: "bg-gray-200 text-gray-700",
   };
 
   return (
     <div
       onClick={onClick}
-      className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
         <span
-          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full ${statusColors[event.status] || "bg-gray-100 text-gray-500"}`}
+          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black ${statusColors[event.status] || "bg-gray-200 text-gray-700"}`}
         >
           {event.status}
         </span>
-        <span className="text-[10px] sm:text-xs text-gray-400 font-medium truncate">
+        <span className="text-xs text-gray-800 font-bold truncate">
           {event.category}
         </span>
       </div>
       <h3 className="font-black text-[#051B1D] text-base sm:text-lg leading-tight mb-1 break-words">
         {event.title}
       </h3>
-      <p className="text-gray-500 text-xs sm:text-sm mb-3 line-clamp-2 break-words">
+      <p className="text-gray-800 text-xs sm:text-sm mb-3 line-clamp-2 break-words font-medium">
         {event.description}
       </p>
-      <div className="flex items-center justify-between text-xs text-gray-400 font-medium">
+      <div className="text-xs text-gray-700 font-bold">
         <span>
           {new Date(event.date).toLocaleDateString("en-IN", {
             day: "numeric",
@@ -42,7 +42,6 @@ function EventCard({ event, onClick }: { event: Event; onClick: () => void }) {
             year: "numeric",
           })}
         </span>
-        <span>{event.registrationCount} registered</span>
       </div>
     </div>
   );
@@ -90,7 +89,7 @@ export default function StudentEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 sm:mb-8">
           <button
@@ -100,13 +99,13 @@ export default function StudentEventsPage() {
             ← Back
           </button>
           <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D]">Events</h1>
-          <p className="text-gray-500 text-xs sm:text-sm mt-0.5">
+          <p className="text-gray-700 text-xs sm:text-sm mt-0.5 font-medium">
             Browse and register for upcoming events
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium">
+          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold">
             {error}
           </div>
         )}
@@ -116,7 +115,7 @@ export default function StudentEventsPage() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="bg-white border-2 border-black rounded-2xl p-5 h-36 animate-pulse"
+                className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-5 h-36 animate-pulse"
               />
             ))}
           </div>
@@ -124,7 +123,7 @@ export default function StudentEventsPage() {
           <div className="text-center py-12 sm:py-16">
             <p className="text-3xl sm:text-4xl mb-3">📭</p>
             <p className="font-bold text-[#051B1D] text-sm sm:text-base">No events yet</p>
-            <p className="text-gray-500 text-xs sm:text-sm">Check back soon</p>
+            <p className="text-gray-700 text-xs sm:text-sm font-medium">Check back soon</p>
           </div>
         ) : (
           <div className="grid gap-3 sm:gap-4">
@@ -143,7 +142,7 @@ export default function StudentEventsPage() {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="bg-white border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
+              className="bg-[#D3D3D3] border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
             >
               {loadingMore ? "Loading..." : "Load More"}
             </button>

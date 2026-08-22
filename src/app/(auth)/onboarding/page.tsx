@@ -45,26 +45,26 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6">
             <div className="flex gap-2 mb-4">
               {[1, 2].map((s) => (
                 <div
                   key={s}
-                  className={`h-2 flex-1 rounded-full transition-all ${s <= step ? "bg-[#00666B]" : "bg-gray-200"}`}
+                  className={`h-2 flex-1 rounded-full transition-all ${s <= step ? "bg-[#00666B]" : "bg-gray-400"}`}
                 />
               ))}
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-[#051B1D]">
               {step === 1 ? "Your Identity" : "Academic Details"}
             </h2>
-            <p className="text-gray-500 text-xs sm:text-sm mt-1">Step {step} of 2</p>
+            <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">Step {step} of 2</p>
           </div>
 
           {error && (
-            <div className="mb-4 bg-red-50 border-2 border-red-400 rounded-xl px-4 py-3 text-red-600 text-xs sm:text-sm font-medium break-words">
+            <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
               {error}
             </div>
           )}
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
                   Full Name
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="Your full name"
                   value={form.name}
                   onChange={(e) => update("name", e.target.value)}
@@ -87,7 +87,7 @@ export default function OnboardingPage() {
                   Roll Number
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] uppercase bg-white text-[#051B1D] placeholder:text-gray-400"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] uppercase bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="e.g. URK22AI001"
                   value={form.rollNumber}
                   onChange={(e) =>
@@ -100,17 +100,22 @@ export default function OnboardingPage() {
                   Phone Number
                 </label>
                 <input
-                  type="tel"
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D] placeholder:text-gray-400"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="10-digit mobile number"
                   value={form.phoneNumber}
                   onChange={(e) => update("phoneNumber", e.target.value)}
                 />
               </div>
               <button
-                onClick={() => setStep(2)}
-                disabled={!form.name.trim() || !form.rollNumber.trim() || !form.phoneNumber.trim()}
-                className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  if (!form.name || !form.rollNumber || !form.phoneNumber) {
+                    setError("Please fill in all fields");
+                    return;
+                  }
+                  setError("");
+                  setStep(2);
+                }}
+                className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
               >
                 Next →
               </button>
@@ -119,61 +124,75 @@ export default function OnboardingPage() {
 
           {step === 2 && (
             <div className="space-y-4">
-              {[
-                {
-                  label: "Program Type",
-                  field: "programType",
-                  options: PROGRAM_TYPES,
-                },
-                {
-                  label: "Department",
-                  field: "department",
-                  options: DEPARTMENTS,
-                },
-                {
-                  label: "Year of Study",
-                  field: "yearOfStudy",
-                  options: YEARS,
-                },
-              ].map(({ label, field, options }) => (
-                <div key={field}>
-                  <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
-                    {label}
-                  </label>
-                  <select
-                    className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-white text-[#051B1D]"
-                    value={form[field as keyof typeof form]}
-                    onChange={(e) => update(field, e.target.value)}
-                  >
-                    <option value="" className="text-[#051B1D]">Select {label}</option>
-                    {options.map((o) => (
-                      <option key={o} value={o} className="text-[#051B1D]">
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
-              <div className="flex gap-3 pt-2">
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
+                  Department
+                </label>
+                <select
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  value={form.department}
+                  onChange={(e) => update("department", e.target.value)}
+                >
+                  <option value="" className="text-[#051B1D]">Select department...</option>
+                  {DEPARTMENTS.map((d) => (
+                    <option key={d} value={d} className="text-[#051B1D]">
+                      {d}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
+                  Program Type
+                </label>
+                <select
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  value={form.programType}
+                  onChange={(e) => update("programType", e.target.value)}
+                >
+                  <option value="" className="text-[#051B1D]">Select program...</option>
+                  {PROGRAM_TYPES.map((p) => (
+                    <option key={p} value={p} className="text-[#051B1D]">
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
+                  Year of Study
+                </label>
+                <select
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  value={form.yearOfStudy}
+                  onChange={(e) => update("yearOfStudy", e.target.value)}
+                >
+                  <option value="" className="text-[#051B1D]">Select year...</option>
+                  {YEARS.map((y) => (
+                    <option key={y} value={y} className="text-[#051B1D]">
+                      {y}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex gap-2">
                 <button
-                  type="button"
                   onClick={() => setStep(1)}
-                  className="flex-1 bg-white text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+                  className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
                 >
                   ← Back
                 </button>
                 <button
-                  type="button"
                   onClick={handleSubmit}
                   disabled={
                     loading ||
-                    !form.programType ||
                     !form.department ||
+                    !form.programType ||
                     !form.yearOfStudy
                   }
-                  className="flex-1 bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
                 >
-                  {loading ? "Saving..." : "Complete →"}
+                  {loading ? "Saving..." : "Complete Setup →"}
                 </button>
               </div>
             </div>

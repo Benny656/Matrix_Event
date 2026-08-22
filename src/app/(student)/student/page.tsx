@@ -3,13 +3,14 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStudentDashboardAction } from "@/actions/registration";
+import SignOutButton from "@/components/shared/signout-button";
 import type { Registration } from "@/types";
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-white border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
+    <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
       <p className="text-2xl sm:text-3xl font-black text-[#00666B]">{value}</p>
-      <p className="text-xs sm:text-sm font-bold text-gray-500 mt-1 truncate">{label}</p>
+      <p className="text-xs sm:text-sm font-bold text-gray-800 mt-1 truncate">{label}</p>
     </div>
   );
 }
@@ -23,26 +24,26 @@ function RegistrationCard({
 }) {
   const statusColors: Record<string, string> = {
     REGISTERED: "bg-[#73FFFF] text-[#051B1D]",
-    WAITLISTED: "bg-yellow-100 text-yellow-800",
-    CANCELLED: "bg-red-100 text-red-600",
+    WAITLISTED: "bg-yellow-200 text-yellow-900",
+    CANCELLED: "bg-red-200 text-red-700",
   };
 
   return (
     <div
       onClick={onClick}
-      className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-black text-[#051B1D] text-xs sm:text-sm leading-tight break-words line-clamp-1">
           {reg.eventTitle}
         </h3>
         <span
-          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 ${statusColors[reg.status] || "bg-gray-100 text-[#051B1D]"}`}
+          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 border border-black ${statusColors[reg.status] || "bg-gray-200 text-[#051B1D]"}`}
         >
           {reg.status}
         </span>
       </div>
-      <p className="text-[10px] sm:text-xs text-gray-400 font-medium">
+      <p className="text-[10px] sm:text-xs text-gray-700 font-bold">
         {new Date(reg.eventDate).toLocaleDateString("en-IN", {
           day: "numeric",
           month: "short",
@@ -57,7 +58,7 @@ function EventCard({ event, onClick }: { event: any; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="bg-white border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-black text-[#051B1D] text-xs sm:text-sm leading-tight break-words line-clamp-1">
@@ -67,7 +68,7 @@ function EventCard({ event, onClick }: { event: any; onClick: () => void }) {
           {event.status}
         </span>
       </div>
-      <p className="text-[10px] sm:text-xs text-gray-400 font-medium">
+      <p className="text-[10px] sm:text-xs text-gray-700 font-bold">
         {new Date(event.date).toLocaleDateString("en-IN", {
           day: "numeric",
           month: "short",
@@ -96,14 +97,14 @@ export default function StudentDashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
-          <div className="h-8 w-48 bg-gray-200 rounded-xl animate-pulse" />
+          <div className="h-8 w-48 bg-gray-400 rounded-xl animate-pulse" />
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[...Array(2)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-white border-2 border-black rounded-2xl animate-pulse"
+                className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -111,7 +112,7 @@ export default function StudentDashboard() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 bg-white border-2 border-black rounded-2xl animate-pulse"
+                className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -121,18 +122,21 @@ export default function StudentDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F7F7F8] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6 sm:mb-8">
-          <p className="text-xs sm:text-sm font-bold text-[#00666B] uppercase tracking-widest truncate">
-            Welcome back
-          </p>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">
-            {data?.user?.name?.split(" ")[0]} 👋
-          </h1>
-          <p className="text-gray-500 text-xs sm:text-sm mt-0.5 truncate">
-            {data?.user?.rollNumber} · {data?.user?.department}
-          </p>
+        <div className="mb-6 sm:mb-8 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-xs sm:text-sm font-bold text-[#00666B] uppercase tracking-widest truncate">
+              Welcome back
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">
+              {data?.user?.name?.split(" ")[0]} 👋
+            </h1>
+            <p className="text-gray-700 text-xs sm:text-sm mt-0.5 font-bold truncate">
+              {data?.user?.rollNumber} · {data?.user?.department}
+            </p>
+          </div>
+          <SignOutButton />
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
@@ -157,12 +161,12 @@ export default function StudentDashboard() {
             </button>
           </div>
           {data?.registrations.length === 0 ? (
-            <div className="bg-white border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-1">📋</p>
               <p className="font-bold text-[#051B1D] text-sm">
                 No registrations yet
               </p>
-              <p className="text-gray-400 text-xs mt-1">
+              <p className="text-gray-700 text-xs mt-1 font-medium">
                 Browse events to get started
               </p>
             </div>
@@ -190,7 +194,7 @@ export default function StudentDashboard() {
             </button>
           </div>
           {data?.upcomingEvents.length === 0 ? (
-            <div className="bg-white border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-1">📭</p>
               <p className="font-bold text-[#051B1D] text-sm">No upcoming events</p>
             </div>
@@ -216,7 +220,7 @@ export default function StudentDashboard() {
           </button>
           <button
             onClick={() => router.push("/student/registrations")}
-            className="bg-white text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3.5 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
+            className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3.5 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
           >
             My Registrations
           </button>

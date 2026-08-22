@@ -1,6 +1,10 @@
 import type { Event } from "@/types"
 
-export function buildEventEligibilityTokens(eligibility: Event["eligibility"]): string[] {
+export function buildEventEligibilityTokens(eligibility?: Event["eligibility"]): string[] {
+  if (!eligibility) {
+    return ["AUDIENCE_ALL", "AUDIENCE_STUDENTS"]
+  }
+
   const tokens: string[] = []
   if (eligibility.targetAudience === "ALL") tokens.push("AUDIENCE_ALL")
   if (eligibility.targetAudience === "STUDENTS" || eligibility.targetAudience === "ALL") tokens.push("AUDIENCE_STUDENTS")

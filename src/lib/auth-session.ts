@@ -17,8 +17,22 @@ const ADMIN_EMAILS = [
 
 export async function createSession(idToken: string) {
   const sessionCookie = await adminAuth.createSessionCookie(idToken, { expiresIn: EXPIRY_MS })
+  const decoded = await adminAuth.verifySessionCookie(sessionCookie)
+  const userSnap = await adminDb.collection("users").doc(decoded.uid).get()
+  const user = userSnap.data()
+
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
+
+  const payload = {
+    session: sessionCookie,
+    uid: decoded.uid,
+    role: isAdmin ? "ADMIN" : user?.role,
+    onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
+    mustChangePassword: user?.mustChangePassword ?? false,
+  }
+
   const cookieStore = await cookies()
-  cookieStore.set(SESSION_COOKIE, sessionCookie, {
+  cookieStore.set(SESSION_COOKIE, JSON.stringify(payload), {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
@@ -27,12 +41,22 @@ export async function createSession(idToken: string) {
   })
 }
 
-export async function getSession() {
+export async function getSessionPayload() {
   try {
     const cookieStore = await cookies()
     const cookie = cookieStore.get(SESSION_COOKIE)
     if (!cookie) return null
-    return await adminAuth.verifySessionCookie(cookie.value, true)
+    return JSON.parse(cookie.value)
+  } catch {
+    return null
+  }
+}
+
+export async function getSession() {
+  try {
+    const payload = await getSessionPayload()
+    if (!payload) return null
+    return await adminAuth.verifySessionCookie(payload.session, true)
   } catch {
     return null
   }
@@ -54,4 +78,27 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function destroySession() {
   const cookieStore = await cookies()
   cookieStore.delete(SESSION_COOKIE)
+}
+export async function refreshSession() {
+  const payload = await getSessionPayload()
+  if (!payload) return
+  const userSnap = await adminDb.collection("users").doc(payload.uid).get()
+  const user = userSnap.data()
+  const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
+
+  const newPayload = {
+    ...payload,
+    role: isAdmin ? "ADMIN" : user?.role,
+    onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
+    mustChangePassword: user?.mustChangePassword ?? false,
+  }
+
+  const cookieStore = await cookies()
+  cookieStore.set(SESSION_COOKIE, JSON.stringify(newPayload), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: EXPIRY_MS / 1000,
+    path: "/",
+  })
 }
