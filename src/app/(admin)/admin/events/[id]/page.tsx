@@ -211,14 +211,20 @@ export default function AdminEventDetailPage() {
 
   function exportCSV() {
     const rows = attendance.map((a) => ({
-      Name: a.studentName,
-      Roll: a.rollNumber,
-      Department: a.department,
-      Year: a.yearOfStudy,
-      Program: a.programType,
-      Session: a.sessionId,
-      Method: a.method,
-      Time: new Date(a.timestamp).toLocaleString("en-IN"),
+      Name: a.studentName ?? "",
+      "Roll Number": a.rollNumber ?? "",
+      "Year of Study": a.yearOfStudy ?? "",
+      "Check-in Time": a.timestamp
+        ? new Date(a.timestamp).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          })
+        : "",
     }));
     const headers = Object.keys(rows[0] ?? {});
     const csv = [
@@ -237,17 +243,28 @@ export default function AdminEventDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
-        >
-          ← Back
-        </button>
+        {/* Top Navigation */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => router.push("/admin")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              ← Dashboard
+            </button>
+            <button
+              onClick={() => router.push("/admin/events")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              All Events
+            </button>
+          </div>
+        </div>
 
         {/* Header with Title & Quick Registration Toggle */}
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-[#73FFFF] text-[#051B1D] border border-black inline-block mb-2">
@@ -297,7 +314,7 @@ export default function AdminEventDetailPage() {
                 className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all capitalize ${
                   tab === t
                     ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000]"
-                    : "bg-[#D3D3D3] text-[#051B1D] hover:bg-[#c4c4c4]"
+                    : "bg-[#F5F7F8] text-[#051B1D] hover:bg-[#c4c4c4]"
                 }`}
               >
                 {t}
@@ -317,12 +334,12 @@ export default function AdminEventDetailPage() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-16 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                    className="h-16 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
                   />
                 ))}
               </div>
             ) : registrations.length === 0 ? (
-              <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+              <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                 <p className="text-2xl mb-2">📋</p>
                 <p className="font-bold text-[#051B1D] text-sm sm:text-base">
                   No registrations yet
@@ -333,7 +350,7 @@ export default function AdminEventDetailPage() {
                 {registrations.map((reg) => (
                   <div
                     key={reg.id}
-                    className="bg-[#D3D3D3] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000] flex items-center justify-between gap-2 sm:gap-3"
+                    className="bg-[#F5F7F8] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000] flex items-center justify-between gap-2 sm:gap-3"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-black text-[#051B1D] text-sm sm:text-base truncate">
@@ -357,7 +374,7 @@ export default function AdminEventDetailPage() {
                   <button
                     onClick={loadMoreRegistrations}
                     disabled={loadingMoreReg}
-                    className="w-full bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+                    className="w-full bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
                   >
                     {loadingMoreReg ? "Loading..." : "Load more"}
                   </button>
@@ -375,7 +392,7 @@ export default function AdminEventDetailPage() {
                 {[...Array(5)].map((_, i) => (
                   <div
                     key={i}
-                    className="h-14 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                    className="h-14 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
                   />
                 ))}
               </div>
@@ -395,7 +412,7 @@ export default function AdminEventDetailPage() {
                   )}
                 </div>
                 {attendance.length === 0 ? (
-                  <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+                  <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
                     <p className="text-2xl mb-2">📊</p>
                     <p className="font-bold text-[#051B1D] text-sm sm:text-base">
                       No attendance recorded yet
@@ -406,7 +423,7 @@ export default function AdminEventDetailPage() {
                     {attendance.map((a) => (
                       <div
                         key={a.id}
-                        className="bg-[#D3D3D3] border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-2"
+                        className="bg-[#F5F7F8] border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-2"
                       >
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-bold text-[#051B1D] truncate">
@@ -439,7 +456,7 @@ export default function AdminEventDetailPage() {
         {/* ── Sessions Tab ── */}
         {tab === "sessions" && (
           <div className="space-y-4">
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="font-black text-[#051B1D] text-base sm:text-lg">
@@ -506,7 +523,7 @@ export default function AdminEventDetailPage() {
                               updateSessionField(session.id, "title", e.target.value)
                             }
                             placeholder="e.g. Workshop Track 1"
-                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                           />
                         </div>
                         <div>
@@ -523,7 +540,7 @@ export default function AdminEventDetailPage() {
                                 e.target.value,
                               )
                             }
-                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                           />
                         </div>
                       </div>
@@ -549,7 +566,7 @@ export default function AdminEventDetailPage() {
         {tab === "settings" && (
           <div className="space-y-4">
             {/* WhatsApp Link Configuration */}
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <div className="flex items-center gap-2 mb-2">
                 <span className="p-1.5 bg-[#25D366] text-white rounded-lg inline-flex items-center justify-center border border-black shadow-[1px_1px_0px_#000]">
                   <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -568,7 +585,7 @@ export default function AdminEventDetailPage() {
                   value={whatsappLink}
                   onChange={(e) => setWhatsappLink(e.target.value)}
                   placeholder="https://chat.whatsapp.com/..."
-                  className="flex-1 border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#25D366] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="flex-1 border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#25D366] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 />
                 <button
                   onClick={handleSaveWhatsapp}
@@ -584,7 +601,7 @@ export default function AdminEventDetailPage() {
             </div>
 
             {/* Event Status Update */}
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <h3 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">
                 Update Status
               </h3>
@@ -597,7 +614,7 @@ export default function AdminEventDetailPage() {
                     className={`border-2 border-black rounded-xl px-2 sm:px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm transition-all disabled:opacity-50 text-center ${
                       event?.status === s
                         ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000]"
-                        : "bg-[#D3D3D3] text-[#051B1D] hover:bg-[#00666B] hover:text-white"
+                        : "bg-[#F5F7F8] text-[#051B1D] hover:bg-[#00666B] hover:text-white"
                     }`}
                   >
                     {s}
@@ -612,7 +629,7 @@ export default function AdminEventDetailPage() {
             </div>
 
             {/* Danger Zone */}
-            <div className="bg-[#D3D3D3] border-2 border-red-500 rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#ef4444] sm:shadow-[4px_4px_0px_#ef4444]">
+            <div className="bg-[#F5F7F8] border-2 border-red-500 rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#ef4444] sm:shadow-[4px_4px_0px_#ef4444]">
               <h3 className="font-black text-red-700 text-base sm:text-lg mb-2">
                 Danger Zone
               </h3>

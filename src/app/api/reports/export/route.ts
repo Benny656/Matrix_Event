@@ -44,11 +44,8 @@ export async function GET(req: NextRequest) {
       return {
         Name: data.studentName ?? "",
         "Roll Number": data.rollNumber ?? "",
-        Department: data.department ?? "",
         "Year of Study": data.yearOfStudy ?? "",
-        "Program Type": data.programType ?? "",
         "Check-in Time": formattedCheckIn,
-        Session: data.sessionId ?? "",
       }
     })
 

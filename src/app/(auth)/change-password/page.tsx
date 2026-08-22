@@ -31,9 +31,9 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6">
             <h2 className="text-xl sm:text-2xl font-black text-[#051B1D]">Set New Password</h2>
             <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">
@@ -54,7 +54,7 @@ export default function ChangePasswordPage() {
               </label>
               <input
                 type="password"
-                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 placeholder="Min. 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -66,7 +66,7 @@ export default function ChangePasswordPage() {
               </label>
               <input
                 type="password"
-                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 placeholder="Repeat password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}

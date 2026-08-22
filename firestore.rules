@@ -7,11 +7,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['ADMIN', 'FACULTY_ADMIN'];
+      return isAuth() && request.auth.token.role in ['ADMIN'];
     }
 
     function isVolunteer() {
-      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['VOLUNTEER', 'ADMIN'];
+      return isAuth() && request.auth.token.role in ['VOLUNTEER', 'ADMIN'];
     }
 
     match /users/{uid} {

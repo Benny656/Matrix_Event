@@ -26,13 +26,13 @@ export default function VolunteerEventsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-3">
           <div className="h-8 w-40 bg-gray-400 rounded-xl animate-pulse mb-6" />
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+              className="h-24 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
             />
           ))}
         </div>
@@ -41,14 +41,25 @@ export default function VolunteerEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
-        >
-          ← Back
-        </button>
+        {/* Top Navigation */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => router.push("/volunteer")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              ← Dashboard
+            </button>
+            <button
+              onClick={() => router.push("/volunteer/attendance")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              📷 Scan Attendance
+            </button>
+          </div>
+        </div>
 
         <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6">My Events</h1>
 
@@ -59,7 +70,7 @@ export default function VolunteerEventsPage() {
         )}
 
         {events.length === 0 ? (
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <p className="text-3xl mb-2">📭</p>
             <p className="font-bold text-[#051B1D] text-sm sm:text-base">No events assigned yet</p>
             <p className="text-gray-700 text-xs mt-1 font-medium">Check back later</p>
@@ -70,7 +81,7 @@ export default function VolunteerEventsPage() {
               <div
                 key={event.id}
                 onClick={() => router.push(`/volunteer/events/${event.id}`)}
-                className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">

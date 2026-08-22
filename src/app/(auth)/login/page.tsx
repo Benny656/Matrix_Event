@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "@/lib/firebase";
 import { syncGoogleUserAction } from "@/actions/auth";
+import { Lottie } from "lottie-react";
+import hiAnimation from "@/public/animations/hi.json";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -49,9 +51,15 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+    <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center p-4">
+      <div className="w-full max-w-md flex flex-col items-center">
+        {/* Waving Girl Lottie Animation */}
+        <div className="w-56 h-56 sm:w-64 sm:h-64 mb-1 relative z-10 pointer-events-none select-none">
+          <Lottie src={hiAnimation} loop autoplay className="w-full h-full" />
+        </div>
+
+        {/* Login Card */}
+        <div className="w-full bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000] relative z-0">
           <div className="mb-6 sm:mb-8">
             <span className="inline-block bg-[#00666B] text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest border border-black">
               AIML · Karunya University
@@ -61,7 +69,7 @@ export default function LoginPage() {
               <br />
               <span className="text-[#00666B]">Matrix.</span>
             </h1>
-            <p className="text-gray-700 mt-2 text-xs sm:text-sm font-medium">
+            <p className="text-[#051B1D]/75 mt-2 text-xs sm:text-sm font-medium">
               Sign in with your Karunya college email to continue.
             </p>
           </div>
@@ -75,7 +83,7 @@ export default function LoginPage() {
           <button
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 bg-[#D3D3D3] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base text-[#051B1D] hover:bg-[#00666B] hover:text-white hover:border-black transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 bg-[#F5F7F8] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base text-[#051B1D] hover:bg-[#00666B] hover:text-white hover:border-black transition-all duration-200 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin shrink-0" />
@@ -102,7 +110,7 @@ export default function LoginPage() {
             <span>{loading ? "Signing in..." : "Continue with Google"}</span>
           </button>
 
-          <p className="text-center text-xs text-gray-700 font-medium mt-6 break-words">
+          <p className="text-center text-xs text-[#051B1D]/70 font-medium mt-6 break-words">
             Only @karunya.edu.in and @karunya.edu emails are allowed
           </p>
         </div>

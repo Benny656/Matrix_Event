@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useStore } from "@/store/user-store";
 import { getStudentDashboardAction } from "@/actions/registration";
 import SignOutButton from "@/components/shared/signout-button";
 import type { Registration } from "@/types";
 
 function StatCard({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
+    <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
       <p className="text-2xl sm:text-3xl font-black text-[#00666B]">{value}</p>
       <p className="text-xs sm:text-sm font-bold text-gray-800 mt-1 truncate">{label}</p>
     </div>
@@ -31,7 +32,7 @@ function RegistrationCard({
   return (
     <div
       onClick={onClick}
-      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-black text-[#051B1D] text-xs sm:text-sm leading-tight break-words line-clamp-1">
@@ -58,7 +59,7 @@ function EventCard({ event, onClick }: { event: any; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2">
         <h3 className="font-black text-[#051B1D] text-xs sm:text-sm leading-tight break-words line-clamp-1">
@@ -81,6 +82,7 @@ function EventCard({ event, onClick }: { event: any; onClick: () => void }) {
 
 export default function StudentDashboard() {
   const router = useRouter();
+  const { dashboardData, setDashboardData } = useStore();
   const [data, setData] = useState<{
     user: any;
     registrations: Registration[];
@@ -89,22 +91,30 @@ export default function StudentDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (dashboardData) {
+      setData(dashboardData);
+      setLoading(false);
+      return;
+    }
     getStudentDashboardAction()
-      .then(setData)
+      .then((result) => {
+        setData(result);
+        setDashboardData(result);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
           <div className="h-8 w-48 bg-gray-400 rounded-xl animate-pulse" />
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[...Array(2)].map((_, i) => (
               <div
                 key={i}
-                className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                className="h-24 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -112,7 +122,7 @@ export default function StudentDashboard() {
             {[...Array(3)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
@@ -122,7 +132,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 sm:mb-8 flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -161,7 +171,7 @@ export default function StudentDashboard() {
             </button>
           </div>
           {data?.registrations.length === 0 ? (
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-1">📋</p>
               <p className="font-bold text-[#051B1D] text-sm">
                 No registrations yet
@@ -194,7 +204,7 @@ export default function StudentDashboard() {
             </button>
           </div>
           {data?.upcomingEvents.length === 0 ? (
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-1">📭</p>
               <p className="font-bold text-[#051B1D] text-sm">No upcoming events</p>
             </div>
@@ -220,7 +230,7 @@ export default function StudentDashboard() {
           </button>
           <button
             onClick={() => router.push("/student/registrations")}
-            className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3.5 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
+            className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-3 sm:px-4 py-3.5 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
           >
             My Registrations
           </button>

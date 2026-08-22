@@ -1,27 +1,29 @@
 "use server"
 
 import { adminDb } from "@/lib/firebase-admin"
-import { getCurrentUser } from "@/lib/auth-session"
+import { getCurrentUser, getSessionPayload } from "@/lib/auth-session"
 import type { Registration } from "@/types"
 
 const PAGE_SIZE = 10
 
 export async function getStudentRegistrationsAction(lastDocId?: string) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error("Unauthorized")
+  const payload = await getSessionPayload()
+  if (!payload) throw new Error("Unauthorized")
 
   let q = adminDb.collection("registrations")
-    .where("studentId", "==", user.id)
+    .where("studentId", "==", payload.uid)
     .orderBy("createdAt", "desc")
     .limit(PAGE_SIZE)
 
   if (lastDocId) {
     const lastSnap = await adminDb.collection("registrations").doc(lastDocId).get()
-    q = adminDb.collection("registrations")
-      .where("studentId", "==", user.id)
-      .orderBy("createdAt", "desc")
-      .startAfter(lastSnap)
-      .limit(PAGE_SIZE)
+    if (lastSnap.exists) {
+      q = adminDb.collection("registrations")
+        .where("studentId", "==", payload.uid)
+        .orderBy("createdAt", "desc")
+        .startAfter(lastSnap)
+        .limit(PAGE_SIZE)
+    }
   }
 
   const snap = await q.get()

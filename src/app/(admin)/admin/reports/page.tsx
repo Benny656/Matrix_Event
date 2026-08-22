@@ -3,13 +3,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminEventsAction, getEventAttendanceAction } from "@/actions/admin";
+import { exportToExcel, exportToPDF } from "@/lib/export";
+import { Sheet, FileText } from "lucide-react";
 
 export default function AdminReportsPage() {
   const router = useRouter();
   const [events, setEvents] = useState<any[]>([]);
   const [selectedEventId, setSelectedEventId] = useState("");
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
+  const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const [stats, setStats] = useState<{
     total: number;
     byMethod: Record<string, number>;
@@ -26,6 +28,7 @@ export default function AdminReportsPage() {
   useEffect(() => {
     if (!selectedEventId) {
       setStats(null);
+      setAttendanceData([]);
       return;
     }
     fetchStats();
@@ -35,6 +38,7 @@ export default function AdminReportsPage() {
     try {
       setLoadingStats(true);
       const data = await getEventAttendanceAction(selectedEventId);
+      setAttendanceData(data);
       const byMethod: Record<string, number> = {};
       data.forEach((a: any) => {
         const method = a.checkInMethod || a.method || "SCANNED";
@@ -48,38 +52,66 @@ export default function AdminReportsPage() {
     }
   }
 
-  async function handleExport() {
-    if (!selectedEventId) return;
-    try {
-      setDownloading(true);
-      const res = await fetch(
-        `/api/reports/export?eventId=${selectedEventId}`,
-      );
-      if (!res.ok) throw new Error("Export failed");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `attendance-${selectedEventId}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setDownloading(false);
-    }
-  }
-
   const selectedEvent = events.find((e) => e.id === selectedEventId);
 
+  function getFormattedAttendanceRows() {
+    return attendanceData.map((a: any) => {
+      const checkInRaw = a.checkInTime || a.createdAt || a.timestamp;
+      const formattedCheckIn = checkInRaw
+        ? new Date(checkInRaw).toLocaleString("en-IN", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          })
+        : "";
+
+      return {
+        "Student Name": a.studentName ?? "",
+        "Roll Number": a.rollNumber ?? "",
+        "Year": a.yearOfStudy ?? "",
+        "Check In Time": formattedCheckIn,
+      };
+    });
+  }
+
+  function handleExcelExport() {
+    if (!selectedEvent || attendanceData.length === 0) return;
+    const rows = getFormattedAttendanceRows();
+    const filename = `${selectedEvent.title}-attendance`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    exportToExcel(rows, filename);
+  }
+
+  function handlePDFExport() {
+    if (!selectedEvent || attendanceData.length === 0) return;
+    const formatted = getFormattedAttendanceRows();
+    const title = `${selectedEvent.title} - Attendance Report`;
+    const columns = ["Student Name", "Roll Number", "Year", "Check In Time"];
+    const rows = formatted.map((r) => [
+      r["Student Name"],
+      r["Roll Number"],
+      r["Year"],
+      r["Check In Time"],
+    ]);
+    const filename = `${selectedEvent.title}-attendance`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-");
+    exportToPDF(title, columns, rows, filename);
+  }
+
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
+          onClick={() => router.push("/admin")}
+          className="mb-4 sm:mb-6 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00666B] hover:text-[#051B1D] transition-colors"
         >
-          ← Back
+          ← Dashboard
         </button>
 
         <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-2">Reports</h1>
@@ -88,7 +120,7 @@ export default function AdminReportsPage() {
         </p>
 
         {/* Event Selector */}
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
           <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
             Select Event
           </label>
@@ -98,7 +130,7 @@ export default function AdminReportsPage() {
             <select
               value={selectedEventId}
               onChange={(e) => setSelectedEventId(e.target.value)}
-              className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+              className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
             >
               <option value="" className="text-[#051B1D]">Choose an event...</option>
               {events.map((e) => (
@@ -118,7 +150,7 @@ export default function AdminReportsPage() {
         {selectedEvent && (
           <>
             {/* Stats */}
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
               <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Attendance Summary</h2>
               {loadingStats ? (
                 <div className="space-y-2">
@@ -167,15 +199,27 @@ export default function AdminReportsPage() {
             </div>
 
             {/* Export Buttons */}
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
               <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">Export Data</h2>
-              <button
-                onClick={handleExport}
-                disabled={downloading}
-                className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {downloading ? "Downloading..." : "⬇ Export Attendance CSV"}
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={handleExcelExport}
+                  disabled={attendanceData.length === 0}
+                  className="flex items-center gap-2 bg-[#16a34a] text-white font-black px-5 py-3 border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Sheet className="w-4 h-4" />
+                  Export Excel
+                </button>
+
+                <button
+                  onClick={handlePDFExport}
+                  disabled={attendanceData.length === 0}
+                  className="flex items-center gap-2 bg-[#dc2626] text-white font-black px-5 py-3 border-2 border-black rounded-xl shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <FileText className="w-4 h-4" />
+                  Export PDF
+                </button>
+              </div>
             </div>
           </>
         )}

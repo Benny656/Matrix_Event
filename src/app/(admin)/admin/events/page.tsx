@@ -52,12 +52,12 @@ export default function AdminEventsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto space-y-3">
           {[...Array(5)].map((_, i) => (
             <div
               key={i}
-              className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+              className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
             />
           ))}
         </div>
@@ -66,15 +66,15 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-6 gap-3">
           <div className="min-w-0">
             <button
-              onClick={() => router.back()}
-              className="text-xs sm:text-sm font-bold text-gray-700 hover:text-[#051B1D] mb-1 block"
+              onClick={() => router.push("/admin")}
+              className="text-xs sm:text-sm font-bold text-[#00666B] hover:text-[#051B1D] mb-1.5 inline-flex items-center gap-1"
             >
-              ← Back
+              ← Dashboard
             </button>
             <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">
               All Events
@@ -89,7 +89,7 @@ export default function AdminEventsPage() {
         </div>
 
         {events.length === 0 ? (
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <p className="text-3xl mb-2">📭</p>
             <p className="font-bold text-[#051B1D] text-sm sm:text-base">
               No events yet
@@ -107,7 +107,7 @@ export default function AdminEventsPage() {
               <div
                 key={event.id}
                 onClick={() => router.push(`/admin/events/${event.id}`)}
-                className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1 min-w-0">
@@ -141,7 +141,7 @@ export default function AdminEventsPage() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="w-full bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+                className="w-full bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
               >
                 {loadingMore ? "Loading..." : "Load more"}
               </button>

@@ -96,26 +96,26 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
         <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
+          onClick={() => router.push("/admin")}
+          className="mb-4 sm:mb-6 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00666B] hover:text-[#051B1D] transition-colors"
         >
-          ← Back
+          ← Dashboard
         </button>
 
         <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6">Users</h1>
 
         {/* Search */}
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search by roll number..."
-              className="w-full sm:flex-1 border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+              className="w-full sm:flex-1 border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
             />
             <div className="flex gap-2">
               <button
@@ -131,7 +131,7 @@ export default function AdminUsersPage() {
                     setSearchQuery("");
                     fetchUsers();
                   }}
-                  className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
                 >
                   Clear
                 </button>
@@ -146,12 +146,12 @@ export default function AdminUsersPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
               />
             ))}
           </div>
         ) : users.length === 0 ? (
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <p className="text-2xl mb-2">👤</p>
             <p className="font-bold text-[#051B1D] text-sm sm:text-base">No users found</p>
           </div>
@@ -160,7 +160,7 @@ export default function AdminUsersPage() {
             {users.map((user) => (
               <div
                 key={user.id}
-                className="bg-[#D3D3D3] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000]"
+                className="bg-[#F5F7F8] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000]"
               >
                 <div className="flex items-start justify-between gap-2 sm:gap-3">
                   <div className="min-w-0 flex-1">
@@ -205,7 +205,7 @@ export default function AdminUsersPage() {
               <button
                 onClick={loadMore}
                 disabled={loadingMore}
-                className="w-full bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+                className="w-full bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
               >
                 {loadingMore ? "Loading..." : "Load more"}
               </button>

@@ -1,16 +1,16 @@
 "use server"
 
 import { adminDb } from "@/lib/firebase-admin"
-import { getCurrentUser } from "@/lib/auth-session"
+import { getSessionPayload } from "@/lib/auth-session"
 import type { Event, Registration } from "@/types"
 
 const PAGE_SIZE = 20
 
 // ─── Guard ────────────────────────────────────────────────
 async function requireAdmin() {
-  const user = await getCurrentUser()
-  if (!user || user.role !== "ADMIN") throw new Error("Unauthorized")
-  return user
+  const payload = await getSessionPayload()
+  if (!payload || payload.role !== "ADMIN") throw new Error("Unauthorized")
+  return payload
 }
 
 // ─── Events ───────────────────────────────────────────────
@@ -22,11 +22,13 @@ export async function getAdminEventsAction(lastDocId?: string) {
     .limit(PAGE_SIZE)
 
   if (lastDocId) {
-    const snap = await adminDb.collection("events").doc(lastDocId).get()
-    q = adminDb.collection("events")
-      .orderBy("date", "desc")
-      .startAfter(snap)
-      .limit(PAGE_SIZE)
+    const lastSnap = await adminDb.collection("events").doc(lastDocId).get()
+    if (lastSnap.exists) {
+      q = adminDb.collection("events")
+        .orderBy("date", "desc")
+        .startAfter(lastSnap)
+        .limit(PAGE_SIZE)
+    }
   }
 
   const snap = await q.get()
@@ -142,12 +144,14 @@ export async function getEventRegistrationsAction(
     .limit(PAGE_SIZE)
 
   if (lastDocId) {
-    const snap = await adminDb.collection("registrations").doc(lastDocId).get()
-    q = adminDb.collection("registrations")
-      .where("eventId", "==", eventId)
-      .orderBy("createdAt", "desc")
-      .startAfter(snap)
-      .limit(PAGE_SIZE)
+    const lastSnap = await adminDb.collection("registrations").doc(lastDocId).get()
+    if (lastSnap.exists) {
+      q = adminDb.collection("registrations")
+        .where("eventId", "==", eventId)
+        .orderBy("createdAt", "desc")
+        .startAfter(lastSnap)
+        .limit(PAGE_SIZE)
+    }
   }
 
   const snap = await q.get()

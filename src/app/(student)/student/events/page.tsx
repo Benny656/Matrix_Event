@@ -16,7 +16,7 @@ function EventCard({ event, onClick }: { event: Event; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
     >
       <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
         <span
@@ -89,15 +89,26 @@ export default function StudentEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
+        {/* Top Navigation */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => router.push("/student")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              ← Dashboard
+            </button>
+            <button
+              onClick={() => router.push("/student/registrations")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              My Registrations
+            </button>
+          </div>
+        </div>
         <div className="mb-6 sm:mb-8">
-          <button
-            onClick={() => router.back()}
-            className="mb-3 sm:mb-4 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
-          >
-            ← Back
-          </button>
           <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D]">Events</h1>
           <p className="text-gray-700 text-xs sm:text-sm mt-0.5 font-medium">
             Browse and register for upcoming events
@@ -115,7 +126,7 @@ export default function StudentEventsPage() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-5 h-36 animate-pulse"
+                className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-5 h-36 animate-pulse"
               />
             ))}
           </div>
@@ -142,7 +153,7 @@ export default function StudentEventsPage() {
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="bg-[#D3D3D3] border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
+              className="bg-[#F5F7F8] border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
             >
               {loadingMore ? "Loading..." : "Load More"}
             </button>

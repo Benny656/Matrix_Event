@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useStore } from "@/store/user-store";
 import {
-  getEventByIdAction,
-  getStudentRegistrationAction,
+  getEventDetailAction,
   getStudentEventAttendanceAction,
   registerForEventAction,
 } from "@/actions/event";
@@ -31,7 +30,7 @@ function WhatsAppIcon({ className = "w-5 h-5" }: { className?: string }) {
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { invalidateEvents, invalidateRegistrations } = useStore();
+  const { invalidateEvents, invalidateRegistrations, invalidateDashboard } = useStore();
   const [event, setEvent] = useState<Event | null>(null);
   const [registration, setRegistration] = useState<Registration | null>(null);
   const [attendances, setAttendances] = useState<Attendance[]>([]);
@@ -51,9 +50,8 @@ export default function EventDetailPage() {
   async function fetchData() {
     try {
       setLoading(true);
-      const [ev, reg, att] = await Promise.all([
-        getEventByIdAction(id),
-        getStudentRegistrationAction(id),
+      const [{ event: ev, registration: reg }, att] = await Promise.all([
+        getEventDetailAction(id),
         getStudentEventAttendanceAction(id),
       ]);
       setEvent(ev);
@@ -73,20 +71,32 @@ export default function EventDetailPage() {
   }
 
   async function handleConfirmRegister() {
+    if (!event) return;
     try {
       setActionLoading(true);
       setError("");
       setModalStep("loading");
 
-      const result = await registerForEventAction(id);
+      const result = await registerForEventAction(id, {
+        title: event.title,
+        category: event.category,
+        date: event.date,
+        whatsappInviteLink: event.whatsappInviteLink ?? null,
+        registrationOpen: event.registrationOpen,
+        maxParticipants: event.maxParticipants ?? null,
+        registrationCount: event.registrationCount,
+      });
+
       setSuccess(
         result.status === "WAITLISTED"
           ? "Added to waitlist!"
           : "Registered successfully!",
       );
+      setRegistration({ id: "temp", status: result.status, eventId: id } as any);
+      setEvent((prev) => prev ? { ...prev, registrationCount: prev.registrationCount + 1 } : prev);
       invalidateEvents();
       invalidateRegistrations();
-      await fetchData();
+      invalidateDashboard();
 
       // Transition after 2.2 seconds of animation
       setTimeout(() => {
@@ -102,10 +112,10 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-2xl mx-auto space-y-4">
           <div className="h-8 w-32 bg-gray-400 rounded-xl animate-pulse" />
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 h-64 animate-pulse" />
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 h-64 animate-pulse" />
         </div>
       </main>
     );
@@ -113,7 +123,7 @@ export default function EventDetailPage() {
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
+      <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center p-4">
         <p className="font-bold text-[#051B1D]">Event not found</p>
       </main>
     );
@@ -124,14 +134,31 @@ export default function EventDetailPage() {
   const isCancelled = registration?.status === "CANCELLED" || !registration;
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
-        >
-          ← Back
-        </button>
+        {/* Top Navigation */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+            <button
+              onClick={() => router.push("/student")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              ← Dashboard
+            </button>
+            <button
+              onClick={() => router.push("/student/events")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              All Events
+            </button>
+            <button
+              onClick={() => router.push("/student/registrations")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              My Registrations
+            </button>
+          </div>
+        </div>
 
         {error && (
           <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
@@ -145,7 +172,7 @@ export default function EventDetailPage() {
           </div>
         )}
 
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
           <div className="flex items-start justify-between gap-2 mb-4">
             <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-[#73FFFF] text-[#051B1D] border border-black">
               {event.status}
@@ -282,7 +309,7 @@ export default function EventDetailPage() {
       {/* ── Registration Flow Modal Popup ── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#D3D3D3] border-4 border-black rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-[6px_6px_0px_#000] text-center relative animate-scaleUp">
+          <div className="bg-[#F5F7F8] border-4 border-black rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-[6px_6px_0px_#000] text-center relative animate-scaleUp">
             {modalStep === "confirm" ? (
               <div className="py-2 space-y-4">
                 {/* Cartoonish Warning Sticker Icon */}
@@ -392,7 +419,7 @@ export default function EventDetailPage() {
 
                     <button
                       onClick={() => setShowModal(false)}
-                      className="w-full bg-[#D3D3D3] text-gray-800 border-2 border-black rounded-xl px-4 py-2.5 font-bold text-xs hover:bg-[#b8b8b8] transition-all cursor-pointer"
+                      className="w-full bg-[#F5F7F8] text-gray-800 border-2 border-black rounded-xl px-4 py-2.5 font-bold text-xs hover:bg-[#b8b8b8] transition-all cursor-pointer"
                     >
                       I&apos;ll join later
                     </button>

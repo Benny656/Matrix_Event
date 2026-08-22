@@ -51,6 +51,27 @@ export async function getStudentEventsAction(lastDocId?: string) {
   return { events, lastId, hasMore }
 }
 
+export async function getEventDetailAction(eventId: string) {
+  const user = await getCurrentUser()
+  if (!user) throw new Error("Unauthorized")
+
+  const [eventSnap, regSnap] = await Promise.all([
+    adminDb.collection("events").doc(eventId).get(),
+    adminDb.collection("registrations")
+      .where("eventId", "==", eventId)
+      .where("studentId", "==", user.id)
+      .limit(1)
+      .get(),
+  ])
+
+  if (!eventSnap.exists) throw new Error("Event not found")
+
+  const event = { id: eventSnap.id, ...eventSnap.data() } as Event
+  const registration = regSnap.empty ? null : { id: regSnap.docs[0].id, ...regSnap.docs[0].data() } as Registration
+
+  return { event, registration }
+}
+
 export async function getEventByIdAction(eventId: string) {
   const snap = await adminDb.collection("events").doc(eventId).get()
   if (!snap.exists) throw new Error("Event not found")
@@ -71,28 +92,28 @@ export async function getStudentRegistrationAction(eventId: string) {
   return { id: snap.docs[0].id, ...snap.docs[0].data() } as Registration
 }
 
-export async function registerForEventAction(eventId: string) {
+export async function registerForEventAction(
+  eventId: string,
+  eventData: {
+    title: string
+    category: string
+    date: string
+    whatsappInviteLink?: string | null
+    registrationOpen: boolean
+    maxParticipants?: number | null
+    registrationCount: number
+  }
+) {
   const user = await getCurrentUser()
   if (!user) throw new Error("Unauthorized")
 
-  const eventSnap = await adminDb.collection("events").doc(eventId).get()
-  if (!eventSnap.exists) throw new Error("Event not found")
-  const event = { id: eventSnap.id, ...eventSnap.data() } as Event
+  if (!eventData.registrationOpen) throw new Error("Registration is closed")
 
-  if (!event.registrationOpen) throw new Error("Registration is closed")
+  const isWaitlisted = typeof eventData.maxParticipants === "number" && eventData.maxParticipants > 0 && eventData.registrationCount >= eventData.maxParticipants
 
-  const existing = await adminDb.collection("registrations")
-    .where("eventId", "==", eventId)
-    .where("studentId", "==", user.id)
-    .limit(1)
-    .get()
-
-  if (!existing.empty) throw new Error("Already registered")
-
-  const isWaitlisted = typeof event.maxParticipants === "number" && event.maxParticipants > 0 && event.registrationCount >= event.maxParticipants
   const ref = adminDb.collection("registrations").doc()
-
   const batch = adminDb.batch()
+
   batch.set(ref, {
     id: ref.id,
     eventId,
@@ -104,10 +125,10 @@ export async function registerForEventAction(eventId: string) {
     email: user.email,
     rollNumber: user.rollNumber,
     department: user.department,
-    eventTitle: event.title,
-    eventCategory: event.category,
-    eventDate: event.date,
-    whatsappInviteLink: event.whatsappInviteLink,
+    eventTitle: eventData.title,
+    eventCategory: eventData.category,
+    eventDate: eventData.date,
+    whatsappInviteLink: eventData.whatsappInviteLink ?? null,
     createdAt: new Date().toISOString(),
     updatedAt: null,
   })

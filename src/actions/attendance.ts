@@ -1,7 +1,7 @@
 "use server"
 
 import { adminDb } from "@/lib/firebase-admin"
-import { getCurrentUser } from "@/lib/auth-session"
+import { getSessionPayload } from "@/lib/auth-session"
 import { FieldValue } from "firebase-admin/firestore"
 import type { RegisteredStudent, Attendance } from "@/types"
 
@@ -31,13 +31,13 @@ export async function submitBatchAttendanceAction(
   eventId: string,
   scanned: { studentId: string; studentName: string; rollNumber: string | null; department: string | null; yearOfStudy: string | null; programType: string | null; method: "SCANNED" | "MANUAL" }[]
 ) {
-  const user = await getCurrentUser()
-  if (!user) throw new Error("Unauthorized")
-
+  const payload = await getSessionPayload()
+  if (!payload) throw new Error("Unauthorized")
   if (scanned.length === 0) throw new Error("No attendance to submit")
 
   const existing = await adminDb.collection("attendances")
     .where("sessionId", "==", sessionId)
+    .select("studentId")
     .get()
 
   const existingIds = new Set(existing.docs.map((d) => d.data().studentId))
@@ -45,11 +45,13 @@ export async function submitBatchAttendanceAction(
 
   if (newScanned.length === 0) throw new Error("All attendance already submitted")
 
-  const batch = adminDb.batch()
   const now = new Date().toISOString()
+  const batch = adminDb.batch()
 
   for (const s of newScanned) {
-    const ref = adminDb.collection("attendances").doc()
+    const ref = adminDb.collection("attendances").doc(
+      `${sessionId}_${s.studentId}`
+    )
     batch.set(ref, {
       id: ref.id,
       sessionId,
@@ -62,12 +64,12 @@ export async function submitBatchAttendanceAction(
       programType: s.programType ?? "",
       checkInTime: now,
       checkInMethod: s.method,
-      markedById: user.id,
+      markedById: payload.uid,
       createdAt: now,
-    })
+    }, { merge: false })
   }
 
-  batch.update(adminDb.collection("users").doc(user.id), {
+  batch.update(adminDb.collection("users").doc(payload.uid), {
     totalCheckInsValidated: FieldValue.increment(newScanned.length),
   })
 

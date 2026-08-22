@@ -45,9 +45,9 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
+        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 shadow-[4px_4px_0px_#000] sm:shadow-[6px_6px_0px_#000]">
           <div className="mb-6">
             <div className="flex gap-2 mb-4">
               {[1, 2].map((s) => (
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
                   Full Name
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="Your full name"
                   value={form.name}
                   onChange={(e) => update("name", e.target.value)}
@@ -87,7 +87,7 @@ export default function OnboardingPage() {
                   Roll Number
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] uppercase bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] uppercase bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="e.g. URK22AI001"
                   value={form.rollNumber}
                   onChange={(e) =>
@@ -100,7 +100,7 @@ export default function OnboardingPage() {
                   Phone Number
                 </label>
                 <input
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                   placeholder="10-digit mobile number"
                   value={form.phoneNumber}
                   onChange={(e) => update("phoneNumber", e.target.value)}
@@ -129,7 +129,7 @@ export default function OnboardingPage() {
                   Department
                 </label>
                 <select
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                   value={form.department}
                   onChange={(e) => update("department", e.target.value)}
                 >
@@ -146,7 +146,7 @@ export default function OnboardingPage() {
                   Program Type
                 </label>
                 <select
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                   value={form.programType}
                   onChange={(e) => update("programType", e.target.value)}
                 >
@@ -163,7 +163,7 @@ export default function OnboardingPage() {
                   Year of Study
                 </label>
                 <select
-                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  className="w-full border-2 border-black rounded-xl px-4 py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                   value={form.yearOfStudy}
                   onChange={(e) => update("yearOfStudy", e.target.value)}
                 >
@@ -178,7 +178,7 @@ export default function OnboardingPage() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setStep(1)}
-                  className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+                  className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl px-4 py-3 font-bold text-sm sm:text-base shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
                 >
                   ← Back
                 </button>

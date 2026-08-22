@@ -149,14 +149,25 @@ export default function NewEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="mb-4 sm:mb-6 flex items-center gap-2 text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors"
-        >
-          ← Back
-        </button>
+        {/* Top Navigation */}
+        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => router.push("/admin")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              ← Dashboard
+            </button>
+            <button
+              onClick={() => router.push("/admin/events")}
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
+            >
+              All Events
+            </button>
+          </div>
+        </div>
 
         <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6 sm:mb-8">
           Create Event
@@ -170,7 +181,7 @@ export default function NewEventPage() {
 
         <div className="space-y-4 sm:space-y-5">
           {/* Basic Info */}
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">
               Basic Info
             </h2>
@@ -184,7 +195,7 @@ export default function NewEventPage() {
                   value={form.title}
                   onChange={handleChange}
                   placeholder="e.g. AI & Web3 Hackathon 2025"
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 />
               </div>
 
@@ -198,7 +209,7 @@ export default function NewEventPage() {
                     name="date"
                     value={form.date}
                     onChange={handleChange}
-                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                   />
                 </div>
                 <div>
@@ -209,7 +220,7 @@ export default function NewEventPage() {
                     name="category"
                     value={form.category}
                     onChange={handleChange}
-                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                    className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                   >
                     <option value="" className="text-[#051B1D]">
                       Select category...
@@ -237,7 +248,7 @@ export default function NewEventPage() {
                   value={form.whatsappInviteLink}
                   onChange={handleChange}
                   placeholder="e.g. https://chat.whatsapp.com/..."
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#25D366] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#25D366] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 />
               </div>
 
@@ -252,7 +263,7 @@ export default function NewEventPage() {
                   onChange={handleChange}
                   placeholder="e.g. 200 (Leave empty for unlimited)"
                   min={0}
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 />
               </div>
 
@@ -266,14 +277,14 @@ export default function NewEventPage() {
                   onChange={handleChange}
                   rows={3}
                   placeholder="Brief description of the event..."
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] resize-none bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] resize-none bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                 />
               </div>
             </div>
           </div>
 
           {/* Eligibility Criteria */}
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-1">
               Eligibility Criteria
             </h2>
@@ -292,7 +303,7 @@ export default function NewEventPage() {
                   onChange={(e) =>
                     setTargetAudience(e.target.value as "ALL" | "STUDENTS")
                   }
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                 >
                   <option value="ALL">All</option>
                   <option value="STUDENTS">Students Only</option>
@@ -372,7 +383,7 @@ export default function NewEventPage() {
           </div>
 
           {/* Sessions (Optional) */}
-          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div>
                 <h2 className="font-black text-[#051B1D] text-base sm:text-lg">
@@ -427,7 +438,7 @@ export default function NewEventPage() {
                             updateSession(session.id, "title", e.target.value)
                           }
                           placeholder="e.g. Keynote Speech"
-                          className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D] placeholder:text-gray-600"
+                          className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
                         />
                       </div>
                       <div>
@@ -440,7 +451,7 @@ export default function NewEventPage() {
                           onChange={(e) =>
                             updateSession(session.id, "startTime", e.target.value)
                           }
-                          className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                          className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
                         />
                       </div>
                     </div>

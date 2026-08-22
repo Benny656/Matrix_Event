@@ -63,6 +63,10 @@ export async function syncGoogleUserAction(
     }
   }
 
+  await adminAuth.setCustomUserClaims(uid, {
+    role: isAdmin ? "ADMIN" : snap.exists ? snap.data()?.role : "STUDENT"
+  })
+
   await createSession(idToken)
 }
 
@@ -100,6 +104,8 @@ export async function completeOnboardingAction(
       updatedAt: new Date().toISOString(),
     })
 
+  await adminAuth.setCustomUserClaims(uid, { role: "STUDENT" })
+
   await refreshSession()
 }
 
@@ -109,5 +115,8 @@ export async function changePasswordAction(uid: string, newPassword: string) {
     mustChangePassword: false,
     updatedAt: new Date().toISOString(),
   })
+
+  await adminAuth.setCustomUserClaims(uid, { role: "STUDENT" })
+
   await refreshSession()
 }

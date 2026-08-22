@@ -18,7 +18,7 @@ export default function VolunteerDashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-2xl mx-auto">
         <div className="mb-6 sm:mb-8 flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -43,7 +43,7 @@ export default function VolunteerDashboard() {
           </button>
           <button
             onClick={() => router.push("/volunteer/events")}
-            className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-2xl px-4 py-4 sm:py-5 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-left"
+            className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl px-4 py-4 sm:py-5 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-left"
           >
             <p className="text-xl sm:text-2xl mb-2">📋</p>
             View Events
@@ -59,12 +59,12 @@ export default function VolunteerDashboard() {
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
+                  className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
                 />
               ))}
             </div>
           ) : events.length === 0 ? (
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-2">📭</p>
               <p className="font-bold text-[#051B1D] text-sm">No active events</p>
             </div>
@@ -74,7 +74,7 @@ export default function VolunteerDashboard() {
                 <div
                   key={event.id}
                   onClick={() => router.push(`/volunteer/events/${event.id}`)}
-                  className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                  className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="font-black text-[#051B1D] text-sm truncate">

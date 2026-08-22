@@ -11,6 +11,10 @@ interface Store {
   user: User | null
   setUser: (user: User | null) => void
 
+  dashboardData: { user: any; registrations: Registration[]; upcomingEvents: any[] } | null
+  setDashboardData: (data: { user: any; registrations: Registration[]; upcomingEvents: any[] }) => void
+  invalidateDashboard: () => void
+
   events: Paginated<Event>
   setEvents: (items: Event[], lastId: string | null, hasMore: boolean) => void
   appendEvents: (items: Event[], lastId: string | null, hasMore: boolean) => void
@@ -42,6 +46,10 @@ const empty = <T>(): Paginated<T> => ({ items: [], lastId: null, hasMore: true }
 export const useStore = create<Store>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
+
+  dashboardData: null,
+  setDashboardData: (data) => set({ dashboardData: data }),
+  invalidateDashboard: () => set({ dashboardData: null }),
 
   events: empty(),
   setEvents: (items, lastId, hasMore) => set({ events: { items, lastId, hasMore } }),

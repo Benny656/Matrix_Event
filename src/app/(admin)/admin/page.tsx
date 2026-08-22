@@ -15,7 +15,7 @@ function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
+    <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
       <p className="text-2xl sm:text-3xl font-black text-[#00666B]">{value}</p>
       <p className="text-xs sm:text-sm font-bold text-[#051B1D] mt-1 truncate">{label}</p>
       {sub && <p className="text-[10px] sm:text-xs text-gray-700 font-medium mt-0.5 truncate">{sub}</p>}
@@ -39,17 +39,17 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto space-y-4">
           <div className="h-8 w-48 bg-gray-400 rounded-xl animate-pulse" />
-          <div className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse" />
+          <div className="h-24 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse" />
         </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
+    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
         <div className="mb-6 sm:mb-8 flex items-center justify-between gap-3">
           <div className="min-w-0">
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             </button>
           </div>
           {data?.activeEvents.length === 0 ? (
-            <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
+            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
               <p className="text-2xl mb-2">📭</p>
               <p className="font-bold text-[#051B1D] text-sm">No active events</p>
               <button
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
                 <div
                   key={event.id}
                   onClick={() => router.push(`/admin/events/${event.id}`)}
-                  className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                  className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <button
               key={path}
               onClick={() => router.push(path)}
-              className="bg-[#D3D3D3] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
+              className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
             >
               {label}
             </button>
