@@ -8,7 +8,7 @@ const roleRoutes: Record<string, string[]> = {
   "/student": ["STUDENT", "ADMIN"],
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
   const cookie = req.cookies.get(SESSION_COOKIE)
 
