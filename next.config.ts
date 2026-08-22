@@ -1,7 +1,8 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  /* config options here */
-};
+  serverExternalPackages: ["firebase-admin"],
+  reactStrictMode: false,
+}
 
-export default nextConfig;
+export default nextConfig
