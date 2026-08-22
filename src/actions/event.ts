@@ -3,7 +3,7 @@
 import { adminDb } from "@/lib/firebase-admin"
 import { getCurrentUser } from "@/lib/auth-session"
 import { FieldValue } from "firebase-admin/firestore"
-import type { Event, Registration } from "@/types"
+import type { Event, Registration, Attendance } from "@/types"
 
 const PAGE_SIZE = 10
 
@@ -136,4 +136,17 @@ export async function cancelRegistrationAction(registrationId: string, eventId: 
   })
 
   await batch.commit()
+}
+
+export async function getStudentEventAttendanceAction(eventId: string): Promise<Attendance[]> {
+  const user = await getCurrentUser()
+  if (!user) return []
+
+  const snap = await adminDb
+    .collection("attendances")
+    .where("eventId", "==", eventId)
+    .where("studentId", "==", user.id)
+    .get()
+
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Attendance))
 }

@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server"
 const SESSION_COOKIE = "matrix-session"
 
 const roleRoutes: Record<string, string[]> = {
-  "/admin": ["ADMIN", "FACULTY_ADMIN"],
+  "/admin": ["ADMIN"],
   "/volunteer": ["VOLUNTEER", "ADMIN"],
-  "/student": ["STUDENT", "ADMIN", "FACULTY", "FACULTY_ADMIN"],
+  "/student": ["STUDENT", "ADMIN"],
 }
 
 export async function middleware(req: NextRequest) {

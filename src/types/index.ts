@@ -10,7 +10,7 @@ export interface User {
   programType: string | null
   degree: string | null
   yearOfStudy: string | null
-  role: "STUDENT" | "VOLUNTEER" | "FACULTY" | "FACULTY_ADMIN" | "ADMIN"
+  role: "STUDENT" | "VOLUNTEER" | "ADMIN"
   onboardingCompleted: boolean
   mustChangePassword: boolean
   totalCheckInsValidated: number

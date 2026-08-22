@@ -20,6 +20,8 @@ const CATEGORIES = [
   "Bootcamp",
 ];
 
+const YEAR_OPTIONS = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+
 export default function NewEventPage() {
   const router = useRouter();
 
@@ -32,10 +34,16 @@ export default function NewEventPage() {
     whatsappInviteLink: "",
   });
 
-  const [sessions, setSessions] = useState<Session[]>([]);
+  // Eligibility state
+  const [targetAudience, setTargetAudience] = useState<"ALL" | "STUDENTS">("ALL");
+  const [programTypes, setProgramTypes] = useState<string[]>(["UG", "PG"]);
+  const [years, setYears] = useState<string[]>(["ALL"]);
 
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  const isAllYears = years.includes("ALL") || years.includes("All Years");
 
   function handleChange(
     e: React.ChangeEvent<
@@ -43,6 +51,41 @@ export default function NewEventPage() {
     >,
   ) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
+
+  function toggleProgramType(type: "UG" | "PG" | "Both") {
+    if (type === "Both") {
+      if (programTypes.includes("UG") && programTypes.includes("PG")) {
+        setProgramTypes([]);
+      } else {
+        setProgramTypes(["UG", "PG"]);
+      }
+    } else {
+      if (programTypes.includes(type)) {
+        setProgramTypes(programTypes.filter((p) => p !== type));
+      } else {
+        setProgramTypes([...programTypes, type]);
+      }
+    }
+  }
+
+  function toggleYear(year: string) {
+    if (year === "ALL") {
+      setYears(["ALL"]);
+      return;
+    }
+    const currentWithoutAll = years.filter((y) => y !== "ALL" && y !== "All Years");
+    if (currentWithoutAll.includes(year)) {
+      const next = currentWithoutAll.filter((y) => y !== year);
+      setYears(next.length === 0 ? ["ALL"] : next);
+    } else {
+      const next = [...currentWithoutAll, year];
+      if (next.length === 4) {
+        setYears(["ALL"]);
+      } else {
+        setYears(next);
+      }
+    }
   }
 
   function addSession() {
@@ -92,6 +135,11 @@ export default function NewEventPage() {
         capacity: Number(form.capacity) || 0,
         whatsappInviteLink: form.whatsappInviteLink.trim() || undefined,
         sessions: activeSessions,
+        eligibility: {
+          targetAudience,
+          programTypes: programTypes.length === 0 ? ["UG", "PG"] : programTypes,
+          years: years.length === 0 ? ["ALL"] : years,
+        },
       });
       router.push(`/admin/events/${id}`);
     } catch (e: any) {
@@ -224,6 +272,105 @@ export default function NewEventPage() {
             </div>
           </div>
 
+          {/* Eligibility Criteria */}
+          <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+            <h2 className="font-black text-[#051B1D] text-base sm:text-lg mb-1">
+              Eligibility Criteria
+            </h2>
+            <p className="text-xs text-gray-700 font-medium mb-3 sm:mb-4">
+              Specify which students can view and register for this event.
+            </p>
+
+            <div className="space-y-4">
+              {/* Target Audience */}
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1.5">
+                  Target Audience
+                </label>
+                <select
+                  value={targetAudience}
+                  onChange={(e) =>
+                    setTargetAudience(e.target.value as "ALL" | "STUDENTS")
+                  }
+                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#D3D3D3] text-[#051B1D]"
+                >
+                  <option value="ALL">All</option>
+                  <option value="STUDENTS">Students Only</option>
+                </select>
+              </div>
+
+              {/* Program Type */}
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1.5">
+                  Program Type
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { label: "UG", key: "UG", active: programTypes.includes("UG") },
+                    { label: "PG", key: "PG", active: programTypes.includes("PG") },
+                    {
+                      label: "Both",
+                      key: "Both",
+                      active:
+                        programTypes.includes("UG") && programTypes.includes("PG"),
+                    },
+                  ].map((chip) => (
+                    <button
+                      key={chip.key}
+                      type="button"
+                      onClick={() => toggleProgramType(chip.key as "UG" | "PG" | "Both")}
+                      className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_#000] ${
+                        chip.active
+                          ? "bg-[#00666B] text-white"
+                          : "bg-white text-[#051B1D] hover:bg-gray-100"
+                      }`}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Year of Study */}
+              <div>
+                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1.5">
+                  Year of Study
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => toggleYear("ALL")}
+                    className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_#000] ${
+                      isAllYears
+                        ? "bg-[#00666B] text-white"
+                        : "bg-white text-[#051B1D] hover:bg-gray-100"
+                    }`}
+                  >
+                    All Years
+                  </button>
+
+                  {YEAR_OPTIONS.map((yr) => {
+                    const isSelected = !isAllYears && years.includes(yr);
+                    return (
+                      <button
+                        key={yr}
+                        type="button"
+                        onClick={() => toggleYear(yr)}
+                        className={`px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all cursor-pointer shadow-[2px_2px_0px_#000] ${
+                          isSelected
+                            ? "bg-[#00666B] text-white"
+                            : "bg-white text-[#051B1D] hover:bg-gray-100"
+                        }`}
+                      >
+                        {yr}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Sessions (Optional) */}
           <div className="bg-[#D3D3D3] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
             <div className="flex items-center justify-between mb-3 sm:mb-4">
@@ -307,7 +454,7 @@ export default function NewEventPage() {
           <button
             onClick={handleSubmit}
             disabled={submitting}
-            className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-4 py-3.5 sm:py-4 font-black text-sm sm:text-base shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
+            className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-4 py-3.5 sm:py-4 font-black text-sm sm:text-base shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 cursor-pointer"
           >
             {submitting ? "Creating Event..." : "Create Event →"}
           </button>

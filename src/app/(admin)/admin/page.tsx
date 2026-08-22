@@ -27,7 +27,6 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [data, setData] = useState<{
     activeEvents: any[];
-    recentRegistrations: any[];
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -43,14 +42,7 @@ export default function AdminDashboard() {
       <main className="min-h-screen bg-[#D3D3D3] px-3 sm:px-4 py-6 sm:py-8">
         <div className="max-w-3xl mx-auto space-y-4">
           <div className="h-8 w-48 bg-gray-400 rounded-xl animate-pulse" />
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
-            {[...Array(2)].map((_, i) => (
-              <div
-                key={i}
-                className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse"
-              />
-            ))}
-          </div>
+          <div className="h-24 bg-[#D3D3D3] border-2 border-black rounded-2xl animate-pulse" />
         </div>
       </main>
     );
@@ -77,16 +69,11 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8">
           <StatCard
             label="Active Events"
             value={data?.activeEvents.length ?? 0}
             sub="Upcoming + Ongoing"
-          />
-          <StatCard
-            label="Recent Registrations"
-            value={data?.recentRegistrations.length ?? 0}
-            sub="Last 10"
           />
         </div>
 
@@ -144,41 +131,6 @@ export default function AdminDashboard() {
               ))}
             </div>
           )}
-        </div>
-
-        {/* Recent Registrations */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-base sm:text-lg font-black text-[#051B1D]">
-              Recent Registrations
-            </h2>
-          </div>
-          <div className="space-y-2">
-            {data?.recentRegistrations.map((reg) => (
-              <div
-                key={reg.id}
-                className="bg-[#D3D3D3] border-2 border-black rounded-xl px-4 py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-[#051B1D] truncate">
-                    {reg.studentName}
-                  </p>
-                  <p className="text-xs text-gray-700 font-medium truncate">{reg.eventTitle}</p>
-                </div>
-                <span
-                  className={`text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full shrink-0 border border-black ${
-                    reg.status === "REGISTERED"
-                      ? "bg-[#73FFFF] text-[#051B1D]"
-                      : reg.status === "WAITLISTED"
-                        ? "bg-yellow-200 text-yellow-900"
-                        : "bg-red-200 text-red-700"
-                  }`}
-                >
-                  {reg.status}
-                </span>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Nav */}

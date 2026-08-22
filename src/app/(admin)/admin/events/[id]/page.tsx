@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import {
   getEventRegistrationsAction,
-  updateRegistrationStatusAction,
   getEventAttendanceAction,
   updateEventAction,
   deleteEventAction,
@@ -114,14 +113,6 @@ export default function AdminEventDetailPage() {
         setLoadingAtt(false);
       }
     }
-  }
-
-  async function toggleRegStatus(regId: string, current: string) {
-    const next = current === "REGISTERED" ? "CANCELLED" : "REGISTERED";
-    await updateRegistrationStatusAction(regId, next as any);
-    setRegistrations((prev) =>
-      prev.map((r) => (r.id === regId ? { ...r, status: next } : r)),
-    );
   }
 
   async function handleToggleRegistration() {
@@ -354,16 +345,10 @@ export default function AdminEventDetailPage() {
                     </div>
                     <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                       <span
-                        className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black ${statusColors[reg.status] || "bg-gray-200 text-[#051B1D]"}`}
+                        className={`text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full border border-black ${statusColors[reg.status] || "bg-gray-200 text-[#051B1D]"}`}
                       >
                         {reg.status}
                       </span>
-                      <button
-                        onClick={() => toggleRegStatus(reg.id, reg.status)}
-                        className="text-[10px] sm:text-xs font-bold text-gray-800 border-2 border-black rounded-lg px-2 py-1 hover:bg-[#00666B] hover:text-white transition-colors"
-                      >
-                        Toggle
-                      </button>
                     </div>
                   </div>
                 ))}

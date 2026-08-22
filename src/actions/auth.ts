@@ -27,11 +27,10 @@ export async function syncGoogleUserAction(
   const isAdmin = ADMIN_EMAILS.includes(normalizedEmail)
 
   if (!snap.exists) {
-    const isFaculty = normalizedEmail.endsWith("@karunya.edu")
     const isStudent = normalizedEmail.endsWith("@karunya.edu.in")
 
-    if (!isAdmin && !isFaculty && !isStudent) {
-      throw new Error("Use your Karunya college email to sign in")
+    if (!isAdmin && !isStudent) {
+      throw new Error("Use your Karunya student email (@karunya.edu.in) to sign in")
     }
 
     await ref.set({
@@ -46,7 +45,7 @@ export async function syncGoogleUserAction(
       programType: null,
       degree: null,
       yearOfStudy: null,
-      role: isAdmin ? "ADMIN" : isFaculty ? "FACULTY" : "STUDENT",
+      role: isAdmin ? "ADMIN" : "STUDENT",
       onboardingCompleted: isAdmin,
       mustChangePassword: false,
       totalCheckInsValidated: 0,

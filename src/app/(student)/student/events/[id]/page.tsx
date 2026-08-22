@@ -6,9 +6,10 @@ import { useStore } from "@/store/user-store";
 import {
   getEventByIdAction,
   getStudentRegistrationAction,
+  getStudentEventAttendanceAction,
   registerForEventAction,
 } from "@/actions/event";
-import type { Event, Registration } from "@/types";
+import type { Event, Registration, Attendance } from "@/types";
 
 function WhatsAppIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -33,6 +34,7 @@ export default function EventDetailPage() {
   const { invalidateEvents, invalidateRegistrations } = useStore();
   const [event, setEvent] = useState<Event | null>(null);
   const [registration, setRegistration] = useState<Registration | null>(null);
+  const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState("");
@@ -49,12 +51,14 @@ export default function EventDetailPage() {
   async function fetchData() {
     try {
       setLoading(true);
-      const [ev, reg] = await Promise.all([
+      const [ev, reg, att] = await Promise.all([
         getEventByIdAction(id),
         getStudentRegistrationAction(id),
+        getStudentEventAttendanceAction(id),
       ]);
       setEvent(ev);
       setRegistration(reg);
+      setAttendances(att);
     } catch {
       setError("Failed to load event");
     } finally {
@@ -178,34 +182,70 @@ export default function EventDetailPage() {
                 Sessions
               </h3>
               <div className="space-y-2">
-                {event.sessions.map((s) => (
-                  <div
-                    key={s.id}
-                    className="flex items-center justify-between bg-[#c8c8c8] border-2 border-black rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2"
-                  >
-                    <span className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
-                      {s.title}
-                    </span>
-                    <span className="text-xs font-bold text-gray-700 shrink-0">
-                      {s.startTime}
-                    </span>
-                  </div>
-                ))}
+                {event.sessions.map((s) => {
+                  const isPresent = attendances.some((a) => a.sessionId === s.id);
+                  return (
+                    <div
+                      key={s.id}
+                      className="flex items-center justify-between bg-[#c8c8c8] border-2 border-black rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2"
+                    >
+                      <div className="min-w-0">
+                        <span className="text-xs sm:text-sm font-bold text-[#051B1D] truncate block">
+                          {s.title}
+                        </span>
+                        <span className="text-[10px] sm:text-xs font-bold text-gray-700">
+                          {s.startTime}
+                        </span>
+                      </div>
+
+                      {/* Present / Absent Badge for registered students */}
+                      {isRegistered ? (
+                        isPresent ? (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black bg-[#25D366] text-white border-2 border-black shrink-0 shadow-[1px_1px_0px_#000]">
+                            Present
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black bg-red-100 text-red-700 border-2 border-black shrink-0 shadow-[1px_1px_0px_#000]">
+                            Absent
+                          </span>
+                        )
+                      ) : (
+                        <span className="text-xs font-bold text-gray-700 shrink-0">
+                          {s.startTime}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* WhatsApp Button for registered students in WhatsApp Green #25D366 */}
+          {/* WhatsApp Badge for registered students in cartoonish neo-brutalist style */}
           {isRegistered && event.whatsappInviteLink && (
-            <a
-              href={event.whatsappInviteLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#128C7E] text-white border-2 border-black rounded-xl px-4 py-3.5 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all mb-3"
-            >
-              <WhatsAppIcon className="w-5 h-5 fill-white shrink-0" />
-              Join WhatsApp Group
-            </a>
+            <div className="mb-4 bg-[#25D366]/20 border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]">
+              <a
+                href={event.whatsappInviteLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3.5 group cursor-pointer"
+              >
+                <div className="w-14 h-14 bg-[#25D366] group-hover:bg-[#128C7E] text-white border-2 border-black rounded-2xl flex items-center justify-center shrink-0 shadow-[3px_3px_0px_#000] group-hover:shadow-none group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all -rotate-3 group-hover:rotate-0">
+                  <WhatsAppIcon className="w-8 h-8 fill-white" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="inline-block bg-[#25D366] text-white border border-black px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider shadow-[1px_1px_0px_#000] mb-1 -rotate-1">
+                    Official Group 💬
+                  </div>
+                  <p className="text-xs sm:text-sm font-black text-[#051B1D] truncate group-hover:text-[#128C7E] transition-colors">
+                    Join WhatsApp Group →
+                  </p>
+                  <p className="text-[11px] text-gray-700 font-bold truncate">
+                    Get live updates & announcements
+                  </p>
+                </div>
+              </a>
+            </div>
           )}
 
           {/* Registration Actions */}
@@ -297,9 +337,35 @@ export default function EventDetailPage() {
               </div>
             ) : (
               <div className="py-4 space-y-5">
-                <div className="w-16 h-16 bg-[#25D366] text-white border-2 border-black rounded-full flex items-center justify-center text-3xl mx-auto shadow-[3px_3px_0px_#000]">
-                  <WhatsAppIcon className="w-9 h-9 fill-white" />
-                </div>
+                {event.whatsappInviteLink ? (
+                  <div className="relative inline-flex flex-col items-center mx-auto">
+                    {/* Animated Cartoon "Click Me!" Sticker */}
+                    <div className="absolute -top-3 -right-7 sm:-right-9 z-10 animate-bounce pointer-events-none">
+                      <div className="bg-[#FFE600] text-[#051B1D] border-2 border-black px-2.5 py-0.5 rounded-full font-black text-[11px] sm:text-xs uppercase tracking-wider shadow-[2px_2px_0px_#000] rotate-12 flex items-center gap-1 whitespace-nowrap">
+                        <span>Click Me!</span>
+                        <span className="text-xs">👇</span>
+                      </div>
+                    </div>
+
+                    <a
+                      href={event.whatsappInviteLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex flex-col items-center group cursor-pointer transition-transform hover:scale-105"
+                    >
+                      <div className="w-20 h-20 bg-[#25D366] hover:bg-[#128C7E] text-white border-4 border-black rounded-3xl flex items-center justify-center mx-auto shadow-[4px_4px_0px_#000] group-hover:shadow-[2px_2px_0px_#000] group-hover:translate-x-[2px] group-hover:translate-y-[2px] transition-all -rotate-3 group-hover:rotate-0">
+                        <WhatsAppIcon className="w-11 h-11 fill-white" />
+                      </div>
+                      <span className="mt-2.5 inline-block bg-[#25D366] text-white border-2 border-black px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-[2px_2px_0px_#000] rotate-1">
+                        Tap to Join Group 💬
+                      </span>
+                    </a>
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 bg-[#25D366] text-white border-4 border-black rounded-3xl flex items-center justify-center mx-auto shadow-[4px_4px_0px_#000] -rotate-3">
+                    <WhatsAppIcon className="w-11 h-11 fill-white" />
+                  </div>
+                )}
 
                 <div>
                   <h3 className="text-xl sm:text-2xl font-black text-[#051B1D]">
@@ -318,15 +384,15 @@ export default function EventDetailPage() {
                       href={event.whatsappInviteLink}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white border-2 border-black rounded-2xl px-5 py-4 font-black text-sm sm:text-base shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all"
+                      className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white border-2 border-black rounded-2xl px-5 py-4 font-black text-sm sm:text-base shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
                     >
                       <WhatsAppIcon className="w-6 h-6 fill-white shrink-0" />
-                      Join the WhatsApp Group
+                      Join WhatsApp Group
                     </a>
 
                     <button
                       onClick={() => setShowModal(false)}
-                      className="w-full bg-[#D3D3D3] text-gray-800 border-2 border-black rounded-xl px-4 py-2.5 font-bold text-xs hover:bg-[#b8b8b8] transition-all"
+                      className="w-full bg-[#D3D3D3] text-gray-800 border-2 border-black rounded-xl px-4 py-2.5 font-bold text-xs hover:bg-[#b8b8b8] transition-all cursor-pointer"
                     >
                       I&apos;ll join later
                     </button>
@@ -334,7 +400,7 @@ export default function EventDetailPage() {
                 ) : (
                   <button
                     onClick={() => setShowModal(false)}
-                    className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-5 py-3.5 font-black text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                    className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-5 py-3.5 font-black text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all cursor-pointer"
                   >
                     Done
                   </button>

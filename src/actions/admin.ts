@@ -38,6 +38,8 @@ export async function getAdminEventsAction(lastDocId?: string) {
   }
 }
 
+import { buildEventEligibilityTokens } from "@/lib/eligibility"
+
 export async function createEventAction(data: {
   title: string
   date: string
@@ -46,8 +48,22 @@ export async function createEventAction(data: {
   capacity?: number
   whatsappInviteLink?: string
   sessions?: { id: string; title: string; startTime: string; endTime?: string | null }[]
+  eligibility?: {
+    targetAudience: "ALL" | "STUDENTS"
+    programTypes?: string[]
+    years?: string[]
+  }
 }) {
   await requireAdmin()
+
+  const eligibility = {
+    targetAudience: data.eligibility?.targetAudience || "ALL",
+    degrees: data.eligibility?.programTypes || ["UG", "PG"],
+    years: data.eligibility?.years || ["ALL"],
+    departments: null,
+  }
+
+  const eligibilityTokens = buildEventEligibilityTokens(eligibility)
 
   const ref = adminDb.collection("events").doc()
   await ref.set({
@@ -62,7 +78,8 @@ export async function createEventAction(data: {
     status: "UPCOMING",
     registrationOpen: true,
     registrationCount: 0,
-    eligibilityTokens: ["AUDIENCE_ALL", "AUDIENCE_STUDENTS"],
+    eligibility,
+    eligibilityTokens,
     createdAt: new Date().toISOString(),
   })
   return { id: ref.id }
@@ -81,13 +98,29 @@ export async function updateEventAction(
     registrationOpen: boolean
     whatsappInviteLink: string | null
     sessions: { id: string; title: string; startTime: string; endTime?: string | null }[]
+    eligibility?: {
+      targetAudience: "ALL" | "STUDENTS"
+      programTypes?: string[]
+      years?: string[]
+    }
   }>
 ) {
   await requireAdmin()
-  await adminDb.collection("events").doc(eventId).update({
+  const updateData: Record<string, any> = {
     ...data,
     updatedAt: new Date().toISOString(),
-  })
+  }
+  if (data.eligibility) {
+    const eligibility = {
+      targetAudience: data.eligibility.targetAudience || "ALL",
+      degrees: data.eligibility.programTypes || ["UG", "PG"],
+      years: data.eligibility.years || ["ALL"],
+      departments: null,
+    }
+    updateData.eligibility = eligibility
+    updateData.eligibilityTokens = buildEventEligibilityTokens(eligibility)
+  }
+  await adminDb.collection("events").doc(eventId).update(updateData)
 }
 
 export async function deleteEventAction(eventId: string) {
@@ -150,20 +183,13 @@ export async function getEventAttendanceAction(eventId: string) {
 export async function getAdminDashboardAction() {
   await requireAdmin()
 
-  const [eventsSnap, recentRegSnap] = await Promise.all([
-    adminDb.collection("events")
-      .where("status", "in", ["UPCOMING", "ONGOING"])
-      .orderBy("date", "asc")
-      .limit(5)
-      .get(),
-    adminDb.collection("registrations")
-      .orderBy("createdAt", "desc")
-      .limit(10)
-      .get(),
-  ])
+  const eventsSnap = await adminDb.collection("events")
+    .where("status", "in", ["UPCOMING", "ONGOING"])
+    .orderBy("date", "asc")
+    .limit(5)
+    .get()
 
   const activeEvents = eventsSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
-  const recentRegistrations = recentRegSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
 
-  return { activeEvents, recentRegistrations }
+  return { activeEvents }
 }
