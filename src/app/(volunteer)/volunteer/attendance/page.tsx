@@ -50,6 +50,10 @@ function playBeep(type: "success" | "duplicate" | "error") {
   }
 }
 
+function normalizeRoll(raw: string): string {
+  return raw.replace(/^\[C1/i, "").replace(/^C1/i, "").replace(/\]$/, "").trim().toUpperCase()
+}
+
 function AttendanceScannerContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -139,7 +143,7 @@ function AttendanceScannerContent() {
   const processBarcodeValue = useCallback(
     (value: string, method: "SCANNED" | "MANUAL" = "SCANNED") => {
       const now = Date.now();
-      const code = value.trim().toUpperCase();
+      const code = normalizeRoll(value);
 
       if (
         code === lastScannedCodeRef.current &&
@@ -152,6 +156,7 @@ function AttendanceScannerContent() {
 
       const student = scannerStudentsRef.current.find(
         (s) =>
+          (s.rollNumber && normalizeRoll(s.rollNumber) === code) ||
           s.rollNumber?.toUpperCase() === code ||
           s.studentId === code ||
           s.registrationId === code,
