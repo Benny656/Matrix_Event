@@ -51,7 +51,14 @@ function playBeep(type: "success" | "duplicate" | "error") {
 }
 
 function normalizeRoll(raw: string): string {
-  return raw.replace(/^\[C1/i, "").replace(/^C1/i, "").replace(/\]$/, "").trim().toUpperCase()
+  return raw
+    .replace(/^\]/, "")
+    .replace(/^\[/, "")
+    .replace(/^C1/i, "")
+    .replace(/\]$/, "")
+    .replace(/\[$/, "")
+    .trim()
+    .toUpperCase()
 }
 
 function AttendanceScannerContent() {
@@ -266,7 +273,7 @@ function AttendanceScannerContent() {
       if (html5QrCodeRef.current) {
         try {
           await html5QrCodeRef.current.stop();
-        } catch {}
+        } catch { }
         html5QrCodeRef.current = null;
       }
 
@@ -289,7 +296,7 @@ function AttendanceScannerContent() {
         (decodedText: string) => {
           processBarcodeValue(decodedText, "SCANNED");
         },
-        () => {},
+        () => { },
       );
 
       setScannerReady(true);
@@ -316,7 +323,7 @@ function AttendanceScannerContent() {
     if (html5QrCodeRef.current) {
       try {
         await html5QrCodeRef.current.stop();
-      } catch {}
+      } catch { }
       html5QrCodeRef.current = null;
     }
     setScannerReady(false);
@@ -388,12 +395,12 @@ function AttendanceScannerContent() {
 
   const filteredStudents = manualSearch.trim()
     ? scannerStudents.filter(
-        (s) =>
-          s.studentName
-            .toLowerCase()
-            .includes(manualSearch.toLowerCase()) ||
-          s.rollNumber?.toLowerCase().includes(manualSearch.toLowerCase()),
-      )
+      (s) =>
+        s.studentName
+          .toLowerCase()
+          .includes(manualSearch.toLowerCase()) ||
+        s.rollNumber?.toLowerCase().includes(manualSearch.toLowerCase()),
+    )
     : [];
 
   return (
@@ -513,11 +520,10 @@ function AttendanceScannerContent() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`py-2.5 sm:py-3 rounded-xl border-2 border-black font-bold text-xs sm:text-sm transition-all ${
-                    activeTab === tab
+                  className={`py-2.5 sm:py-3 rounded-xl border-2 border-black font-bold text-xs sm:text-sm transition-all ${activeTab === tab
                       ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000]"
                       : "bg-[#D3D3D3] text-[#051B1D] shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-                  }`}
+                    }`}
                 >
                   {tab === "SCANNER" ? "📷 Camera" : "⌨️ Manual / Search"}
                 </button>
