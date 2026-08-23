@@ -17,7 +17,6 @@ export async function syncGoogleUserAction(
   uid: string,
   email: string,
   name: string,
-  image: string,
   idToken: string,
 ) {
   const normalizedEmail = email.toLowerCase().trim()
@@ -37,8 +36,6 @@ export async function syncGoogleUserAction(
       id: uid,
       name,
       email: normalizedEmail,
-      emailVerified: true,
-      image,
       rollNumber: null,
       phoneNumber: null,
       department: null,
@@ -47,8 +44,6 @@ export async function syncGoogleUserAction(
       yearOfStudy: null,
       role: isAdmin ? "ADMIN" : "STUDENT",
       onboardingCompleted: isAdmin,
-      mustChangePassword: false,
-      totalCheckInsValidated: 0,
       createdAt: new Date().toISOString(),
       updatedAt: null,
     })
@@ -112,7 +107,6 @@ export async function completeOnboardingAction(
 export async function changePasswordAction(uid: string, newPassword: string) {
   await adminAuth.updateUser(uid, { password: newPassword })
   await adminDb.collection("users").doc(uid).update({
-    mustChangePassword: false,
     updatedAt: new Date().toISOString(),
   })
 

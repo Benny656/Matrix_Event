@@ -2,7 +2,6 @@
 
 import { adminDb } from "@/lib/firebase-admin"
 import { getSessionPayload } from "@/lib/auth-session"
-import { FieldValue } from "firebase-admin/firestore"
 import type { RegisteredStudent, Attendance } from "@/types"
 
 export async function getEventRegisteredStudentsAction(eventId: string): Promise<RegisteredStudent[]> {
@@ -68,10 +67,6 @@ export async function submitBatchAttendanceAction(
       createdAt: now,
     }, { merge: false })
   }
-
-  batch.update(adminDb.collection("users").doc(payload.uid), {
-    totalCheckInsValidated: FieldValue.increment(newScanned.length),
-  })
 
   await batch.commit()
   return { submitted: newScanned.length }

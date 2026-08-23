@@ -18,14 +18,10 @@ export async function proxy(req: NextRequest) {
 
   try {
     const payload = JSON.parse(cookie.value)
-    const { role, onboardingCompleted, mustChangePassword } = payload
+    const { role, onboardingCompleted } = payload
 
     if (!onboardingCompleted && pathname !== "/onboarding") {
       return NextResponse.redirect(new URL("/onboarding", req.url))
-    }
-
-    if (mustChangePassword && pathname !== "/change-password") {
-      return NextResponse.redirect(new URL("/change-password", req.url))
     }
 
     for (const [route, roles] of Object.entries(roleRoutes)) {
@@ -41,5 +37,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/volunteer/:path*", "/student/:path*", "/onboarding", "/change-password"],
+  matcher: ["/admin/:path*", "/volunteer/:path*", "/student/:path*", "/onboarding"],
 }

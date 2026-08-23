@@ -18,13 +18,12 @@ export default function LoginPage() {
       setLoading(true);
       setError("");
       const result = await signInWithPopup(auth, provider);
-      const { uid, email, displayName, photoURL } = result.user;
+      const { uid, email, displayName } = result.user;
       const idToken = await result.user.getIdToken();
       await syncGoogleUserAction(
         uid,
         email!,
         displayName || "",
-        photoURL || "",
         idToken,
       );
 

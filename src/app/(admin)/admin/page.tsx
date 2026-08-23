@@ -51,17 +51,13 @@ export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
       <div className="max-w-3xl mx-auto">
-        <div className="mb-6 sm:mb-8 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs sm:text-sm font-bold text-[#00666B] uppercase tracking-widest truncate">
-              Matrix Admin
-            </p>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] truncate">Dashboard</h1>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="mb-8">
+          <p className="text-sm font-bold text-[#0d9488] uppercase tracking-widest">Matrix Admin</p>
+          <h1 className="text-3xl font-black text-black">Dashboard</h1>
+          <div className="flex gap-3 mt-4">
             <button
               onClick={() => router.push("/admin/events/new")}
-              className="bg-[#00666B] text-white border-2 border-black rounded-xl px-3 sm:px-5 py-2.5 sm:py-3 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all shrink-0"
+              className="flex-1 bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-black text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
             >
               + New Event
             </button>

@@ -7,6 +7,5 @@ export async function GET() {
   return NextResponse.json({
     role: payload.role,
     onboardingCompleted: payload.onboardingCompleted,
-    mustChangePassword: payload.mustChangePassword,
   })
 }

@@ -2,8 +2,6 @@ export interface User {
   id: string
   name: string
   email: string
-  emailVerified: boolean
-  image: string | null
   rollNumber: string | null
   phoneNumber: string | null
   department: string | null
@@ -12,8 +10,6 @@ export interface User {
   yearOfStudy: string | null
   role: "STUDENT" | "VOLUNTEER" | "ADMIN"
   onboardingCompleted: boolean
-  mustChangePassword: boolean
-  totalCheckInsValidated: number
   createdAt: string
   updatedAt: string | null
 }

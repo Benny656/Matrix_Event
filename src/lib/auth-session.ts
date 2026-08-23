@@ -28,7 +28,6 @@ export async function createSession(idToken: string) {
     uid: decoded.uid,
     role: isAdmin ? "ADMIN" : user?.role,
     onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
-    mustChangePassword: user?.mustChangePassword ?? false,
   }
 
   const cookieStore = await cookies()
@@ -90,7 +89,6 @@ export async function refreshSession() {
     ...payload,
     role: isAdmin ? "ADMIN" : user?.role,
     onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
-    mustChangePassword: user?.mustChangePassword ?? false,
   }
 
   const cookieStore = await cookies()
