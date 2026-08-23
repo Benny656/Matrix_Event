@@ -33,10 +33,7 @@ export default function VolunteerEventsPage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="volunteer" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
             My Events
@@ -123,6 +120,5 @@ export default function VolunteerEventsPage() {
           </div>
         )}
       </div>
-    </main>
   );
 }

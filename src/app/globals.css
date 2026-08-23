@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -16,6 +18,8 @@
     --accent-light: 182 48% 45%;
     --accent-subtle: 173 100% 97%;
     --accent-foreground: 0 0% 100%;
+    --primary: 173 100% 21%;
+    --primary-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
@@ -40,6 +44,8 @@
     --accent-light: 180 100% 73%;
     --accent-subtle: 173 100% 6%;
     --accent-foreground: 0 0% 100%;
+    --primary: 182 48% 45%;
+    --primary-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --success: 142 71% 45%;
     --warning: 38 92% 50%;
@@ -173,4 +179,19 @@ html.lenis {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@theme inline {
+  --animate-shine: shine var(--duration) infinite linear;
+  @keyframes shine {
+  0% {
+    background-position: 0% 0%;
+    }
+  50% {
+    background-position: 100% 100%;
+    }
+  to {
+    background-position: 0% 0%;
+    }
+  }
 }

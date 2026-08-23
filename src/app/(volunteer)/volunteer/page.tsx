@@ -18,40 +18,39 @@ export default function VolunteerDashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-6 sm:mb-8 flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <span className="inline-block bg-[#00666B] text-white text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-widest border border-black">
-              Volunteer
-            </span>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D]">Terminal</h1>
-            <p className="text-gray-700 text-xs sm:text-sm mt-1 font-medium">
-              Manage events and scan attendance
-            </p>
-          </div>
-          <SignOutButton />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <span className="text-sm font-medium text-[hsl(var(--accent))] uppercase tracking-widest block mb-1">
+            Volunteer Terminal
+          </span>
+          <h1 className="text-3xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">Dashboard</h1>
+          <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+            Manage active events and scan participant attendance
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 sm:mb-8">
           <button
             onClick={() => router.push("/volunteer/attendance")}
-            className="bg-[#00666B] text-white border-2 border-black rounded-2xl px-4 py-4 sm:py-5 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-left"
+            className="glass rounded-2xl border border-[hsl(var(--border))] p-5 hover:border-[hsl(var(--accent))] transition-all text-left group hover:shadow-lg"
           >
-            <p className="text-xl sm:text-2xl mb-2">📷</p>
-            Scan Attendance
+            <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">📷</p>
+            <p className="text-base font-semibold text-[hsl(var(--text-primary))]">Scan Attendance</p>
+            <p className="text-xs text-[hsl(var(--text-secondary))] mt-0.5">QR scanner & manual roll entry</p>
           </button>
           <button
             onClick={() => router.push("/volunteer/events")}
-            className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl px-4 py-4 sm:py-5 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-left"
+            className="glass rounded-2xl border border-[hsl(var(--border))] p-5 hover:border-[hsl(var(--accent))] transition-all text-left group hover:shadow-lg"
           >
-            <p className="text-xl sm:text-2xl mb-2">📋</p>
-            View Events
+            <p className="text-2xl mb-2 group-hover:scale-110 transition-transform">📋</p>
+            <p className="text-base font-semibold text-[hsl(var(--text-primary))]">View Events</p>
+            <p className="text-xs text-[hsl(var(--text-secondary))] mt-0.5">Browse assigned events & status</p>
           </button>
         </div>
 
         <div>
-          <h2 className="text-base sm:text-lg font-black text-[#051B1D] mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-semibold text-[hsl(var(--text-primary))] mb-3 sm:mb-4">
             Active & Upcoming Events
           </h2>
           {loading ? (
@@ -59,14 +58,15 @@ export default function VolunteerDashboard() {
               {[...Array(3)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
+                  className="h-20 glass rounded-2xl border border-[hsl(var(--border))] animate-pulse"
                 />
               ))}
             </div>
           ) : events.length === 0 ? (
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
-              <p className="text-2xl mb-2">📭</p>
-              <p className="font-bold text-[#051B1D] text-sm">No active events</p>
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+              <p className="text-3xl mb-2">📭</p>
+              <p className="font-semibold text-[hsl(var(--text-primary))] text-sm">No active events</p>
+              <p className="text-xs text-[hsl(var(--text-secondary))] mt-1">Check back when upcoming events are assigned</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -74,19 +74,23 @@ export default function VolunteerDashboard() {
                 <div
                   key={event.id}
                   onClick={() => router.push(`/volunteer/events/${event.id}`)}
-                  className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                  className="glass rounded-2xl border border-[hsl(var(--border))] p-4 hover:border-[hsl(var(--accent))] transition-all cursor-pointer hover:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-black text-[#051B1D] text-sm truncate">
+                    <h3 className="font-semibold text-[hsl(var(--text-primary))] text-sm truncate">
                       {event.title}
                     </h3>
                     <span
-                      className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black shrink-0 ${event.status === "ONGOING" ? "bg-[#73FFFF] text-[#051B1D]" : "bg-[#39A8AD]/20 text-[#00666B]"}`}
+                      className={`text-[10px] sm:text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${
+                        event.status === "ONGOING"
+                          ? "bg-emerald-500/10 text-emerald-600"
+                          : "bg-[hsl(var(--accent-subtle))] text-[hsl(var(--accent))]"
+                      }`}
                     >
                       {event.status}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-700 font-bold mt-1 truncate">
+                  <p className="text-xs text-[hsl(var(--text-secondary))] font-medium mt-1 truncate">
                     {new Date(event.date).toLocaleDateString("en-IN", {
                       day: "numeric",
                       month: "short",
@@ -99,6 +103,6 @@ export default function VolunteerDashboard() {
           )}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

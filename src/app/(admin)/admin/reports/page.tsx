@@ -106,11 +106,8 @@ export default function AdminReportsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="max-w-3xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
               Reports & Exports
@@ -233,6 +230,5 @@ export default function AdminReportsPage() {
           )}
         </div>
       </div>
-    </main>
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { auth } from "@/lib/firebase";
 import { changePasswordAction } from "@/actions/auth";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 export default function ChangePasswordPage() {
   const router = useRouter();
@@ -34,13 +35,14 @@ export default function ChangePasswordPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] p-4 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center bg-transparent p-4 relative overflow-hidden">
       {/* Ambient background orb */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[hsl(var(--accent)/0.08)] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[hsl(var(--accent-light)/0.08)] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-lg mx-auto">
-        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 shadow-xl">
+        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
           <div className="mb-6">
             <div className="w-12 h-12 rounded-xl bg-[hsl(var(--accent-subtle))] border border-[hsl(var(--accent)/0.2)] flex items-center justify-center text-[hsl(var(--accent))] mb-4">
               <Lock className="w-6 h-6" />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createEventAction } from "@/actions/admin";
 import { v4 as uuidv4 } from "uuid";
 import Header from "@/components/layout/header";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 type Session = {
   id: string;
@@ -150,11 +151,8 @@ export default function NewEventPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="max-w-3xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
@@ -173,7 +171,8 @@ export default function NewEventPage() {
 
           <div className="space-y-6">
             {/* Basic Info */}
-            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 relative overflow-hidden">
+              <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
               <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
                 Basic Info
               </h2>
@@ -275,7 +274,8 @@ export default function NewEventPage() {
             </div>
 
             {/* Eligibility Criteria */}
-            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 relative overflow-hidden">
+              <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
               <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-1">
                 Eligibility Criteria
               </h2>
@@ -375,7 +375,8 @@ export default function NewEventPage() {
             </div>
 
             {/* Sessions (Optional) */}
-            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 relative overflow-hidden">
+              <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
               <div className="flex items-center justify-between gap-3 mb-4">
                 <div>
                   <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))]">
@@ -464,6 +465,5 @@ export default function NewEventPage() {
           </div>
         </div>
       </div>
-    </main>
   );
 }

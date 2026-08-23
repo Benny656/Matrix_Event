@@ -99,10 +99,7 @@ export default function StudentRegistrationsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="student" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">My Registrations</h1>
           <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">All your event sign-ups</p>
@@ -168,6 +165,5 @@ export default function StudentRegistrationsPage() {
           </div>
         )}
       </div>
-    </main>
   );
 }

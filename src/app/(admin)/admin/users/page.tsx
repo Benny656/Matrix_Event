@@ -7,6 +7,7 @@ import {
   searchUsersAction,
 } from "@/actions/user";
 import Header from "@/components/layout/header";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 function getRoleBadge(role: string) {
   switch (role) {
@@ -80,10 +81,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
@@ -95,7 +93,8 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Search Card */}
-          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 mb-6">
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 mb-6 relative overflow-hidden">
+            <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 value={searchQuery}
@@ -205,6 +204,5 @@ export default function AdminUsersPage() {
           )}
         </div>
       </div>
-    </main>
   );
 }

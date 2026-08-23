@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useStore } from "@/store/user-store";
 import { getStudentDashboardAction } from "@/actions/registration";
-import Header from "@/components/layout/header";
+import GlassNav from "@/components/shared/GlassNav";
+import SignOutButton from "@/components/shared/signout-button";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 import type { Registration } from "@/types";
 
 const statusColors: Record<string, string> = {
@@ -113,36 +115,30 @@ export default function StudentDashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[hsl(var(--background))]">
-        <Header role="student" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-          <div className="h-10 w-64 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[...Array(2)].map((_, i) => (
-              <div
-                key={i}
-                className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
-              />
-            ))}
-          </div>
-          <div className="space-y-4">
-            {[...Array(3)].map((_, i) => (
-              <div
-                key={i}
-                className="h-24 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
-              />
-            ))}
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+        <div className="h-10 w-64 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[...Array(2)].map((_, i) => (
+            <div
+              key={i}
+              className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+            />
+          ))}
         </div>
-      </main>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-24 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+            />
+          ))}
+        </div>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="student" userName={data?.user?.name} userImage={data?.user?.image} />
-      
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Welcome section */}
         <div className="mb-8">
           <p className="text-sm font-medium text-[hsl(var(--accent))] uppercase tracking-widest truncate">
@@ -248,20 +244,19 @@ export default function StudentDashboard() {
 
         {/* Bottom actions */}
         <div className="flex items-center gap-3 pt-2">
-          <button
+          <InteractiveHoverButton
             onClick={() => router.push("/student/events")}
-            className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all cursor-pointer"
+            className="py-2.5 px-5"
           >
             Browse Events
-          </button>
+          </InteractiveHoverButton>
           <button
             onClick={() => router.push("/student/registrations")}
-            className="bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] text-sm font-medium px-4 py-2 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all cursor-pointer"
+            className="bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] text-sm font-medium px-4 py-2.5 rounded-full hover:bg-[hsl(var(--surface-2))] transition-all cursor-pointer"
           >
             My Registrations
           </button>
         </div>
       </div>
-    </main>
   );
 }

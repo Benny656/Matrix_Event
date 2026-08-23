@@ -57,36 +57,27 @@ export default function VolunteerEventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[hsl(var(--background))]">
-        <Header role="volunteer" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4">
-          <div className="h-8 w-32 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse" />
-          <div className="h-64 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
-        </div>
-      </main>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4">
+        <div className="h-8 w-32 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse" />
+        <div className="h-64 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+      </div>
     );
   }
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[hsl(var(--background))]">
-        <Header role="volunteer" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
-            <p className="text-base font-semibold text-[hsl(var(--text-primary))]">
-              Event not found
-            </p>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+          <p className="text-base font-semibold text-[hsl(var(--text-primary))]">
+            Event not found
+          </p>
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="volunteer" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Main card */}
         <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
           <div className="flex items-start justify-between gap-3">
@@ -178,6 +169,5 @@ export default function VolunteerEventDetailPage() {
           </div>
         )}
       </div>
-    </main>
   );
 }

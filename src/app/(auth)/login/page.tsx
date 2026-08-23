@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "@/lib/firebase";
 import { syncGoogleUserAction } from "@/actions/auth";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 const HiAnimation = dynamic(
   () => import("@/components/shared/hi-animation"),
@@ -59,7 +60,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] px-4 sm:px-6 py-10 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center bg-transparent px-4 sm:px-6 py-10 relative overflow-hidden">
       {/* Ambient gradient orb */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[hsl(var(--accent)/0.12)] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[hsl(var(--accent-light)/0.1)] rounded-full blur-3xl pointer-events-none" />
@@ -87,7 +88,8 @@ export default function LoginPage() {
 
         {/* Right Column / Card */}
         <div className="w-full max-w-md mx-auto lg:max-w-none">
-          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-10 shadow-xl">
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-10 shadow-xl relative overflow-hidden">
+            <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-[hsl(var(--text-primary))]">
                 Sign In

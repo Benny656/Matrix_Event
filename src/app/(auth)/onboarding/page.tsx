@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { completeOnboardingAction } from "@/actions/auth";
 import { motion } from "framer-motion";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 const DEPARTMENTS = ["AI", "AIML"];
 const PROGRAM_TYPES = ["UG", "PG"];
@@ -46,13 +47,14 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[hsl(var(--background))] p-4 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center bg-transparent p-4 relative overflow-hidden">
       {/* Ambient background orb */}
       <div className="absolute top-1/4 -left-32 w-96 h-96 bg-[hsl(var(--accent)/0.08)] rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 -right-32 w-96 h-96 bg-[hsl(var(--accent-light)/0.08)] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-lg mx-auto">
-        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 shadow-xl">
+        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
           {/* Progress bar */}
           <div className="mb-6">
             <div className="flex gap-2 mb-4">

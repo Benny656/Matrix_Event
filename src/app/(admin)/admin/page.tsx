@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminDashboardAction } from "@/actions/admin";
-import Header from "@/components/layout/header";
+import GlassNav from "@/components/shared/GlassNav";
+import SignOutButton from "@/components/shared/signout-button";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 
 function StatCard({
   label,
@@ -44,10 +46,7 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Welcome Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
@@ -61,12 +60,12 @@ export default function AdminDashboard() {
               Overview of events, attendance, and administrative controls
             </p>
           </div>
-          <button
+          <InteractiveHoverButton
             onClick={() => router.push("/admin/events/new")}
-            className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all self-start sm:self-auto shrink-0"
+            className="self-start sm:self-auto shrink-0 py-2.5 px-5"
           >
             + New Event
-          </button>
+          </InteractiveHoverButton>
         </div>
 
         {/* Stats */}
@@ -194,6 +193,5 @@ export default function AdminDashboard() {
           ))}
         </div>
       </div>
-    </main>
   );
 }

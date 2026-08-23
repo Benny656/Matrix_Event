@@ -9,6 +9,8 @@ import {
   registerForEventAction,
 } from "@/actions/event";
 import Header from "@/components/layout/header";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
+import { ShineBorder } from "@/components/ui/shine-border";
 import type { Event, Registration, Attendance } from "@/types";
 
 const statusColors: Record<string, string> = {
@@ -119,24 +121,18 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[hsl(var(--background))]">
-        <Header role="student" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4">
-          <div className="h-8 w-48 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
-          <div className="bg-[hsl(var(--surface-2))] rounded-2xl h-64 animate-pulse" />
-        </div>
-      </main>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4">
+        <div className="h-8 w-48 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+        <div className="bg-[hsl(var(--surface-2))] rounded-2xl h-64 animate-pulse" />
+      </div>
     );
   }
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[hsl(var(--background))]">
-        <Header role="student" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center">
-          <p className="font-semibold text-lg text-[hsl(var(--text-primary))]">Event not found</p>
-        </div>
-      </main>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center">
+        <p className="font-semibold text-lg text-[hsl(var(--text-primary))]">Event not found</p>
+      </div>
     );
   }
 
@@ -145,10 +141,7 @@ export default function EventDetailPage() {
   const isCancelled = registration?.status === "CANCELLED" || !registration;
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="student" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {error && (
           <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-xl px-4 py-3 break-words">
             {error}
@@ -161,7 +154,8 @@ export default function EventDetailPage() {
           </div>
         )}
 
-        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 mb-6">
+        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 mb-6 relative overflow-hidden">
+          <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
           <div className="flex items-start justify-between gap-2 mb-4">
             <span
               className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[event.status] || "bg-blue-500/10 text-blue-600"}`}
@@ -268,13 +262,13 @@ export default function EventDetailPage() {
 
           {/* Registration Actions */}
           {event.registrationOpen && isCancelled && (
-            <button
+            <InteractiveHoverButton
               onClick={handleInitiateRegister}
               disabled={actionLoading}
-              className="w-full bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full justify-center py-3.5"
             >
               Register Now
-            </button>
+            </InteractiveHoverButton>
           )}
 
           {isWaitlisted && (
@@ -295,12 +289,12 @@ export default function EventDetailPage() {
             </div>
           )}
         </div>
-      </div>
 
       {/* ── Registration Flow Modal Popup ── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-          <div className="bg-[#F5F7F8] border-4 border-black rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-[6px_6px_0px_#000] text-center relative animate-scaleUp">
+          <div className="glass rounded-3xl border border-[hsl(var(--border))] p-6 sm:p-8 max-w-md w-full shadow-2xl text-center relative overflow-hidden animate-scaleUp">
+            <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
             {modalStep === "confirm" ? (
               <div className="py-2 space-y-4">
                 {/* Cartoonish Warning Sticker Icon */}
@@ -428,6 +422,6 @@ export default function EventDetailPage() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }

@@ -12,6 +12,7 @@ import { getEventByIdAction } from "@/actions/event";
 import { v4 as uuidv4 } from "uuid";
 import type { Event } from "@/types";
 import Header from "@/components/layout/header";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 type Tab = "registrations" | "attendance" | "sessions" | "settings";
 
@@ -255,13 +256,11 @@ export default function AdminEventDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="max-w-4xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-4xl mx-auto">
           {/* Header with Title & Quick Registration Toggle */}
-          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6 relative overflow-hidden">
+            <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[hsl(var(--accent-subtle))] text-[hsl(var(--accent))] inline-block mb-2">
@@ -565,7 +564,8 @@ export default function AdminEventDetailPage() {
           {tab === "settings" && (
             <div className="space-y-4">
               {/* WhatsApp Link Configuration */}
-              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-3">
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-3 relative overflow-hidden">
+                <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
                 <div className="flex items-center gap-2">
                   <span className="p-1.5 bg-[#25D366] text-white rounded-lg inline-flex items-center justify-center">
                     <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
@@ -648,6 +648,5 @@ export default function AdminEventDetailPage() {
           )}
         </div>
       </div>
-    </main>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import "./globals.css"
+import GrainientBackground from "@/components/shared/GrainientBackground"
 
 export const metadata: Metadata = {
   title: "Matrix · AIML Karunya",
@@ -26,8 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body className="antialiased bg-[hsl(var(--background))] text-[hsl(var(--text-primary))]">
-        {children}
+      <body className="antialiased bg-transparent text-[hsl(var(--text-primary))] relative">
+        <GrainientBackground />
+        <div className="relative z-10">{children}</div>
       </body>
     </html>
   )

@@ -10,6 +10,7 @@ import {
 } from "@/actions/attendance";
 import type { RegisteredStudent } from "@/types";
 import Header from "@/components/layout/header";
+import { ShineBorder } from "@/components/ui/shine-border";
 
 type ActiveTab = "SCANNER" | "MANUAL";
 type ScannedEntry = RegisteredStudent & { method: "SCANNED" | "MANUAL" };
@@ -405,11 +406,8 @@ function AttendanceScannerContent() {
     : [];
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="volunteer" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="max-w-2xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-2xl mx-auto">
           {/* Header info */}
           <div className="mb-6">
             <span className="text-xs font-medium text-[hsl(var(--accent))] uppercase tracking-widest block mb-1">
@@ -430,7 +428,8 @@ function AttendanceScannerContent() {
           )}
 
           {!studentsLoaded ? (
-            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-4">
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-4 relative overflow-hidden">
+              <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
               <div>
                 <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
                   Select Event
@@ -583,7 +582,8 @@ function AttendanceScannerContent() {
               )}
 
               {/* Quick Roll Form */}
-              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5">
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 relative overflow-hidden">
+                <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
                 <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
                   Barcode / Roll Input
                 </label>
@@ -695,7 +695,6 @@ function AttendanceScannerContent() {
           )}
         </div>
       </div>
-    </main>
   );
 }
 

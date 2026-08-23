@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { getAdminEventsAction } from "@/actions/admin";
 import Header from "@/components/layout/header";
+import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
 
 function getStatusBadge(status: string) {
   switch (status) {
@@ -63,10 +64,7 @@ export default function AdminEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[hsl(var(--background))]">
-      <Header role="admin" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Header & New Event button */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
@@ -77,12 +75,12 @@ export default function AdminEventsPage() {
               Manage, monitor, and create departmental events
             </p>
           </div>
-          <button
+          <InteractiveHoverButton
             onClick={() => router.push("/admin/events/new")}
-            className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all self-start sm:self-auto shrink-0"
+            className="self-start sm:self-auto shrink-0 py-2.5 px-5"
           >
             + New Event
-          </button>
+          </InteractiveHoverButton>
         </div>
 
         {loading ? (
@@ -100,12 +98,12 @@ export default function AdminEventsPage() {
             <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
               No events yet
             </p>
-            <button
+            <InteractiveHoverButton
               onClick={() => router.push("/admin/events/new")}
-              className="mt-4 bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all inline-block"
+              className="mt-4 py-2.5 px-5 inline-block"
             >
               Create first event
-            </button>
+            </InteractiveHoverButton>
           </div>
         ) : (
           <div>
@@ -165,6 +163,5 @@ export default function AdminEventsPage() {
           </div>
         )}
       </div>
-    </main>
   );
 }
