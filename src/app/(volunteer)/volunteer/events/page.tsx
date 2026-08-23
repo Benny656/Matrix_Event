@@ -2,14 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { getVolunteerEventsAction } from "@/actions/attendance";
+import Header from "@/components/layout/header";
 
-const statusColors: Record<string, string> = {
-  UPCOMING: "bg-[#39A8AD]/20 text-[#00666B]",
-  ONGOING: "bg-[#73FFFF] text-[#051B1D]",
-  COMPLETED: "bg-gray-200 text-gray-700",
-  ARCHIVED: "bg-yellow-200 text-yellow-900",
-};
+function getStatusBadge(status: string) {
+  switch (status) {
+    case "ONGOING":
+      return "bg-emerald-500/10 text-emerald-600";
+    case "UPCOMING":
+      return "bg-blue-500/10 text-blue-600";
+    case "COMPLETED":
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]";
+    default:
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]";
+  }
+}
 
 export default function VolunteerEventsPage() {
   const router = useRouter();
@@ -24,100 +32,93 @@ export default function VolunteerEventsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-2xl mx-auto space-y-3">
-          <div className="h-8 w-40 bg-gray-400 rounded-xl animate-pulse mb-6" />
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              className="h-24 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
-            />
-          ))}
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Top Navigation */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => router.push("/volunteer")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              ← Dashboard
-            </button>
-            <button
-              onClick={() => router.push("/volunteer/attendance")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              📷 Scan Attendance
-            </button>
-          </div>
-        </div>
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="volunteer" />
 
-        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6">My Events</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-6">
+          <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
+            My Events
+          </h1>
+          <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+            Events assigned to you for attendance management
+          </p>
+        </div>
 
         {error && (
-          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold">
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-xl px-4 py-3">
             {error}
           </div>
         )}
 
-        {events.length === 0 ? (
-          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="h-36 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+              />
+            ))}
+          </div>
+        ) : events.length === 0 ? (
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
             <p className="text-3xl mb-2">📭</p>
-            <p className="font-bold text-[#051B1D] text-sm sm:text-base">No events assigned yet</p>
-            <p className="text-gray-700 text-xs mt-1 font-medium">Check back later</p>
+            <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+              No events assigned yet
+            </p>
+            <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+              Check back later when events are assigned to your volunteer terminal
+            </p>
           </div>
         ) : (
-          <div className="space-y-3">
-            {events.map((event) => (
-              <div
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {events.map((event, index) => (
+              <motion.div
                 key={event.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
                 onClick={() => router.push(`/volunteer/events/${event.id}`)}
-                className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 hover:shadow-md hover:border-[hsl(var(--accent))]/50 transition-all cursor-pointer flex flex-col justify-between"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-black text-[#051B1D] leading-tight text-sm sm:text-base break-words">
+                <div>
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <h3 className="font-semibold text-[hsl(var(--text-primary))] leading-tight text-base break-words flex-1">
                       {event.title}
                     </h3>
-                    <p className="text-xs text-gray-700 font-bold mt-1 truncate">
-                      {new Date(event.date).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-end gap-1.5 shrink-0">
                     <span
-                      className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black ${statusColors[event.status] || "bg-gray-200 text-[#051B1D]"}`}
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${getStatusBadge(event.status)}`}
                     >
                       {event.status}
                     </span>
-                    <span className="text-[10px] sm:text-xs text-gray-800 font-bold">
+                  </div>
+
+                  <p className="text-xs text-[hsl(var(--text-tertiary))] mb-3">
+                    {new Date(event.date).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-[hsl(var(--border))] flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-[hsl(var(--text-secondary))]">
+                      {event.category}
+                    </span>
+                    <span className="text-xs text-[hsl(var(--text-tertiary))]">·</span>
+                    <span className="text-xs text-[hsl(var(--text-tertiary))]">
                       {event.sessions?.length ?? 0} session
                       {event.sessions?.length !== 1 ? "s" : ""}
                     </span>
                   </div>
-                </div>
-
-                <div className="mt-3 pt-3 border-t border-gray-400 flex items-center justify-between">
-                  <span className="text-xs text-gray-800 font-bold">
-                    {event.category}
-                  </span>
-                  <span className="text-xs font-bold text-[#00666B]">
+                  <span className="text-xs font-medium text-[hsl(var(--accent))]">
                     View details →
                   </span>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

@@ -5,7 +5,7 @@ const SESSION_COOKIE = "matrix-session"
 const roleRoutes: Record<string, string[]> = {
   "/admin": ["ADMIN"],
   "/volunteer": ["VOLUNTEER", "ADMIN"],
-  "/student": ["STUDENT", "ADMIN"],
+  "/student": ["STUDENT", "ADMIN", "FACULTY"],
 }
 
 export async function proxy(req: NextRequest) {

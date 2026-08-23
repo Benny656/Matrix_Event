@@ -30,7 +30,7 @@ export async function getAllUsersAction(lastDocId?: string) {
   }
 }
 
-export async function updateUserRoleAction(userId: string, role: "ADMIN" | "VOLUNTEER" | "STUDENT") {
+export async function updateUserRoleAction(userId: string, role: "ADMIN" | "VOLUNTEER" | "FACULTY" | "STUDENT") {
   const current = await getCurrentUser()
   if (!current || current.role !== "ADMIN") throw new Error("Unauthorized")
   await adminDb.collection("users").doc(userId).update({ role })
@@ -40,12 +40,41 @@ export async function searchUsersAction(query: string) {
   const current = await getCurrentUser()
   if (!current || current.role !== "ADMIN") throw new Error("Unauthorized")
 
-  // Search by rollNumber prefix
-  const snap = await adminDb.collection("users")
-    .where("rollNumber", ">=", query.toUpperCase())
-    .where("rollNumber", "<=", query.toUpperCase() + "\uf8ff")
-    .limit(10)
-    .get()
+  const clean = query.trim()
+  if (!clean) return []
 
-  return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  const upper = clean.toUpperCase()
+  const lower = clean.toLowerCase()
+
+  const [byRoll, byEmail, byName] = await Promise.all([
+    adminDb
+      .collection("users")
+      .where("rollNumber", ">=", upper)
+      .where("rollNumber", "<=", upper + "\uf8ff")
+      .limit(20)
+      .get(),
+    adminDb
+      .collection("users")
+      .where("email", ">=", lower)
+      .where("email", "<=", lower + "\uf8ff")
+      .limit(20)
+      .get(),
+    adminDb
+      .collection("users")
+      .where("name", ">=", clean)
+      .where("name", "<=", clean + "\uf8ff")
+      .limit(20)
+      .get(),
+  ])
+
+  const userMap = new Map<string, any>()
+  for (const snap of [byRoll, byEmail, byName]) {
+    for (const doc of snap.docs) {
+      if (!userMap.has(doc.id)) {
+        userMap.set(doc.id, { id: doc.id, ...doc.data() })
+      }
+    }
+  }
+
+  return Array.from(userMap.values())
 }

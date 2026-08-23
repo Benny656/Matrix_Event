@@ -1,76 +1,53 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  getAllUsersAction,
   updateUserRoleAction,
   searchUsersAction,
 } from "@/actions/user";
+import Header from "@/components/layout/header";
 
-const roleColors: Record<string, string> = {
-  ADMIN: "bg-[#73FFFF] text-[#051B1D]",
-  VOLUNTEER: "bg-[#39A8AD]/20 text-[#00666B]",
-  STUDENT: "bg-gray-200 text-[#051B1D]",
-};
+function getRoleBadge(role: string) {
+  switch (role) {
+    case "ADMIN":
+      return "bg-[hsl(var(--accent-subtle))] text-[hsl(var(--accent))]";
+    case "VOLUNTEER":
+      return "bg-blue-500/10 text-blue-600";
+    case "FACULTY":
+      return "bg-purple-500/10 text-purple-600";
+    case "STUDENT":
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-secondary))]";
+    default:
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-secondary))]";
+  }
+}
 
-const ROLES = ["STUDENT", "VOLUNTEER", "ADMIN"] as const;
+const ROLES = ["STUDENT", "VOLUNTEER", "FACULTY", "ADMIN"] as const;
 
 export default function AdminUsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
-  const [lastId, setLastId] = useState<string | null>(null);
-  const [hasMore, setHasMore] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
-  const [isSearchMode, setIsSearchMode] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [lastSearchedQuery, setLastSearchedQuery] = useState("");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  async function fetchUsers() {
-    try {
-      setLoading(true);
-      setIsSearchMode(false);
-      const res = await getAllUsersAction();
-      setUsers(res.users);
-      setLastId(res.lastId);
-      setHasMore(res.hasMore);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function loadMore() {
-    if (!lastId) return;
-    try {
-      setLoadingMore(true);
-      const res = await getAllUsersAction(lastId);
-      setUsers((prev) => [...prev, ...res.users]);
-      setLastId(res.lastId);
-      setHasMore(res.hasMore);
-    } finally {
-      setLoadingMore(false);
-    }
-  }
-
   async function handleSearch() {
-    if (!searchQuery.trim()) {
-      fetchUsers();
+    const query = searchQuery.trim();
+    if (!query) {
+      setUsers([]);
+      setHasSearched(false);
+      setLastSearchedQuery("");
       return;
     }
     try {
       setSearching(true);
-      setIsSearchMode(true);
-      const results = await searchUsersAction(searchQuery.trim());
+      setLastSearchedQuery(query);
+      const results = await searchUsersAction(query);
       setUsers(results);
-      setHasMore(false);
+      setHasSearched(true);
     } catch (e) {
       console.error(e);
     } finally {
@@ -78,9 +55,16 @@ export default function AdminUsersPage() {
     }
   }
 
+  function handleClear() {
+    setSearchQuery("");
+    setUsers([]);
+    setHasSearched(false);
+    setLastSearchedQuery("");
+  }
+
   async function handleRoleChange(
     userId: string,
-    role: "ADMIN" | "VOLUNTEER" | "STUDENT",
+    role: "ADMIN" | "VOLUNTEER" | "FACULTY" | "STUDENT",
   ) {
     try {
       setUpdatingId(userId);
@@ -96,122 +80,130 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-3xl mx-auto">
-        <button
-          onClick={() => router.push("/admin")}
-          className="mb-4 sm:mb-6 flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#00666B] hover:text-[#051B1D] transition-colors"
-        >
-          ← Dashboard
-        </button>
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="admin" />
 
-        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-6">Users</h1>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
+              Users Directory
+            </h1>
+            <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+              Search students, faculty, volunteers, and manage administrative roles
+            </p>
+          </div>
 
-        {/* Search */}
-        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Search by roll number..."
-              className="w-full sm:flex-1 border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
-            />
-            <div className="flex gap-2">
-              <button
-                onClick={handleSearch}
-                disabled={searching}
-                className="flex-1 sm:flex-initial bg-[#00666B] text-white border-2 border-black rounded-xl px-4 sm:px-5 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50"
-              >
-                {searching ? "..." : "Search"}
-              </button>
-              {isSearchMode && (
+          {/* Search Card */}
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 mb-6">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Search by roll number, name, or email..."
+                className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full sm:flex-1 placeholder:text-[hsl(var(--text-tertiary))]"
+              />
+              <div className="flex gap-2 shrink-0">
                 <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    fetchUsers();
-                  }}
-                  className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                  onClick={handleSearch}
+                  disabled={searching}
+                  className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 flex-1 sm:flex-initial"
                 >
-                  Clear
+                  {searching ? "Searching..." : "Search"}
                 </button>
-              )}
+                {(hasSearched || searchQuery) && (
+                  <button
+                    onClick={handleClear}
+                    className="bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Users List */}
-        {loading ? (
-          <div className="space-y-3">
-            {[...Array(6)].map((_, i) => (
-              <div
-                key={i}
-                className="h-20 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
-              />
-            ))}
-          </div>
-        ) : users.length === 0 ? (
-          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-            <p className="text-2xl mb-2">👤</p>
-            <p className="font-bold text-[#051B1D] text-sm sm:text-base">No users found</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {users.map((user) => (
-              <div
-                key={user.id}
-                className="bg-[#F5F7F8] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000]"
-              >
-                <div className="flex items-start justify-between gap-2 sm:gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-black text-[#051B1D] leading-tight text-sm sm:text-base truncate">
-                      {user.name}
-                    </p>
-                    <p className="text-xs text-gray-700 font-medium mt-0.5 truncate">
-                      {user.rollNumber} {user.department ? `· ${user.department}` : ""}
-                    </p>
-                    <p className="text-xs text-gray-700 font-medium break-all">{user.email}</p>
-                  </div>
-                  <span
-                    className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full shrink-0 border border-black ${roleColors[user.role] || "bg-gray-200 text-[#051B1D]"}`}
-                  >
-                    {user.role}
-                  </span>
-                </div>
-
-                {/* Role switcher */}
-                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-3 pt-2 border-t border-gray-400">
-                  {ROLES.map((role) => (
-                    <button
-                      key={role}
-                      onClick={() => handleRoleChange(user.id, role)}
-                      disabled={user.role === role || updatingId === user.id}
-                      className={`text-[10px] sm:text-xs font-bold px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg border-2 border-black transition-all disabled:opacity-40 ${
-                        user.role === role
-                          ? "text-[#00666B] bg-[#73FFFF] shadow-[1px_1px_0px_#000]"
-                          : "text-gray-800 bg-[#c8c8c8] hover:bg-[#00666B] hover:text-white"
-                      }`}
+          {/* Users Content */}
+          {searching ? (
+            <div className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+                />
+              ))}
+            </div>
+          ) : !hasSearched ? (
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+              <p className="text-3xl mb-2">🔍</p>
+              <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+                Search Users
+              </p>
+              <p className="text-sm text-[hsl(var(--text-secondary))] mt-1 max-w-md mx-auto">
+                Enter a roll number, name, or email to search and manage user roles across the platform.
+              </p>
+            </div>
+          ) : users.length === 0 ? (
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+              <p className="text-3xl mb-2">👤</p>
+              <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+                No users found matching &quot;{lastSearchedQuery}&quot;
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-[hsl(var(--text-tertiary))] mb-1">
+                Found {users.length} {users.length === 1 ? "user" : "users"}
+              </p>
+              {users.map((user) => (
+                <div
+                  key={user.id}
+                  className="glass rounded-2xl border border-[hsl(var(--border))] px-5 py-4"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-[hsl(var(--text-primary))] leading-tight text-sm sm:text-base truncate">
+                        {user.name}
+                      </p>
+                      <p className="text-xs text-[hsl(var(--text-tertiary))] mt-0.5 truncate">
+                        {user.rollNumber || "No Roll No."} {user.department ? `· ${user.department}` : ""}
+                      </p>
+                      <p className="text-xs text-[hsl(var(--text-secondary))] break-all mt-0.5">
+                        {user.email}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${getRoleBadge(user.role)}`}
                     >
-                      {updatingId === user.id && user.role !== role
-                        ? "..."
-                        : role}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ))}
+                      {user.role}
+                    </span>
+                  </div>
 
-            {hasMore && (
-              <button
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="w-full bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
-              >
-                {loadingMore ? "Loading..." : "Load more"}
-              </button>
-            )}
-          </div>
-        )}
+                  {/* Role switcher */}
+                  <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-[hsl(var(--border))]">
+                    {ROLES.map((role) => (
+                      <button
+                        key={role}
+                        onClick={() => handleRoleChange(user.id, role)}
+                        disabled={user.role === role || updatingId === user.id}
+                        className={`text-xs font-medium px-3 py-1 rounded-xl transition-all disabled:cursor-default ${
+                          user.role === role
+                            ? "bg-[hsl(var(--accent))] text-white"
+                            : "bg-[hsl(var(--surface))] text-[hsl(var(--text-secondary))] border border-[hsl(var(--border))] hover:bg-[hsl(var(--surface-2))]"
+                        }`}
+                      >
+                        {updatingId === user.id && user.role !== role
+                          ? "..."
+                          : role}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );

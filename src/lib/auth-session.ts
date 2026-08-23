@@ -21,13 +21,16 @@ export async function createSession(idToken: string) {
   const userSnap = await adminDb.collection("users").doc(decoded.uid).get()
   const user = userSnap.data()
 
+  const isFaculty = user?.email?.endsWith("@karunya.edu")
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
+  const role = isAdmin ? "ADMIN" : isFaculty ? "FACULTY" : user?.role
+  const onboardingCompleted = isAdmin ? true : isFaculty ? true : user?.onboardingCompleted
 
   const payload = {
     session: sessionCookie,
     uid: decoded.uid,
-    role: isAdmin ? "ADMIN" : user?.role,
-    onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
+    role,
+    onboardingCompleted,
   }
 
   const cookieStore = await cookies()
@@ -67,8 +70,12 @@ export async function getCurrentUser(): Promise<User | null> {
   const doc = await adminDb.collection("users").doc(session.uid).get()
   if (!doc.exists) return null
   const user = { id: doc.id, ...doc.data() } as User
+  const isFaculty = user.email?.endsWith("@karunya.edu")
   if (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())) {
     user.role = "ADMIN"
+    user.onboardingCompleted = true
+  } else if (isFaculty) {
+    user.role = "FACULTY"
     user.onboardingCompleted = true
   }
   return user
@@ -83,12 +90,13 @@ export async function refreshSession() {
   if (!payload) return
   const userSnap = await adminDb.collection("users").doc(payload.uid).get()
   const user = userSnap.data()
+  const isFaculty = user?.email?.endsWith("@karunya.edu")
   const isAdmin = user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim())
 
   const newPayload = {
     ...payload,
-    role: isAdmin ? "ADMIN" : user?.role,
-    onboardingCompleted: isAdmin ? true : user?.onboardingCompleted,
+    role: isAdmin ? "ADMIN" : isFaculty ? "FACULTY" : user?.role,
+    onboardingCompleted: isAdmin ? true : isFaculty ? true : user?.onboardingCompleted,
   }
 
   const cookieStore = await cookies()

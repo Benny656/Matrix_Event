@@ -3,6 +3,7 @@
 import { adminDb } from "@/lib/firebase-admin"
 import { getCurrentUser } from "@/lib/auth-session"
 import { FieldValue } from "firebase-admin/firestore"
+import { buildFacultyEligibilityTokens } from "@/lib/eligibility"
 import type { Event, Registration, Attendance } from "@/types"
 
 const PAGE_SIZE = 10
@@ -23,7 +24,9 @@ export async function getStudentEventsAction(lastDocId?: string) {
   const user = await getCurrentUser()
   if (!user) throw new Error("Unauthorized")
 
-  const tokens = buildEligibilityTokens(user)
+  const tokens = user.role === "FACULTY"
+    ? buildFacultyEligibilityTokens()
+    : buildEligibilityTokens(user)
 
   let q = adminDb.collection("events")
     .where("status", "!=", "ARCHIVED")

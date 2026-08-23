@@ -8,7 +8,7 @@ export interface User {
   programType: string | null
   degree: string | null
   yearOfStudy: string | null
-  role: "STUDENT" | "VOLUNTEER" | "ADMIN"
+  role: "STUDENT" | "VOLUNTEER" | "FACULTY" | "ADMIN"
   onboardingCompleted: boolean
   createdAt: string
   updatedAt: string | null

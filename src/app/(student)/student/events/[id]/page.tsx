@@ -8,7 +8,14 @@ import {
   getStudentEventAttendanceAction,
   registerForEventAction,
 } from "@/actions/event";
+import Header from "@/components/layout/header";
 import type { Event, Registration, Attendance } from "@/types";
+
+const statusColors: Record<string, string> = {
+  UPCOMING: "bg-blue-500/10 text-blue-600",
+  ONGOING: "bg-emerald-500/10 text-emerald-600",
+  COMPLETED: "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]",
+};
 
 function WhatsAppIcon({ className = "w-5 h-5" }: { className?: string }) {
   return (
@@ -112,10 +119,11 @@ export default function EventDetailPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <div className="h-8 w-32 bg-gray-400 rounded-xl animate-pulse" />
-          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 h-64 animate-pulse" />
+      <main className="min-h-screen bg-[hsl(var(--background))]">
+        <Header role="student" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-4">
+          <div className="h-8 w-48 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+          <div className="bg-[hsl(var(--surface-2))] rounded-2xl h-64 animate-pulse" />
         </div>
       </main>
     );
@@ -123,8 +131,11 @@ export default function EventDetailPage() {
 
   if (!event) {
     return (
-      <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center p-4">
-        <p className="font-bold text-[#051B1D]">Event not found</p>
+      <main className="min-h-screen bg-[hsl(var(--background))]">
+        <Header role="student" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-16 text-center">
+          <p className="font-semibold text-lg text-[hsl(var(--text-primary))]">Event not found</p>
+        </div>
       </main>
     );
   }
@@ -134,66 +145,46 @@ export default function EventDetailPage() {
   const isCancelled = registration?.status === "CANCELLED" || !registration;
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Top Navigation */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            <button
-              onClick={() => router.push("/student")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              ← Dashboard
-            </button>
-            <button
-              onClick={() => router.push("/student/events")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              All Events
-            </button>
-            <button
-              onClick={() => router.push("/student/registrations")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              My Registrations
-            </button>
-          </div>
-        </div>
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="student" />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {error && (
-          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-xl px-4 py-3 break-words">
             {error}
           </div>
         )}
 
         {success && (
-          <div className="mb-4 bg-green-100 border-2 border-green-600 rounded-xl px-4 py-3 text-green-800 text-xs sm:text-sm font-bold break-words">
+          <div className="mb-6 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm rounded-xl px-4 py-3 break-words">
             {success}
           </div>
         )}
 
-        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-4">
+        <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 mb-6">
           <div className="flex items-start justify-between gap-2 mb-4">
-            <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-[#73FFFF] text-[#051B1D] border border-black">
+            <span
+              className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[event.status] || "bg-blue-500/10 text-blue-600"}`}
+            >
               {event.status}
             </span>
-            <span className="text-xs text-gray-800 font-bold truncate">
+            <span className="text-xs font-medium text-[hsl(var(--text-tertiary))] truncate">
               {event.category}
             </span>
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-black text-[#051B1D] mb-2 leading-tight break-words">
+          <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] mb-2 leading-tight break-words">
             {event.title}
           </h1>
-          <p className="text-gray-800 text-xs sm:text-sm leading-relaxed mb-6 break-words font-medium">
+          <p className="text-sm text-[hsl(var(--text-secondary))] leading-relaxed mb-6 break-words">
             {event.description}
           </p>
 
-          <div className="bg-[#c8c8c8] border-2 border-black rounded-xl p-2.5 sm:p-3 mb-6">
-            <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">
+          <div className="bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))] mb-6">
+            <p className="text-xs text-[hsl(var(--text-tertiary))] font-medium truncate">
               Date
             </p>
-            <p className="text-xs sm:text-sm font-black text-[#051B1D] truncate">
+            <p className="text-sm font-semibold text-[hsl(var(--text-primary))] mt-0.5 truncate">
               {new Date(event.date).toLocaleDateString("en-IN", {
                 day: "numeric",
                 month: "long",
@@ -205,7 +196,7 @@ export default function EventDetailPage() {
           {/* Sessions if configured */}
           {event.sessions && event.sessions.length > 0 && (
             <div className="mb-6">
-              <h3 className="font-black text-[#051B1D] text-sm sm:text-base mb-3">
+              <h3 className="font-semibold text-[hsl(var(--text-primary))] text-base mb-3">
                 Sessions
               </h3>
               <div className="space-y-2">
@@ -214,13 +205,13 @@ export default function EventDetailPage() {
                   return (
                     <div
                       key={s.id}
-                      className="flex items-center justify-between bg-[#c8c8c8] border-2 border-black rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 gap-2"
+                      className="flex items-center justify-between bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))] gap-2"
                     >
                       <div className="min-w-0">
-                        <span className="text-xs sm:text-sm font-bold text-[#051B1D] truncate block">
+                        <span className="text-sm font-semibold text-[hsl(var(--text-primary))] truncate block">
                           {s.title}
                         </span>
-                        <span className="text-[10px] sm:text-xs font-bold text-gray-700">
+                        <span className="text-xs text-[hsl(var(--text-tertiary))] font-medium">
                           {s.startTime}
                         </span>
                       </div>
@@ -228,16 +219,16 @@ export default function EventDetailPage() {
                       {/* Present / Absent Badge for registered students */}
                       {isRegistered ? (
                         isPresent ? (
-                          <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black bg-[#25D366] text-white border-2 border-black shrink-0 shadow-[1px_1px_0px_#000]">
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-600 shrink-0">
                             Present
                           </span>
                         ) : (
-                          <span className="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black bg-red-100 text-red-700 border-2 border-black shrink-0 shadow-[1px_1px_0px_#000]">
+                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-500 shrink-0">
                             Absent
                           </span>
                         )
                       ) : (
-                        <span className="text-xs font-bold text-gray-700 shrink-0">
+                        <span className="text-xs text-[hsl(var(--text-tertiary))] font-medium shrink-0">
                           {s.startTime}
                         </span>
                       )}
@@ -250,7 +241,7 @@ export default function EventDetailPage() {
 
           {/* WhatsApp Badge for registered students in cartoonish neo-brutalist style */}
           {isRegistered && event.whatsappInviteLink && (
-            <div className="mb-4 bg-[#25D366]/20 border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]">
+            <div className="mb-6 bg-[#25D366]/20 border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000]">
               <a
                 href={event.whatsappInviteLink}
                 target="_blank"
@@ -280,26 +271,26 @@ export default function EventDetailPage() {
             <button
               onClick={handleInitiateRegister}
               disabled={actionLoading}
-              className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 cursor-pointer"
+              className="w-full bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
             >
               Register Now
             </button>
           )}
 
           {isWaitlisted && (
-            <div className="bg-yellow-100 border-2 border-yellow-600 rounded-xl px-4 py-3 text-yellow-900 text-xs sm:text-sm font-bold text-center">
+            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 text-sm font-medium rounded-xl px-4 py-3 text-center">
               You are on the waitlist
             </div>
           )}
 
           {isRegistered && (
-            <div className="bg-green-100 border-2 border-green-600 rounded-xl px-4 py-3 text-green-900 text-xs sm:text-sm font-bold text-center">
+            <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm font-medium rounded-xl px-4 py-3 text-center">
               ✓ You are registered
             </div>
           )}
 
           {!event.registrationOpen && isCancelled && (
-            <div className="bg-gray-200 border-2 border-gray-500 rounded-xl px-4 py-3 text-gray-800 text-xs sm:text-sm font-bold text-center">
+            <div className="bg-[hsl(var(--surface-2))] border border-[hsl(var(--border))] text-[hsl(var(--text-secondary))] text-sm font-medium rounded-xl px-4 py-3 text-center">
               Registration is currently closed
             </div>
           )}

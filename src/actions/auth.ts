@@ -24,14 +24,14 @@ export async function syncGoogleUserAction(
   const snap = await ref.get()
 
   const isAdmin = ADMIN_EMAILS.includes(normalizedEmail)
+  const isFaculty = normalizedEmail.endsWith("@karunya.edu")
+  const isStudent = normalizedEmail.endsWith("@karunya.edu.in")
+
+  if (!isAdmin && !isFaculty && !isStudent) {
+    throw new Error("Use your Karunya college email to sign in")
+  }
 
   if (!snap.exists) {
-    const isStudent = normalizedEmail.endsWith("@karunya.edu.in")
-
-    if (!isAdmin && !isStudent) {
-      throw new Error("Use your Karunya student email (@karunya.edu.in) to sign in")
-    }
-
     await ref.set({
       id: uid,
       name,
@@ -42,8 +42,8 @@ export async function syncGoogleUserAction(
       programType: null,
       degree: null,
       yearOfStudy: null,
-      role: isAdmin ? "ADMIN" : "STUDENT",
-      onboardingCompleted: isAdmin,
+      role: isAdmin ? "ADMIN" : isFaculty ? "FACULTY" : "STUDENT",
+      onboardingCompleted: isAdmin || isFaculty ? true : false,
       createdAt: new Date().toISOString(),
       updatedAt: null,
     })
@@ -56,10 +56,19 @@ export async function syncGoogleUserAction(
         updatedAt: new Date().toISOString(),
       })
     }
+  } else if (isFaculty) {
+    const data = snap.data()
+    if (data?.role !== "FACULTY" || !data?.onboardingCompleted) {
+      await ref.update({
+        role: "FACULTY",
+        onboardingCompleted: true,
+        updatedAt: new Date().toISOString(),
+      })
+    }
   }
 
   await adminAuth.setCustomUserClaims(uid, {
-    role: isAdmin ? "ADMIN" : snap.exists ? snap.data()?.role : "STUDENT"
+    role: isAdmin ? "ADMIN" : isFaculty ? "FACULTY" : snap.exists ? snap.data()?.role : "STUDENT"
   })
 
   await createSession(idToken)

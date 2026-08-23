@@ -11,14 +11,26 @@ import {
 import { getEventByIdAction } from "@/actions/event";
 import { v4 as uuidv4 } from "uuid";
 import type { Event } from "@/types";
+import Header from "@/components/layout/header";
 
 type Tab = "registrations" | "attendance" | "sessions" | "settings";
 
-const statusColors: Record<string, string> = {
-  REGISTERED: "bg-[#73FFFF] text-[#051B1D]",
-  WAITLISTED: "bg-yellow-200 text-yellow-900",
-  CANCELLED: "bg-red-200 text-red-700",
-};
+function getStatusBadge(status: string) {
+  switch (status) {
+    case "ONGOING":
+    case "REGISTERED":
+      return "bg-emerald-500/10 text-emerald-600";
+    case "UPCOMING":
+    case "WAITLISTED":
+      return "bg-amber-500/10 text-amber-600";
+    case "CANCELLED":
+      return "bg-red-500/10 text-red-500";
+    case "COMPLETED":
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]";
+    default:
+      return "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]";
+  }
+}
 
 export default function AdminEventDetailPage() {
   const router = useRouter();
@@ -243,410 +255,398 @@ export default function AdminEventDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-3xl mx-auto">
-        {/* Top Navigation */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => router.push("/admin")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              ← Dashboard
-            </button>
-            <button
-              onClick={() => router.push("/admin/events")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              All Events
-            </button>
-          </div>
-        </div>
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="admin" />
 
-        {/* Header with Title & Quick Registration Toggle */}
-        <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <span className="text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full bg-[#73FFFF] text-[#051B1D] border border-black inline-block mb-2">
-                {event?.category || "Event"}
-              </span>
-              <h1 className="text-xl sm:text-2xl font-black text-[#051B1D] truncate">
-                {event?.title || "Event Detail"}
-              </h1>
-              <p className="text-xs text-gray-700 font-medium mt-1">
-                {event?.date
-                  ? new Date(event.date).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })
-                  : ""}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleToggleRegistration}
-                disabled={togglingReg || loadingEvent}
-                className={`border-2 border-black rounded-xl px-4 py-2.5 font-black text-xs sm:text-sm shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 ${
-                  event?.registrationOpen
-                    ? "bg-green-600 text-white"
-                    : "bg-red-600 text-white"
-                }`}
-              >
-                {togglingReg
-                  ? "Updating..."
-                  : event?.registrationOpen
-                  ? "✓ Registration: OPEN"
-                  : "✕ Registration: CLOSED"}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6 border-b-2 border-black pb-3">
-          {(["registrations", "attendance", "sessions", "settings"] as Tab[]).map(
-            (t) => (
-              <button
-                key={t}
-                onClick={() => handleTabChange(t)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-bold text-xs sm:text-sm border-2 border-black transition-all capitalize ${
-                  tab === t
-                    ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000]"
-                    : "bg-[#F5F7F8] text-[#051B1D] hover:bg-[#c4c4c4]"
-                }`}
-              >
-                {t}
-              </button>
-            ),
-          )}
-        </div>
-
-        {/* ── Registrations Tab ── */}
-        {tab === "registrations" && (
-          <div>
-            <p className="text-xs sm:text-sm text-gray-700 font-bold mb-4">
-              {registrations.length} loaded
-            </p>
-            {loadingReg ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-16 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : registrations.length === 0 ? (
-              <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-                <p className="text-2xl mb-2">📋</p>
-                <p className="font-bold text-[#051B1D] text-sm sm:text-base">
-                  No registrations yet
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header with Title & Quick Registration Toggle */}
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-[hsl(var(--accent-subtle))] text-[hsl(var(--accent))] inline-block mb-2">
+                  {event?.category || "Event"}
+                </span>
+                <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] leading-tight break-words">
+                  {event?.title || "Event Detail"}
+                </h1>
+                <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+                  {event?.date
+                    ? new Date(event.date).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })
+                    : ""}
                 </p>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {registrations.map((reg) => (
-                  <div
-                    key={reg.id}
-                    className="bg-[#F5F7F8] border-2 border-black rounded-2xl px-4 sm:px-5 py-3 sm:py-4 shadow-[3px_3px_0px_#000] flex items-center justify-between gap-2 sm:gap-3"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="font-black text-[#051B1D] text-sm sm:text-base truncate">
-                        {reg.studentName}
-                      </p>
-                      <p className="text-xs text-gray-700 truncate font-medium">
-                        {reg.rollNumber} {reg.department ? `· ${reg.department}` : ""}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleToggleRegistration}
+                  disabled={togglingReg || loadingEvent}
+                  className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all disabled:opacity-50 ${
+                    event?.registrationOpen
+                      ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-emerald-500/20"
+                      : "bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20"
+                  }`}
+                >
+                  {togglingReg
+                    ? "Updating..."
+                    : event?.registrationOpen
+                    ? "✓ Registration: OPEN"
+                    : "✕ Registration: CLOSED"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs */}
+          <div className="border-b border-[hsl(var(--border))] mb-6 flex gap-2 overflow-x-auto">
+            {(["registrations", "attendance", "sessions", "settings"] as Tab[]).map(
+              (t) => (
+                <button
+                  key={t}
+                  onClick={() => handleTabChange(t)}
+                  className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-all capitalize whitespace-nowrap ${
+                    tab === t
+                      ? "border-[hsl(var(--accent))] text-[hsl(var(--accent))]"
+                      : "border-transparent text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                  }`}
+                >
+                  {t}
+                </button>
+              ),
+            )}
+          </div>
+
+          {/* ── Registrations Tab ── */}
+          {tab === "registrations" && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">
+                  {registrations.length} registered students loaded
+                </p>
+              </div>
+
+              {loadingReg ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-16 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : registrations.length === 0 ? (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+                  <p className="text-3xl mb-2">📋</p>
+                  <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+                    No registrations yet
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {registrations.map((reg) => (
+                    <div
+                      key={reg.id}
+                      className="glass rounded-xl border border-[hsl(var(--border))] px-4 py-3 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-[hsl(var(--text-primary))] text-sm truncate">
+                          {reg.studentName}
+                        </p>
+                        <p className="text-xs text-[hsl(var(--text-tertiary))] truncate mt-0.5">
+                          {reg.rollNumber} {reg.department ? `· ${reg.department}` : ""}
+                        </p>
+                      </div>
                       <span
-                        className={`text-[10px] sm:text-xs font-bold px-2.5 py-1 rounded-full border border-black ${statusColors[reg.status] || "bg-gray-200 text-[#051B1D]"}`}
+                        className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${getStatusBadge(reg.status)}`}
                       >
                         {reg.status}
                       </span>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
-                {regHasMore && (
-                  <button
-                    onClick={loadMoreRegistrations}
-                    disabled={loadingMoreReg}
-                    className="w-full bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-2xl py-3 sm:py-4 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
-                  >
-                    {loadingMoreReg ? "Loading..." : "Load more"}
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Attendance Tab ── */}
-        {tab === "attendance" && (
-          <div>
-            {loadingAtt ? (
-              <div className="space-y-3">
-                {[...Array(5)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="h-14 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse"
-                  />
-                ))}
-              </div>
-            ) : (
-              <>
-                <div className="flex items-center justify-between mb-4 gap-2">
-                  <p className="text-xs sm:text-sm text-gray-700 font-bold">
-                    {attendance.length} records
-                  </p>
-                  {attendance.length > 0 && (
+                  {regHasMore && (
                     <button
-                      onClick={exportCSV}
-                      className="bg-[#00666B] text-white border-2 border-black rounded-xl px-3 sm:px-4 py-1.5 sm:py-2 font-bold text-xs sm:text-sm shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all"
+                      onClick={loadMoreRegistrations}
+                      disabled={loadingMoreReg}
+                      className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] text-sm font-medium w-full py-3 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all mt-4 disabled:opacity-50"
                     >
-                      Export CSV
+                      {loadingMoreReg ? "Loading..." : "Load more"}
                     </button>
                   )}
                 </div>
-                {attendance.length === 0 ? (
-                  <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 sm:p-8 text-center shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-                    <p className="text-2xl mb-2">📊</p>
-                    <p className="font-bold text-[#051B1D] text-sm sm:text-base">
-                      No attendance recorded yet
+              )}
+            </div>
+          )}
+
+          {/* ── Attendance Tab ── */}
+          {tab === "attendance" && (
+            <div>
+              {loadingAtt ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="h-14 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+                    />
+                  ))}
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-4 gap-2">
+                    <p className="text-sm font-medium text-[hsl(var(--text-secondary))]">
+                      {attendance.length} check-in records
+                    </p>
+                    {attendance.length > 0 && (
+                      <button
+                        onClick={exportCSV}
+                        className="bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] text-sm font-medium px-4 py-2 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all"
+                      >
+                        Export CSV
+                      </button>
+                    )}
+                  </div>
+
+                  {attendance.length === 0 ? (
+                    <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+                      <p className="text-3xl mb-2">📊</p>
+                      <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+                        No attendance recorded yet
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {attendance.map((a) => (
+                        <div
+                          key={a.id}
+                          className="glass rounded-xl border border-[hsl(var(--border))] px-4 py-3 flex items-center justify-between gap-3"
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-[hsl(var(--text-primary))] truncate">
+                              {a.studentName}
+                            </p>
+                            <p className="text-xs text-[hsl(var(--text-tertiary))] truncate mt-0.5">
+                              {a.rollNumber} {a.department ? `· ${a.department}` : ""}
+                            </p>
+                          </div>
+                          <div className="text-right shrink-0">
+                            <p className="text-xs font-medium text-[hsl(var(--text-secondary))]">
+                              {a.method}
+                            </p>
+                            <p className="text-xs text-[hsl(var(--text-tertiary))] mt-0.5">
+                              {new Date(a.timestamp).toLocaleTimeString("en-IN", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* ── Sessions Tab ── */}
+          {tab === "sessions" && (
+            <div className="space-y-4">
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))]">
+                      Manage Sessions
+                    </h2>
+                    <p className="text-xs text-[hsl(var(--text-secondary))] mt-0.5">
+                      Add, edit, or remove sessions for this event at any time.
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={addSession}
+                    className="text-xs font-medium text-[hsl(var(--accent))] border border-[hsl(var(--accent))] rounded-xl px-3 py-1.5 hover:bg-[hsl(var(--accent))] hover:text-white transition-all shrink-0"
+                  >
+                    + Add Session
+                  </button>
+                </div>
+
+                {sessionMsg && (
+                  <div className="mb-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-2.5 text-emerald-600 text-sm font-medium">
+                    {sessionMsg}
+                  </div>
+                )}
+
+                {sessions.length === 0 ? (
+                  <div className="border border-dashed border-[hsl(var(--border-2))] rounded-xl p-6 text-center">
+                    <p className="text-sm text-[hsl(var(--text-secondary))] mb-3">
+                      No sessions created yet for this event.
+                    </p>
+                    <button
+                      onClick={addSession}
+                      className="bg-[hsl(var(--accent))] text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all"
+                    >
+                      + Create First Session
+                    </button>
+                  </div>
                 ) : (
-                  <div className="space-y-2">
-                    {attendance.map((a) => (
+                  <div className="space-y-3 mb-4">
+                    {sessions.map((session, index) => (
                       <div
-                        key={a.id}
-                        className="bg-[#F5F7F8] border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 shadow-[2px_2px_0px_#000] flex items-center justify-between gap-2"
+                        key={session.id}
+                        className="bg-[hsl(var(--surface))] rounded-xl border border-[hsl(var(--border))] p-4"
                       >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold text-[#051B1D] truncate">
-                            {a.studentName}
+                        <div className="flex items-center justify-between mb-3">
+                          <p className="text-xs font-medium text-[hsl(var(--text-tertiary))] uppercase tracking-wide">
+                            Session {index + 1}
                           </p>
-                          <p className="text-xs text-gray-700 truncate font-medium">
-                            {a.rollNumber} {a.department ? `· ${a.department}` : ""}
-                          </p>
+                          <button
+                            type="button"
+                            onClick={() => removeSession(session.id)}
+                            className="text-xs text-red-500 hover:underline font-medium"
+                          >
+                            Remove
+                          </button>
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-[10px] sm:text-xs font-bold text-gray-800">
-                            {a.method}
-                          </p>
-                          <p className="text-[10px] sm:text-xs text-gray-700">
-                            {new Date(a.timestamp).toLocaleTimeString("en-IN", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                              Session Title
+                            </label>
+                            <input
+                              value={session.title}
+                              onChange={(e) =>
+                                updateSessionField(session.id, "title", e.target.value)
+                              }
+                              placeholder="e.g. Workshop Track 1"
+                              className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full placeholder:text-[hsl(var(--text-tertiary))]"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                              Start Time
+                            </label>
+                            <input
+                              type="time"
+                              value={session.startTime}
+                              onChange={(e) =>
+                                updateSessionField(
+                                  session.id,
+                                  "startTime",
+                                  e.target.value,
+                                )
+                              }
+                              className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full"
+                            />
+                          </div>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
-              </>
-            )}
-          </div>
-        )}
 
-        {/* ── Sessions Tab ── */}
-        {tab === "sessions" && (
-          <div className="space-y-4">
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h2 className="font-black text-[#051B1D] text-base sm:text-lg">
-                    Manage Sessions
-                  </h2>
-                  <p className="text-xs text-gray-700">
-                    Add, edit, or remove sessions for this event at any time.
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  onClick={addSession}
-                  className="text-xs sm:text-sm font-bold text-[#00666B] border-2 border-[#00666B] rounded-xl px-3 py-1.5 hover:bg-[#00666B] hover:text-white transition-all shrink-0"
-                >
-                  + Add Session
-                </button>
-              </div>
-
-              {sessionMsg && (
-                <div className="mb-4 bg-green-100 border-2 border-green-600 rounded-xl px-4 py-2 text-green-800 text-xs sm:text-sm font-bold">
-                  {sessionMsg}
-                </div>
-              )}
-
-              {sessions.length === 0 ? (
-                <div className="border-2 border-dashed border-gray-600 rounded-xl p-6 text-center">
-                  <p className="text-xs sm:text-sm text-gray-700 font-bold mb-2">
-                    No sessions created yet for this event.
-                  </p>
+                {sessions.length > 0 && (
                   <button
-                    onClick={addSession}
-                    className="bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-2 font-bold text-xs shadow-[2px_2px_0px_#000]"
+                    onClick={handleSaveSessions}
+                    disabled={savingSessions}
+                    className="w-full bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
                   >
-                    + Create First Session
+                    {savingSessions ? "Saving Sessions..." : "Save Sessions"}
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── Settings Tab ── */}
+          {tab === "settings" && (
+            <div className="space-y-4">
+              {/* WhatsApp Link Configuration */}
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 bg-[#25D366] text-white rounded-lg inline-flex items-center justify-center">
+                    <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                  </span>
+                  <h3 className="font-semibold text-[hsl(var(--text-primary))] text-base sm:text-lg">
+                    WhatsApp Group / Community Link
+                  </h3>
+                </div>
+                <p className="text-xs text-[hsl(var(--text-secondary))]">
+                  Students will be prompted to join this WhatsApp group right after registering.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 pt-1">
+                  <input
+                    value={whatsappLink}
+                    onChange={(e) => setWhatsappLink(e.target.value)}
+                    placeholder="https://chat.whatsapp.com/..."
+                    className="flex-1 bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all placeholder:text-[hsl(var(--text-tertiary))]"
+                  />
+                  <button
+                    onClick={handleSaveWhatsapp}
+                    disabled={savingWhatsapp}
+                    className="bg-[#25D366] hover:bg-[#128C7E] text-white rounded-xl px-4 py-2.5 text-sm font-semibold transition-all disabled:opacity-50 shrink-0 flex items-center justify-center gap-1.5"
+                  >
+                    <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+                    </svg>
+                    <span>{savingWhatsapp ? "Saving..." : "Update WhatsApp Link"}</span>
                   </button>
                 </div>
-              ) : (
-                <div className="space-y-3 mb-4">
-                  {sessions.map((session, index) => (
-                    <div
-                      key={session.id}
-                      className="border-2 border-black rounded-xl p-3 sm:p-4 bg-[#c8c8c8]"
+              </div>
+
+              {/* Event Status Update */}
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
+                <h3 className="font-semibold text-[hsl(var(--text-primary))] text-base sm:text-lg mb-3">
+                  Update Status
+                </h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => handleStatusUpdate(s)}
+                      disabled={statusUpdating}
+                      className={`rounded-xl py-2.5 text-sm transition-all disabled:opacity-50 text-center ${
+                        event?.status === s
+                          ? "bg-[hsl(var(--accent))] text-white font-semibold"
+                          : "bg-[hsl(var(--surface))] text-[hsl(var(--text-secondary))] border border-[hsl(var(--border))] font-medium hover:bg-[hsl(var(--surface-2))]"
+                      }`}
                     >
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-[10px] sm:text-xs font-black text-gray-800 uppercase tracking-widest">
-                          Session {index + 1}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => removeSession(session.id)}
-                          className="text-xs text-red-600 font-bold hover:underline"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-                        <div>
-                          <label className="text-[10px] sm:text-xs font-bold text-[#051B1D] block mb-1">
-                            Session Title
-                          </label>
-                          <input
-                            value={session.title}
-                            onChange={(e) =>
-                              updateSessionField(session.id, "title", e.target.value)
-                            }
-                            placeholder="e.g. Workshop Track 1"
-                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] sm:text-xs font-bold text-[#051B1D] block mb-1">
-                            Start Time
-                          </label>
-                          <input
-                            type="time"
-                            value={session.startTime}
-                            onChange={(e) =>
-                              updateSessionField(
-                                session.id,
-                                "startTime",
-                                e.target.value,
-                              )
-                            }
-                            className="w-full border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
-                          />
-                        </div>
-                      </div>
-                    </div>
+                      {s}
+                    </button>
                   ))}
                 </div>
-              )}
+                {eventStatus && (
+                  <p className="text-xs text-[hsl(var(--accent))] font-medium mt-3">
+                    Status updated to {eventStatus}
+                  </p>
+                )}
+              </div>
 
-              {sessions.length > 0 && (
-                <button
-                  onClick={handleSaveSessions}
-                  disabled={savingSessions}
-                  className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl py-3 font-black text-sm shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50"
-                >
-                  {savingSessions ? "Saving Sessions..." : "Save Sessions"}
-                </button>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* ── Settings Tab ── */}
-        {tab === "settings" && (
-          <div className="space-y-4">
-            {/* WhatsApp Link Configuration */}
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="p-1.5 bg-[#25D366] text-white rounded-lg inline-flex items-center justify-center border border-black shadow-[1px_1px_0px_#000]">
-                  <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                  </svg>
-                </span>
-                <h3 className="font-black text-[#051B1D] text-base sm:text-lg">
-                  WhatsApp Group / Community Link
+              {/* Danger Zone */}
+              <div className="glass rounded-2xl border border-red-500/20 p-6">
+                <h3 className="font-semibold text-red-500 text-base mb-2">
+                  Danger Zone
                 </h3>
-              </div>
-              <p className="text-xs text-gray-700 mb-3 font-medium">
-                Students will be prompted to join this WhatsApp group right after registering.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  value={whatsappLink}
-                  onChange={(e) => setWhatsappLink(e.target.value)}
-                  placeholder="https://chat.whatsapp.com/..."
-                  className="flex-1 border-2 border-black rounded-xl px-3 py-2 text-sm font-medium focus:outline-none focus:border-[#25D366] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
-                />
+                <p className="text-xs text-[hsl(var(--text-secondary))] mb-4">
+                  Deleting an event is permanent. Registrations and attendance
+                  records are not automatically removed.
+                </p>
                 <button
-                  onClick={handleSaveWhatsapp}
-                  disabled={savingWhatsapp}
-                  className="bg-[#25D366] hover:bg-[#128C7E] text-white border-2 border-black rounded-xl px-4 py-2 font-black text-xs sm:text-sm shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] transition-all disabled:opacity-50 shrink-0 flex items-center justify-center gap-1.5"
+                  onClick={handleDelete}
+                  disabled={deleting}
+                  className="bg-red-500 text-white rounded-xl px-4 py-2.5 text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 w-full sm:w-auto"
                 >
-                  <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
-                  </svg>
-                  {savingWhatsapp ? "Saving..." : "Update WhatsApp Link"}
+                  {deleting ? "Deleting..." : "Delete Event"}
                 </button>
               </div>
             </div>
-
-            {/* Event Status Update */}
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-              <h3 className="font-black text-[#051B1D] text-base sm:text-lg mb-3 sm:mb-4">
-                Update Status
-              </h3>
-              <div className="grid grid-cols-2 gap-2">
-                {["UPCOMING", "ONGOING", "COMPLETED", "CANCELLED"].map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => handleStatusUpdate(s)}
-                    disabled={statusUpdating}
-                    className={`border-2 border-black rounded-xl px-2 sm:px-4 py-2.5 sm:py-3 font-bold text-xs sm:text-sm transition-all disabled:opacity-50 text-center ${
-                      event?.status === s
-                        ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000]"
-                        : "bg-[#F5F7F8] text-[#051B1D] hover:bg-[#00666B] hover:text-white"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-              {eventStatus && (
-                <p className="text-xs text-[#00666B] font-bold mt-3">
-                  Status updated to {eventStatus}
-                </p>
-              )}
-            </div>
-
-            {/* Danger Zone */}
-            <div className="bg-[#F5F7F8] border-2 border-red-500 rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#ef4444] sm:shadow-[4px_4px_0px_#ef4444]">
-              <h3 className="font-black text-red-700 text-base sm:text-lg mb-2">
-                Danger Zone
-              </h3>
-              <p className="text-xs text-gray-800 mb-4 font-medium">
-                Deleting an event is permanent. Registrations and attendance
-                records are not automatically removed.
-              </p>
-              <button
-                onClick={handleDelete}
-                disabled={deleting}
-                className="w-full bg-red-600 text-white border-2 border-black rounded-xl px-4 py-3 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
-              >
-                {deleting ? "Deleting..." : "Delete Event"}
-              </button>
-            </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   );

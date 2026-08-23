@@ -9,6 +9,7 @@ import {
   submitBatchAttendanceAction,
 } from "@/actions/attendance";
 import type { RegisteredStudent } from "@/types";
+import Header from "@/components/layout/header";
 
 type ActiveTab = "SCANNER" | "MANUAL";
 type ScannedEntry = RegisteredStudent & { method: "SCANNED" | "MANUAL" };
@@ -58,7 +59,7 @@ function normalizeRoll(raw: string): string {
     .replace(/\]$/, "")
     .replace(/\[$/, "")
     .trim()
-    .toUpperCase()
+    .toUpperCase();
 }
 
 function AttendanceScannerContent() {
@@ -404,289 +405,295 @@ function AttendanceScannerContent() {
     : [];
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Top Navigation */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => router.push("/volunteer")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              ← Dashboard
-            </button>
-            <button
-              onClick={() => router.push("/volunteer/events")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              Events
-            </button>
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="volunteer" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-2xl mx-auto">
+          {/* Header info */}
+          <div className="mb-6">
+            <span className="text-xs font-medium text-[hsl(var(--accent))] uppercase tracking-widest block mb-1">
+              Scanner Terminal
+            </span>
+            <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
+              Attendance Terminal
+            </h1>
+            <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+              Select an event and session to begin verification
+            </p>
           </div>
-        </div>
 
-        <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D] mb-4 sm:mb-6">
-          Attendance Terminal
-        </h1>
-
-        {error && (
-          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold break-words">
-            {error}
-          </div>
-        )}
-
-        {!studentsLoaded ? (
-          <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-6 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] space-y-4">
-            <div>
-              <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
-                Select Event
-              </label>
-              <select
-                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
-                value={selectedEventId}
-                onChange={(e) => {
-                  setSelectedEventId(e.target.value);
-                  setSelectedSessionId("");
-                }}
-              >
-                <option value="" className="text-[#051B1D]">Choose event...</option>
-                {events.map((e) => (
-                  <option key={e.id} value={e.id} className="text-[#051B1D]">
-                    {e.title}
-                  </option>
-                ))}
-              </select>
+          {error && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-xl px-4 py-3 break-words">
+              {error}
             </div>
+          )}
 
-            {sessions.length > 0 && (
+          {!studentsLoaded ? (
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 space-y-4">
               <div>
-                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-1">
-                  Select Session
+                <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                  Select Event
                 </label>
                 <select
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D]"
-                  value={selectedSessionId}
-                  onChange={(e) => setSelectedSessionId(e.target.value)}
+                  className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full"
+                  value={selectedEventId}
+                  onChange={(e) => {
+                    setSelectedEventId(e.target.value);
+                    setSelectedSessionId("");
+                  }}
                 >
-                  <option value="" className="text-[#051B1D]">Choose session...</option>
-                  {sessions.map((s: any) => (
-                    <option key={s.id} value={s.id} className="text-[#051B1D]">
-                      {s.title}
+                  <option value="">Choose event...</option>
+                  {events.map((e) => (
+                    <option key={e.id} value={e.id}>
+                      {e.title}
                     </option>
                   ))}
                 </select>
               </div>
-            )}
 
-            <button
-              onClick={loadStudents}
-              disabled={
-                !selectedEventId || !selectedSessionId || loadingStudents
-              }
-              className="w-full bg-[#00666B] text-white border-2 border-black rounded-xl px-4 py-3 sm:py-3.5 font-bold text-xs sm:text-sm shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
-            >
-              {loadingStudents
-                ? "Loading students..."
-                : `Load Students (1 read)`}
-            </button>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {/* Stats bar */}
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-              <div className="grid grid-cols-3 gap-2 text-center">
+              {sessions.length > 0 && (
                 <div>
-                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">
-                    Loaded
-                  </p>
-                  <p className="text-xl sm:text-2xl font-black text-[#00666B]">
-                    {scannerStudents.length}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">Scanned</p>
-                  <p className="text-xl sm:text-2xl font-black text-[#051B1D]">
-                    {scannedIds.size}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-[10px] sm:text-xs text-gray-700 font-bold">Remaining</p>
-                  <p className="text-xl sm:text-2xl font-black text-[#051B1D]">
-                    {scannerStudents.length - scannedIds.size}
-                  </p>
-                </div>
-              </div>
-
-              {lastScan && (
-                <div
-                  className={`mt-3 rounded-xl px-4 py-2 text-xs sm:text-sm font-bold text-center border-2 ${lastScan.success ? "bg-green-100 border-green-600 text-green-800" : "bg-red-100 border-red-500 text-red-700"}`}
-                >
-                  {lastScan.success ? "✓" : "✗"} {lastScan.name}
+                  <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                    Select Session
+                  </label>
+                  <select
+                    className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full"
+                    value={selectedSessionId}
+                    onChange={(e) => setSelectedSessionId(e.target.value)}
+                  >
+                    <option value="">Choose session...</option>
+                    {sessions.map((s: any) => (
+                      <option key={s.id} value={s.id}>
+                        {s.title}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               )}
+
+              <button
+                onClick={loadStudents}
+                disabled={
+                  !selectedEventId || !selectedSessionId || loadingStudents
+                }
+                className="w-full bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-3 rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+              >
+                {loadingStudents ? "Loading students..." : "Load Students"}
+              </button>
             </div>
-
-            {/* Mode tabs */}
-            <div className="grid grid-cols-2 gap-2">
-              {(["SCANNER", "MANUAL"] as ActiveTab[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`py-2.5 sm:py-3 rounded-xl border-2 border-black font-bold text-xs sm:text-sm transition-all ${activeTab === tab
-                      ? "bg-[#00666B] text-white shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000]"
-                      : "bg-[#F5F7F8] text-[#051B1D] shadow-[2px_2px_0px_#000] sm:shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-                    }`}
-                >
-                  {tab === "SCANNER" ? "📷 Camera" : "⌨️ Manual / Search"}
-                </button>
-              ))}
-            </div>
-
-            {/* Camera Viewfinder */}
-            {activeTab === "SCANNER" && (
-              <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl overflow-hidden shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-                <div className="relative w-full aspect-square bg-[#051B1D]">
-                  <div
-                    id="reader-container"
-                    className="absolute inset-0 w-full h-full [&>video]:object-cover [&>video]:w-full [&>video]:h-full"
-                  />
-
-                  {scannerReady && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div className="absolute inset-0 bg-black/30" />
-                      <div className="relative z-10 w-44 sm:w-52 h-44 sm:h-52">
-                        <span className="absolute -top-[2px] -left-[2px] w-6 sm:w-7 h-6 sm:h-7 border-t-[3px] border-l-[3px] border-[#73FFFF]" />
-                        <span className="absolute -top-[2px] -right-[2px] w-6 sm:w-7 h-6 sm:h-7 border-t-[3px] border-r-[3px] border-[#73FFFF]" />
-                        <span className="absolute -bottom-[2px] -left-[2px] w-6 sm:w-7 h-6 sm:h-7 border-b-[3px] border-l-[3px] border-[#73FFFF]" />
-                        <span className="absolute -bottom-[2px] -right-[2px] w-6 sm:w-7 h-6 sm:h-7 border-b-[3px] border-r-[3px] border-[#73FFFF]" />
-                      </div>
-                      <p className="absolute bottom-4 left-0 right-0 text-center text-[10px] sm:text-xs text-white/80 font-bold">
-                        Align barcode in frame
-                      </p>
-                    </div>
-                  )}
-
-                  {!scannerReady && !cameraError && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#051B1D]/80 p-4">
-                      <p className="text-white text-xs sm:text-sm font-bold animate-pulse">
-                        Initializing camera...
-                      </p>
-                    </div>
-                  )}
-
-                  {cameraError && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#051B1D]/90 p-4 text-center">
-                      <p className="text-2xl sm:text-3xl">📵</p>
-                      <p className="text-white text-xs sm:text-sm font-bold">{cameraError}</p>
-                      <p className="text-white/60 text-[10px] sm:text-xs">
-                        Switch to Manual tab to mark attendance
-                      </p>
-                    </div>
-                  )}
+          ) : (
+            <div className="space-y-4">
+              {/* Stats bar */}
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <p className="text-xs text-[hsl(var(--text-secondary))]">Loaded</p>
+                    <p className="text-2xl font-bold text-[hsl(var(--accent))] mt-0.5">
+                      {scannerStudents.length}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[hsl(var(--text-secondary))]">Scanned</p>
+                    <p className="text-2xl font-bold text-[hsl(var(--accent))] mt-0.5">
+                      {scannedIds.size}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-[hsl(var(--text-secondary))]">Remaining</p>
+                    <p className="text-2xl font-bold text-[hsl(var(--accent))] mt-0.5">
+                      {scannerStudents.length - scannedIds.size}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
 
-            {/* Quick Roll Form */}
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-              <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
-                Barcode / Roll Input
-              </label>
-              <input
-                ref={inputRef}
-                className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600 uppercase"
-                placeholder="Point scanner or type roll number..."
-                value={barcodeInput}
-                onChange={(e) => setBarcodeInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && barcodeInput.trim()) {
-                    handleBarcodeScan(barcodeInput.trim());
-                  }
-                }}
-              />
-              <p className="text-[10px] sm:text-xs text-gray-700 font-bold mt-1">
-                Press Enter or scan barcode to mark attendance
-              </p>
-            </div>
-
-            {/* Manual Search */}
-            {activeTab === "MANUAL" && (
-              <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-                <label className="text-xs sm:text-sm font-bold text-[#051B1D] block mb-2">
-                  Manual Search
-                </label>
-                <input
-                  className="w-full border-2 border-black rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm font-medium focus:outline-none focus:border-[#39A8AD] bg-[#F5F7F8] text-[#051B1D] placeholder:text-gray-600"
-                  placeholder="Search by name or roll number..."
-                  value={manualSearch}
-                  onChange={(e) => setManualSearch(e.target.value)}
-                />
-                {filteredStudents.length > 0 && (
-                  <div className="mt-2 space-y-2 max-h-60 overflow-y-auto">
-                    {filteredStudents.map((s) => (
-                      <div
-                        key={s.studentId}
-                        onClick={() => handleManualAdd(s)}
-                        className={`flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 cursor-pointer transition-all gap-2 ${scannedIds.has(s.studentId) ? "border-green-600 bg-green-100" : "border-black hover:border-[#39A8AD]"}`}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
-                            {s.studentName}
-                          </p>
-                          <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">{s.rollNumber}</p>
-                        </div>
-                        {scannedIds.has(s.studentId) ? (
-                          <span className="text-green-700 font-bold text-xs sm:text-sm shrink-0">
-                            ✓
-                          </span>
-                        ) : (
-                          <span className="text-xs font-bold text-[#00666B] shrink-0">
-                            Mark
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                {lastScan && (
+                  <div
+                    className={`mt-4 rounded-xl px-4 py-2.5 text-sm font-medium text-center border ${
+                      lastScan.success
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                        : "bg-red-500/10 border-red-500/20 text-red-500"
+                    }`}
+                  >
+                    {lastScan.success ? "✓" : "✗"} {lastScan.name}
                   </div>
                 )}
               </div>
-            )}
 
-            {/* Scanned List */}
-            {scannedList.length > 0 && (
-              <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-3.5 sm:p-4 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000]">
-                <h3 className="font-black text-[#051B1D] text-sm sm:text-base mb-2 sm:mb-3">
-                  Scanned ({scannedList.length})
-                </h3>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {scannedList.map((s) => (
-                    <div
-                      key={s.studentId}
-                      className="flex items-center justify-between px-3 py-2 bg-green-100 border border-green-400 rounded-xl gap-2"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-xs sm:text-sm font-bold text-[#051B1D] truncate">
-                          {s.studentName}
-                        </p>
-                        <p className="text-[10px] sm:text-xs text-gray-700 font-bold truncate">{s.rollNumber}</p>
-                      </div>
-                      <span className="text-[10px] sm:text-xs text-gray-700 font-bold shrink-0">{s.method}</span>
-                    </div>
-                  ))}
-                </div>
+              {/* Mode tabs */}
+              <div className="grid grid-cols-2 gap-3">
+                {(["SCANNER", "MANUAL"] as ActiveTab[]).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={
+                      activeTab === tab
+                        ? "bg-[hsl(var(--accent))] text-white rounded-xl font-medium text-sm py-2.5 transition-all"
+                        : "bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all"
+                    }
+                  >
+                    {tab === "SCANNER" ? "📷 Camera" : "⌨️ Manual / Search"}
+                  </button>
+                ))}
               </div>
-            )}
 
-            {/* Submit */}
-            <button
-              onClick={handleSubmit}
-              disabled={submitting || scannedList.length === 0}
-              className="w-full bg-[#00666B] text-white border-2 border-black rounded-2xl px-4 py-3.5 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50"
-            >
-              {submitting
-                ? "Submitting..."
-                : `Submit Attendance (${scannedList.length} students) →`}
-            </button>
-          </div>
-        )}
+              {/* Camera Viewfinder */}
+              {activeTab === "SCANNER" && (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] overflow-hidden">
+                  <div className="relative w-full aspect-square bg-[#051B1D]">
+                    <div
+                      id="reader-container"
+                      className="absolute inset-0 w-full h-full [&>video]:object-cover [&>video]:w-full [&>video]:h-full"
+                    />
+
+                    {scannerReady && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="absolute inset-0 bg-black/30" />
+                        <div className="relative z-10 w-44 sm:w-52 h-44 sm:h-52">
+                          <span className="absolute -top-[2px] -left-[2px] w-6 sm:w-7 h-6 sm:h-7 border-t-[3px] border-l-[3px] border-[#73FFFF]" />
+                          <span className="absolute -top-[2px] -right-[2px] w-6 sm:w-7 h-6 sm:h-7 border-t-[3px] border-r-[3px] border-[#73FFFF]" />
+                          <span className="absolute -bottom-[2px] -left-[2px] w-6 sm:w-7 h-6 sm:h-7 border-b-[3px] border-l-[3px] border-[#73FFFF]" />
+                          <span className="absolute -bottom-[2px] -right-[2px] w-6 sm:w-7 h-6 sm:h-7 border-b-[3px] border-r-[3px] border-[#73FFFF]" />
+                        </div>
+                        <p className="absolute bottom-4 left-0 right-0 text-center text-xs text-white/80 font-medium">
+                          Align barcode in frame
+                        </p>
+                      </div>
+                    )}
+
+                    {!scannerReady && !cameraError && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#051B1D]/80 p-4">
+                        <p className="text-white text-xs sm:text-sm font-medium animate-pulse">
+                          Initializing camera...
+                        </p>
+                      </div>
+                    )}
+
+                    {cameraError && (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#051B1D]/90 p-4 text-center">
+                        <p className="text-2xl sm:text-3xl">📵</p>
+                        <p className="text-white text-xs sm:text-sm font-medium">{cameraError}</p>
+                        <p className="text-white/60 text-xs">
+                          Switch to Manual tab to mark attendance
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Quick Roll Form */}
+              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5">
+                <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                  Barcode / Roll Input
+                </label>
+                <input
+                  ref={inputRef}
+                  className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full uppercase placeholder:text-[hsl(var(--text-tertiary))]"
+                  placeholder="Point scanner or type roll number..."
+                  value={barcodeInput}
+                  onChange={(e) => setBarcodeInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && barcodeInput.trim()) {
+                      handleBarcodeScan(barcodeInput.trim());
+                    }
+                  }}
+                />
+                <p className="text-xs text-[hsl(var(--text-tertiary))] mt-1">
+                  Press Enter or scan barcode to mark attendance
+                </p>
+              </div>
+
+              {/* Manual Search */}
+              {activeTab === "MANUAL" && (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5">
+                  <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                    Manual Search
+                  </label>
+                  <input
+                    className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full placeholder:text-[hsl(var(--text-tertiary))]"
+                    placeholder="Search by name or roll number..."
+                    value={manualSearch}
+                    onChange={(e) => setManualSearch(e.target.value)}
+                  />
+                  {filteredStudents.length > 0 && (
+                    <div className="mt-3 space-y-2 max-h-60 overflow-y-auto">
+                      {filteredStudents.map((s) => (
+                        <div
+                          key={s.studentId}
+                          onClick={() => handleManualAdd(s)}
+                          className={`flex items-center justify-between px-4 py-2.5 rounded-xl border cursor-pointer transition-all gap-2 ${
+                            scannedIds.has(s.studentId)
+                              ? "border-emerald-500/20 bg-emerald-500/10"
+                              : "bg-[hsl(var(--surface))] border border-[hsl(var(--border))] hover:border-[hsl(var(--accent))]"
+                          }`}
+                        >
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-[hsl(var(--text-primary))] truncate">
+                              {s.studentName}
+                            </p>
+                            <p className="text-xs text-[hsl(var(--text-secondary))] truncate">
+                              {s.rollNumber}
+                            </p>
+                          </div>
+                          {scannedIds.has(s.studentId) ? (
+                            <span className="text-emerald-600 font-bold text-sm shrink-0">
+                              ✓
+                            </span>
+                          ) : (
+                            <span className="text-xs font-medium text-[hsl(var(--accent))] shrink-0">
+                              Mark
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Scanned List */}
+              {scannedList.length > 0 && (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5">
+                  <h3 className="text-sm font-semibold text-[hsl(var(--text-primary))] mb-3">
+                    Scanned ({scannedList.length})
+                  </h3>
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {scannedList.map((s) => (
+                      <div
+                        key={s.studentId}
+                        className="flex items-center justify-between px-3.5 py-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl gap-2"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-[hsl(var(--text-primary))] truncate">
+                            {s.studentName}
+                          </p>
+                          <p className="text-xs text-[hsl(var(--text-secondary))] truncate">
+                            {s.rollNumber}
+                          </p>
+                        </div>
+                        <span className="text-xs text-[hsl(var(--text-tertiary))] shrink-0">
+                          {s.method}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <button
+                onClick={handleSubmit}
+                disabled={submitting || scannedList.length === 0}
+                className="w-full bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-3.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50"
+              >
+                {submitting
+                  ? "Submitting..."
+                  : `Submit Attendance (${scannedList.length} students) →`}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </main>
   );
@@ -696,8 +703,8 @@ export default function AttendanceScannerPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-[#F5F7F8] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black" />
+        <main className="min-h-screen bg-[hsl(var(--background))] flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-[hsl(var(--accent))] border-t-transparent" />
         </main>
       }
     >

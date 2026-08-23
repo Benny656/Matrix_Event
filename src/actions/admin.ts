@@ -51,7 +51,7 @@ export async function createEventAction(data: {
   whatsappInviteLink?: string
   sessions?: { id: string; title: string; startTime: string; endTime?: string | null }[]
   eligibility?: {
-    targetAudience: "ALL" | "STUDENTS"
+    targetAudience: "ALL" | "STUDENTS" | "FACULTY"
     programTypes?: string[]
     years?: string[]
   }
@@ -101,7 +101,7 @@ export async function updateEventAction(
     whatsappInviteLink: string | null
     sessions: { id: string; title: string; startTime: string; endTime?: string | null }[]
     eligibility?: {
-      targetAudience: "ALL" | "STUDENTS"
+      targetAudience: "ALL" | "STUDENTS" | "FACULTY"
       programTypes?: string[]
       years?: string[]
     }

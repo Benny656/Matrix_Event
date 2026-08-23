@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminDashboardAction } from "@/actions/admin";
-import SignOutButton from "@/components/shared/signout-button";
+import Header from "@/components/layout/header";
 
 function StatCard({
   label,
@@ -15,10 +15,16 @@ function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] min-w-0">
-      <p className="text-2xl sm:text-3xl font-black text-[#00666B]">{value}</p>
-      <p className="text-xs sm:text-sm font-bold text-[#051B1D] mt-1 truncate">{label}</p>
-      {sub && <p className="text-[10px] sm:text-xs text-gray-700 font-medium mt-0.5 truncate">{sub}</p>}
+    <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 min-w-0">
+      <p className="text-3xl font-bold text-[hsl(var(--accent))]">{value}</p>
+      <p className="text-sm font-semibold text-[hsl(var(--text-primary))] mt-1 truncate">
+        {label}
+      </p>
+      {sub && (
+        <p className="text-xs text-[hsl(var(--text-secondary))] mt-0.5 truncate">
+          {sub}
+        </p>
+      )}
     </div>
   );
 }
@@ -37,60 +43,79 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-        <div className="max-w-3xl mx-auto space-y-4">
-          <div className="h-8 w-48 bg-gray-400 rounded-xl animate-pulse" />
-          <div className="h-24 bg-[#F5F7F8] border-2 border-black rounded-2xl animate-pulse" />
-        </div>
-      </main>
-    );
-  }
-
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-3xl mx-auto">
-        <div className="mb-8">
-          <p className="text-sm font-bold text-[#0d9488] uppercase tracking-widest">Matrix Admin</p>
-          <h1 className="text-3xl font-black text-black">Dashboard</h1>
-          <div className="flex gap-3 mt-4">
-            <button
-              onClick={() => router.push("/admin/events/new")}
-              className="flex-1 bg-[#0d9488] text-white border-2 border-black rounded-xl px-4 py-3 font-black text-sm shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
-            >
-              + New Event
-            </button>
-            <SignOutButton />
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="admin" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Welcome Section */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+          <div>
+            <span className="text-sm font-medium text-[hsl(var(--accent))] uppercase tracking-widest block mb-1">
+              Matrix Admin
+            </span>
+            <h1 className="text-3xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
+              Dashboard
+            </h1>
+            <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
+              Overview of events, attendance, and administrative controls
+            </p>
           </div>
+          <button
+            onClick={() => router.push("/admin/events/new")}
+            className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 transition-all self-start sm:self-auto shrink-0"
+          >
+            + New Event
+          </button>
         </div>
 
-        <div className="mb-6 sm:mb-8">
-          <StatCard
-            label="Active Events"
-            value={data?.activeEvents.length ?? 0}
-            sub="Upcoming + Ongoing"
-          />
+        {/* Stats */}
+        <div className="mb-8">
+          {loading ? (
+            <div className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse max-w-sm" />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <StatCard
+                label="Active Events"
+                value={data?.activeEvents.length ?? 0}
+                sub="Upcoming + Ongoing"
+              />
+            </div>
+          )}
         </div>
 
         {/* Active Events */}
-        <div className="mb-6 sm:mb-8">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-base sm:text-lg font-black text-[#051B1D]">Active Events</h2>
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">
+              Active Events
+            </h2>
             <button
               onClick={() => router.push("/admin/events")}
-              className="text-xs sm:text-sm font-bold text-[#00666B] hover:underline"
+              className="text-sm font-medium text-[hsl(var(--accent))] hover:underline"
             >
               Manage all →
             </button>
           </div>
-          {data?.activeEvents.length === 0 ? (
-            <div className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-6 text-center shadow-[3px_3px_0px_#000]">
-              <p className="text-2xl mb-2">📭</p>
-              <p className="font-bold text-[#051B1D] text-sm">No active events</p>
+
+          {loading ? (
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-20 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
+                />
+              ))}
+            </div>
+          ) : data?.activeEvents.length === 0 ? (
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-8 text-center">
+              <p className="text-3xl mb-2">📭</p>
+              <p className="font-semibold text-[hsl(var(--text-primary))] text-base">
+                No active events
+              </p>
               <button
                 onClick={() => router.push("/admin/events/new")}
-                className="mt-3 text-xs sm:text-sm font-bold text-[#00666B] hover:underline"
+                className="mt-3 text-sm font-medium text-[hsl(var(--accent))] hover:underline inline-block"
               >
                 Create one →
               </button>
@@ -101,14 +126,14 @@ export default function AdminDashboard() {
                 <div
                   key={event.id}
                   onClick={() => router.push(`/admin/events/${event.id}`)}
-                  className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+                  className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 hover:shadow-md hover:border-[hsl(var(--accent))]/50 transition-all cursor-pointer"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="font-black text-[#051B1D] text-sm break-words line-clamp-1">
+                      <h3 className="font-semibold text-[hsl(var(--text-primary))] text-sm break-words line-clamp-1">
                         {event.title}
                       </h3>
-                      <p className="text-xs text-gray-700 font-medium mt-0.5 truncate">
+                      <p className="text-xs text-[hsl(var(--text-tertiary))] mt-1 truncate">
                         {new Date(event.date).toLocaleDateString("en-IN", {
                           day: "numeric",
                           month: "short",
@@ -117,10 +142,12 @@ export default function AdminDashboard() {
                       </p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-base sm:text-lg font-black text-[#00666B]">
+                      <p className="text-lg font-bold text-[hsl(var(--accent))] leading-none">
                         {event.registrationCount ?? 0}
                       </p>
-                      <p className="text-[10px] sm:text-xs text-gray-700 font-bold">registered</p>
+                      <p className="text-xs text-[hsl(var(--text-tertiary))] mt-1">
+                        registered
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -129,20 +156,41 @@ export default function AdminDashboard() {
           )}
         </div>
 
-        {/* Nav */}
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 mt-6 sm:mt-8">
+        {/* Quick Nav Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
           {[
-            { label: "Events", path: "/admin/events" },
-            { label: "Users", path: "/admin/users" },
-            { label: "Export", path: "/admin/reports" },
-          ].map(({ label, path }) => (
-            <button
+            {
+              label: "Events",
+              path: "/admin/events",
+              desc: "Manage and configure all events",
+              icon: "📋",
+            },
+            {
+              label: "Users",
+              path: "/admin/users",
+              desc: "Directory and role management",
+              icon: "👥",
+            },
+            {
+              label: "Export & Reports",
+              path: "/admin/reports",
+              desc: "Download attendance reports",
+              icon: "📊",
+            },
+          ].map(({ label, path, desc, icon }) => (
+            <div
               key={path}
               onClick={() => router.push(path)}
-              className="bg-[#F5F7F8] text-[#051B1D] border-2 border-black rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 font-black text-xs sm:text-sm shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all text-center"
+              className="glass rounded-2xl border border-[hsl(var(--border))] hover:border-[hsl(var(--accent))] p-5 text-center cursor-pointer transition-all hover:shadow-md"
             >
-              {label}
-            </button>
+              <p className="text-2xl mb-2">{icon}</p>
+              <p className="text-sm font-semibold text-[hsl(var(--text-primary))]">
+                {label}
+              </p>
+              <p className="text-xs text-[hsl(var(--text-secondary))] mt-1">
+                {desc}
+              </p>
+            </div>
           ))}
         </div>
       </div>

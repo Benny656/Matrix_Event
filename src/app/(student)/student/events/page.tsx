@@ -2,39 +2,43 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { useStore } from "@/store/user-store";
 import { getStudentEventsAction } from "@/actions/event";
+import Header from "@/components/layout/header";
 import type { Event } from "@/types";
 
-function EventCard({ event, onClick }: { event: Event; onClick: () => void }) {
-  const statusColors: Record<string, string> = {
-    UPCOMING: "bg-[#39A8AD]/20 text-[#00666B]",
-    ONGOING: "bg-[#73FFFF] text-[#051B1D]",
-    COMPLETED: "bg-gray-200 text-gray-700",
-  };
+const statusColors: Record<string, string> = {
+  UPCOMING: "bg-blue-500/10 text-blue-600",
+  ONGOING: "bg-emerald-500/10 text-emerald-600",
+  COMPLETED: "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]",
+};
 
+function EventCard({ event, onClick }: { event: Event; onClick: () => void }) {
   return (
     <div
       onClick={onClick}
-      className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-4 sm:p-5 shadow-[3px_3px_0px_#000] sm:shadow-[4px_4px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all cursor-pointer"
+      className="glass rounded-2xl border border-[hsl(var(--border))] p-4 sm:p-5 hover:shadow-md transition-all cursor-pointer h-full flex flex-col justify-between"
     >
-      <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
-        <span
-          className={`text-[10px] sm:text-xs font-bold px-2 py-0.5 sm:py-1 rounded-full border border-black ${statusColors[event.status] || "bg-gray-200 text-gray-700"}`}
-        >
-          {event.status}
-        </span>
-        <span className="text-xs text-gray-800 font-bold truncate">
-          {event.category}
-        </span>
+      <div>
+        <div className="flex items-start justify-between gap-2 mb-2 sm:mb-3">
+          <span
+            className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[event.status] || "bg-[hsl(var(--surface-2))] text-[hsl(var(--text-tertiary))]"}`}
+          >
+            {event.status}
+          </span>
+          <span className="text-xs font-medium text-[hsl(var(--text-tertiary))] truncate">
+            {event.category}
+          </span>
+        </div>
+        <h3 className="text-base font-semibold text-[hsl(var(--text-primary))] leading-tight mb-1 break-words line-clamp-1">
+          {event.title}
+        </h3>
+        <p className="text-sm text-[hsl(var(--text-secondary))] mb-4 line-clamp-2 break-words">
+          {event.description}
+        </p>
       </div>
-      <h3 className="font-black text-[#051B1D] text-base sm:text-lg leading-tight mb-1 break-words">
-        {event.title}
-      </h3>
-      <p className="text-gray-800 text-xs sm:text-sm mb-3 line-clamp-2 break-words font-medium">
-        {event.description}
-      </p>
-      <div className="text-xs text-gray-700 font-bold">
+      <div className="text-xs text-[hsl(var(--text-tertiary))] font-medium">
         <span>
           {new Date(event.date).toLocaleDateString("en-IN", {
             day: "numeric",
@@ -89,71 +93,62 @@ export default function StudentEventsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] px-3 sm:px-4 py-6 sm:py-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Top Navigation */}
-        <div className="mb-4 sm:mb-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => router.push("/student")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              ← Dashboard
-            </button>
-            <button
-              onClick={() => router.push("/student/registrations")}
-              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#051B1D] hover:text-[#00666B] transition-colors bg-[#F5F7F8] border-2 border-black rounded-xl px-3 py-1.5 shadow-[2px_2px_0px_#000] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px]"
-            >
-              My Registrations
-            </button>
-          </div>
-        </div>
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-black text-[#051B1D]">Events</h1>
-          <p className="text-gray-700 text-xs sm:text-sm mt-0.5 font-medium">
+    <main className="min-h-screen bg-[hsl(var(--background))]">
+      <Header role="student" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-[hsl(var(--text-primary))] tracking-tight">Events</h1>
+          <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">
             Browse and register for upcoming events
           </p>
         </div>
 
         {error && (
-          <div className="mb-4 bg-red-100 border-2 border-red-500 rounded-xl px-4 py-3 text-red-700 text-xs sm:text-sm font-bold">
+          <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-500 text-sm rounded-xl px-4 py-3">
             {error}
           </div>
         )}
 
         {loading ? (
-          <div className="grid gap-3 sm:gap-4">
-            {[...Array(4)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="bg-[#F5F7F8] border-2 border-black rounded-2xl p-5 h-36 animate-pulse"
+                className="h-44 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse"
               />
             ))}
           </div>
         ) : events.items.length === 0 ? (
-          <div className="text-center py-12 sm:py-16">
-            <p className="text-3xl sm:text-4xl mb-3">📭</p>
-            <p className="font-bold text-[#051B1D] text-sm sm:text-base">No events yet</p>
-            <p className="text-gray-700 text-xs sm:text-sm font-medium">Check back soon</p>
+          <div className="glass rounded-2xl border border-[hsl(var(--border))] p-12 text-center">
+            <p className="text-3xl mb-3">📭</p>
+            <h3 className="font-semibold text-[hsl(var(--text-primary))] text-base">No events yet</h3>
+            <p className="text-sm text-[hsl(var(--text-secondary))] mt-1">Check back soon for upcoming events</p>
           </div>
         ) : (
-          <div className="grid gap-3 sm:gap-4">
-            {events.items.map((event) => (
-              <EventCard
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {events.items.map((event, index) => (
+              <motion.div
                 key={event.id}
-                event={event}
-                onClick={() => router.push(`/student/events/${event.id}`)}
-              />
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <EventCard
+                  event={event}
+                  onClick={() => router.push(`/student/events/${event.id}`)}
+                />
+              </motion.div>
             ))}
           </div>
         )}
 
         {events.hasMore && !loading && (
-          <div className="mt-6 text-center">
+          <div className="mt-8 text-center">
             <button
               onClick={loadMore}
               disabled={loadingMore}
-              className="bg-[#F5F7F8] border-2 border-black rounded-xl px-6 py-3 font-bold text-[#051B1D] shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all disabled:opacity-50 text-xs sm:text-sm"
+              className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] text-sm font-medium px-6 py-2.5 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all text-[hsl(var(--text-primary))] disabled:opacity-50 cursor-pointer"
             >
               {loadingMore ? "Loading..." : "Load More"}
             </button>

@@ -3,9 +3,24 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
+import { motion, useAnimationControls } from "framer-motion"
 import Lenis from "lenis"
-import TechOrbit from "@/components/shared/TechOrbit"
+import {
+  Brain,
+  Code2,
+  Database,
+  Cpu,
+  Globe,
+  Layers,
+  Terminal,
+  Zap,
+  GitBranch,
+  Shield,
+  BarChart2,
+  Wifi,
+  Sun,
+  Moon,
+} from "lucide-react"
 
 const GLYPHS = "!<>-_\\/[]{}—=+*^?#_0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 const FULL_TITLE = "Machine Learning Association for Technical Research and Excellence"
@@ -156,7 +171,79 @@ const SOCIALS = [
   },
 ]
 
+const TECH_ITEMS = [
+  { icon: Brain, label: "Python" },
+  { icon: Code2, label: "TensorFlow" },
+  { icon: Database, label: "Firebase" },
+  { icon: Cpu, label: "Next.js" },
+  { icon: Globe, label: "React" },
+  { icon: Layers, label: "PyTorch" },
+  { icon: Terminal, label: "SQL" },
+  { icon: Zap, label: "Docker" },
+  { icon: GitBranch, label: "Git" },
+  { icon: Shield, label: "TypeScript" },
+  { icon: BarChart2, label: "Scikit" },
+  { icon: Wifi, label: "FastAPI" },
+]
+
+function MarqueeRow({ items, direction }: { items: typeof TECH_ITEMS; direction: "left" | "right" }) {
+  const controls = useAnimationControls()
+  const doubled = [...items, ...items]
+
+  useEffect(() => {
+    controls.start({
+      x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
+      transition: {
+        duration: direction === "left" ? 25 : 30,
+        repeat: Infinity,
+        ease: "linear",
+      },
+    })
+  }, [controls, direction])
+
+  return (
+    <div
+      className="overflow-hidden"
+      onMouseEnter={() => controls.stop()}
+      onMouseLeave={() =>
+        controls.start({
+          x: direction === "left" ? ["0%", "-50%"] : ["-50%", "0%"],
+          transition: {
+            duration: direction === "left" ? 25 : 30,
+            repeat: Infinity,
+            ease: "linear",
+          },
+        })
+      }
+    >
+      <motion.div className="flex" animate={controls}>
+        {doubled.map((item, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-2 px-5 py-2.5 mx-2 bg-white/5 border border-white/10 rounded-xl text-white/80 text-sm font-semibold shrink-0 cursor-default select-none"
+          >
+            <item.icon className="w-4 h-4 text-[#73FFFF]" />
+            {item.label}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  )
+}
+
 export default function LandingPage() {
+  const [dark, setDark] = useState(false)
+
+  useEffect(() => {
+    setDark(document.documentElement.classList.contains("dark"))
+  }, [])
+
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.toggle("dark")
+    localStorage.setItem("theme", isDark ? "dark" : "light")
+    setDark(isDark)
+  }
+
   // Initialize Lenis smooth scrolling
   useEffect(() => {
     const lenis = new Lenis({
@@ -180,125 +267,121 @@ export default function LandingPage() {
   }, [])
 
   return (
-    <main className="min-h-screen bg-[#F5F7F8] overflow-x-hidden">
+    <main className="min-h-screen bg-[hsl(var(--background))] overflow-x-hidden">
 
       {/* NAV */}
       <motion.nav
         initial={{ y: -40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className="sticky top-0 z-50 bg-[#F5F7F8]/90 backdrop-blur-sm border-b-2 border-black px-4 sm:px-8 py-3 flex items-center justify-between"
+        className="sticky top-0 z-50 bg-[hsl(var(--background))]/80 backdrop-blur-md border-b border-[hsl(var(--border))] px-4 sm:px-8 py-3 flex items-center justify-between"
       >
         <div className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="Matrix" width={32} height={32} className="object-contain" />
+          <Image
+            src={dark ? "/logo-dark.svg" : "/logo-light.svg"}
+            alt="Matrix"
+            width={32}
+            height={32}
+            className="object-contain"
+          />
           <div>
-            <p className="font-black text-[#051B1D] text-sm uppercase tracking-widest leading-none">MATRIX</p>
-            <p className="text-[9px] font-bold text-[#00666B] uppercase tracking-widest leading-none">AIML · Karunya</p>
+            <p className="font-bold text-[hsl(var(--text-primary))] text-sm uppercase tracking-widest leading-none">MATRIX</p>
+            <p className="text-[9px] font-bold text-[hsl(var(--accent))] uppercase tracking-widest leading-none">AIML · Karunya</p>
           </div>
         </div>
-        <Link href="/login">
-          <button className="bg-[#00666B] text-white font-black text-xs uppercase tracking-widest px-4 py-2 border-2 border-black rounded-xl shadow-[3px_3px_0px_#000] hover:shadow-none hover:translate-x-[3px] hover:translate-y-[3px] transition-all">
-            Sign In
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-lg text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))] hover:bg-[hsl(var(--surface))] transition-all"
+          >
+            {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-        </Link>
+          <Link href="/login">
+            <button className="bg-[hsl(var(--accent))] text-white text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all">
+              Sign In
+            </button>
+          </Link>
+        </div>
       </motion.nav>
 
       {/* HERO */}
       <section className="px-4 sm:px-8 pt-12 sm:pt-16 pb-20 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          <div className="lg:col-span-7">
-            
-            {/* Pill Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.85, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-              className="mb-6"
-            >
-              <span className="inline-flex items-center gap-2 bg-[#051B1D] text-[#73FFFF] text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border-2 border-black shadow-[2px_2px_0px_#000]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#73FFFF] animate-pulse" />
-                Department of AI &amp; Machine Learning
-              </span>
-            </motion.div>
-
-            {/* Headline */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-4xl sm:text-6xl md:text-7xl font-black text-[#051B1D] leading-tight mb-4"
-            >
-              The event platform<br />
-              for AIML at<br />
-              <span className="text-[#00666B]">Karunya.</span>
-            </motion.h1>
-
-            {/* M.A.T.R.I.X Scramble Subtitle */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3 mb-8"
-            >
-              <span className="text-base sm:text-xl md:text-2xl font-black text-[#39A8AD] uppercase tracking-widest shrink-0 font-mono">
-                M.A.T.R.I.X —
-              </span>
-              <span className="text-base sm:text-xl md:text-2xl font-black text-[#051B1D] uppercase tracking-wide font-mono">
-                <ScrambleText text={FULL_TITLE} />
-              </span>
-            </motion.div>
-
-            {/* Description */}
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
-              className="text-[#051B1D]/75 text-sm sm:text-base font-medium max-w-md mb-10 leading-relaxed"
-            >
-              Register for workshops, track attendance, and stay current with department events — built for the next generation of builders.
-            </motion.p>
-
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row gap-3"
-            >
-              <Link href="/login">
-                <button className="bg-[#00666B] text-white font-black text-sm uppercase tracking-widest px-8 py-4 border-2 border-black rounded-2xl shadow-[5px_5px_0px_#000] hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px] transition-all">
-                  Access Event Portal →
-                </button>
-              </Link>
-              <Link href="/login">
-                <button className="bg-white text-[#051B1D] font-black text-sm uppercase tracking-widest px-8 py-4 border-2 border-black rounded-2xl shadow-[5px_5px_0px_#000] hover:shadow-none hover:translate-x-[5px] hover:translate-y-[5px] transition-all">
-                  Sign in with College Email
-                </button>
-              </Link>
-            </motion.div>
-
-            {/* Students Badge */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, rotate: -6 }}
-              animate={{ opacity: 1, scale: 1, rotate: -2 }}
-              transition={{ duration: 0.6, delay: 0.7, type: "spring", stiffness: 180 }}
-              className="mt-12 inline-flex items-center bg-[#73FFFF] border-2 border-black rounded-2xl px-6 py-3.5 shadow-[5px_5px_0px_#000]"
-            >
-              <span className="font-black text-xl sm:text-2xl text-[#051B1D] uppercase tracking-wide">
-                <CountUp end={400} />+ Students
-              </span>
-            </motion.div>
-          </div>
-
-          {/* Tech Orbit with gentle entrance */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.4, ease: "easeOut" }}
-            className="lg:col-span-5 flex justify-center items-center lg:items-start lg:pt-6 py-6 lg:py-0"
+        <div className="max-w-3xl">
+          {/* Headline */}
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-4xl sm:text-6xl md:text-7xl font-black text-[hsl(var(--text-primary))] leading-tight mb-4"
           >
-            <TechOrbit />
+            The event platform<br />
+            for AIML at<br />
+            <span className="text-[hsl(var(--accent))]">Karunya.</span>
+          </motion.h1>
+
+          {/* M.A.T.R.I.X Scramble Subtitle */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.35, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-3 mb-8"
+          >
+            <span className="text-base sm:text-xl md:text-2xl font-black text-[hsl(var(--accent-light))] uppercase tracking-widest shrink-0 font-mono">
+              M.A.T.R.I.X —
+            </span>
+            <span className="text-base sm:text-xl md:text-2xl font-black text-[hsl(var(--text-primary))] uppercase tracking-wide font-mono">
+              <ScrambleText text={FULL_TITLE} />
+            </span>
           </motion.div>
+
+          {/* Description */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.45, ease: "easeOut" }}
+            className="text-[hsl(var(--text-secondary))] text-sm sm:text-base font-medium max-w-md mb-10 leading-relaxed"
+          >
+            Register for workshops, track attendance, and stay current with department events — built for the next generation of builders.
+          </motion.p>
+
+          {/* Action Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.55, ease: "easeOut" }}
+            className="flex flex-col sm:flex-row gap-3"
+          >
+            <Link href="/login">
+              <button className="bg-[hsl(var(--accent))] text-white font-semibold text-sm px-8 py-3.5 rounded-xl hover:opacity-90 transition-all shadow-sm">
+                Access Event Portal →
+              </button>
+            </Link>
+            <Link href="/login">
+              <button className="bg-[hsl(var(--surface))] text-[hsl(var(--text-primary))] border border-[hsl(var(--border))] font-semibold text-sm px-8 py-3.5 rounded-xl hover:bg-[hsl(var(--surface-2))] transition-all shadow-sm">
+                Sign in with College Email
+              </button>
+            </Link>
+          </motion.div>
+
+          {/* Students Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, rotate: -6 }}
+            animate={{ opacity: 1, scale: 1, rotate: -2 }}
+            transition={{ duration: 0.6, delay: 0.7, type: "spring", stiffness: 180 }}
+            className="mt-12 inline-flex items-center bg-[#73FFFF] border-2 border-black rounded-2xl px-6 py-3.5 shadow-[5px_5px_0px_#000]"
+          >
+            <span className="font-black text-xl sm:text-2xl text-[#051B1D] uppercase tracking-wide">
+              <CountUp end={400} />+ Students
+            </span>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* TECH MARQUEE */}
+      <section className="py-8 border-y-2 border-black bg-[#051B1D] overflow-hidden">
+        <div className="flex flex-col gap-3">
+          <MarqueeRow items={TECH_ITEMS.slice(0, 6)} direction="left" />
+          <MarqueeRow items={TECH_ITEMS.slice(6, 12)} direction="right" />
         </div>
       </section>
 
@@ -308,55 +391,50 @@ export default function LandingPage() {
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="origin-left w-full h-1 bg-black"
+        className="origin-left w-full h-px bg-[hsl(var(--border))]"
       />
 
       {/* DUMMY'S GUIDE */}
-      <section className="px-4 sm:px-8 py-20 max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-12"
-        >
-          <div className="inline-block rotate-1 bg-[#051B1D] text-[#73FFFF] font-black text-xs uppercase tracking-widest px-4 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_#39A8AD] mb-4">
-            The Dummy's Guide
-          </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#051B1D] leading-tight">
-            How this app<br />
-            <span className="text-[#00666B]">works.</span>
-          </h2>
-        </motion.div>
+      <section className="bg-[hsl(var(--surface))] py-24 px-4 sm:px-8">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 35 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mb-12"
+          >
+            <div className="inline-block rotate-1 bg-[#051B1D] text-[#73FFFF] font-black text-xs uppercase tracking-widest px-4 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_#39A8AD] mb-4">
+              The Dummy's Guide
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-black text-[hsl(var(--text-primary))] leading-tight">
+              How this app<br />
+              <span className="text-[hsl(var(--accent))]">works.</span>
+            </h2>
+          </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {STEPS.map((step, idx) => (
-            <motion.div
-              key={step.number}
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true, margin: "-60px" }}
-              transition={{ duration: 0.5, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ scale: 1.04, rotate: 0, y: -4 }}
-              className={`
-                ${step.color} ${step.rotate}
-                border-2 border-black rounded-2xl p-6
-                shadow-[5px_5px_0px_#000]
-                hover:shadow-none
-                transition-all duration-200 cursor-default
-                ${step.number === "04" ? "text-white" : "text-[#051B1D]"}
-              `}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <span className="text-4xl font-black opacity-20">{step.number}</span>
-                <span className="text-3xl">{step.emoji}</span>
-              </div>
-              <h3 className="text-2xl font-black mb-2">{step.title}</h3>
-              <p className={`text-sm font-medium leading-relaxed ${step.number === "04" ? "text-white/80" : "text-[#051B1D]/75"}`}>
-                {step.desc}
-              </p>
-            </motion.div>
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {STEPS.map((step, idx) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 40, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ duration: 0.5, delay: idx * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                whileHover={{ scale: 1.04, y: -4 }}
+                className="glass rounded-2xl p-6 border border-[hsl(var(--border))] transition-all duration-200 cursor-default"
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-4xl font-bold text-[hsl(var(--accent))] opacity-30">{step.number}</span>
+                  <span className="text-3xl">{step.emoji}</span>
+                </div>
+                <h3 className="text-xl font-semibold text-[hsl(var(--text-primary))] mb-2">{step.title}</h3>
+                <p className="text-sm text-[hsl(var(--text-secondary))] leading-relaxed">
+                  {step.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -366,11 +444,11 @@ export default function LandingPage() {
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="origin-left w-full h-1 bg-black"
+        className="origin-left w-full h-px bg-[hsl(var(--border))]"
       />
 
       {/* SOCIAL LINKS */}
-      <section className="px-4 sm:px-8 py-20 max-w-5xl mx-auto">
+      <section className="bg-[hsl(var(--background))] px-4 sm:px-8 py-20 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 35 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -381,9 +459,9 @@ export default function LandingPage() {
           <div className="inline-block -rotate-1 bg-[#00666B] text-white font-black text-xs uppercase tracking-widest px-4 py-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_#000] mb-4">
             Find Us Online
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black text-[#051B1D] leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-[hsl(var(--text-primary))] leading-tight">
             Connect with<br />
-            <span className="text-[#00666B]">Matrix AIML.</span>
+            <span className="text-[hsl(var(--accent))]">Matrix AIML.</span>
           </h2>
         </motion.div>
 
@@ -398,19 +476,12 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: idx * 0.15, type: "spring", stiffness: 180 }}
-              whileHover={{ scale: 1.08, rotate: 0, y: -8 }}
-              className={`
-                ${social.color} ${social.rotate}
-                border-2 border-black rounded-2xl p-6
-                shadow-[5px_5px_0px_#000]
-                hover:shadow-none
-                transition-all duration-200
-                flex-1 w-full
-              `}
+              whileHover={{ scale: 1.04, y: -4 }}
+              className="glass rounded-2xl p-6 border border-[hsl(var(--border))] transition-all duration-200 flex-1 w-full"
             >
-              <span className="text-4xl block mb-4">{social.emoji}</span>
-              <h3 className="text-xl font-black text-[#051B1D] mb-1">{social.name}</h3>
-              <p className="text-xs font-bold text-[#051B1D]/70">{social.tag}</p>
+              <span className="text-3xl block mb-3">{social.emoji}</span>
+              <h3 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-1">{social.name}</h3>
+              <p className="text-sm text-[hsl(var(--text-secondary))]">{social.tag}</p>
             </motion.a>
           ))}
         </div>
@@ -422,7 +493,7 @@ export default function LandingPage() {
         whileInView={{ scaleX: 1 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
-        className="origin-left w-full h-1 bg-black"
+        className="origin-left w-full h-px bg-[hsl(var(--border))]"
       />
 
       {/* FOOTER */}
@@ -435,7 +506,7 @@ export default function LandingPage() {
       >
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <Image src="/logo.svg" alt="Matrix" width={24} height={24} className="object-contain invert" />
+            <Image src="/logo-dark.svg" alt="Matrix" width={24} height={24} className="object-contain" />
             <p className="text-[#73FFFF] font-black text-xs uppercase tracking-widest">
               Matrix · AIML · Karunya © {new Date().getFullYear()}
             </p>
