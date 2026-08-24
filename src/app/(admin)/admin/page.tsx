@@ -35,6 +35,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [data, setData] = useState<{
     activeEvents: any[];
+    totalUsers: number;
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -71,13 +72,21 @@ export default function AdminDashboard() {
         {/* Stats */}
         <div className="mb-8">
           {loading ? (
-            <div className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse max-w-sm" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+              <div className="h-28 bg-[hsl(var(--surface-2))] rounded-2xl animate-pulse" />
+            </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <StatCard
                 label="Active Events"
                 value={data?.activeEvents.length ?? 0}
                 sub="Upcoming + Ongoing"
+              />
+              <StatCard
+                label="Total Registered Users"
+                value={data?.totalUsers ?? 0}
+                sub="Total registered accounts"
               />
             </div>
           )}

@@ -187,13 +187,17 @@ export async function getEventAttendanceAction(eventId: string) {
 export async function getAdminDashboardAction() {
   await requireAdmin()
 
-  const eventsSnap = await adminDb.collection("events")
-    .where("status", "in", ["UPCOMING", "ONGOING"])
-    .orderBy("date", "asc")
-    .limit(5)
-    .get()
+  const [eventsSnap, usersCountSnap] = await Promise.all([
+    adminDb.collection("events")
+      .where("status", "in", ["UPCOMING", "ONGOING"])
+      .orderBy("date", "asc")
+      .limit(5)
+      .get(),
+    adminDb.collection("users").count().get(),
+  ])
 
   const activeEvents = eventsSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  const totalUsers = usersCountSnap.data().count
 
-  return { activeEvents }
+  return { activeEvents, totalUsers }
 }
