@@ -3,19 +3,30 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getVolunteerEventsAction } from "@/actions/attendance";
+import { useStore } from "@/store/user-store";
 import SignOutButton from "@/components/shared/signout-button";
 
 export default function VolunteerDashboard() {
   const router = useRouter();
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { volunteerEvents, setVolunteerEvents } = useStore();
+  const [events, setEvents] = useState<any[]>(volunteerEvents ?? []);
+  const [loading, setLoading] = useState(!volunteerEvents);
 
   useEffect(() => {
+    if (volunteerEvents) {
+      setEvents(volunteerEvents);
+      setLoading(false);
+      return;
+    }
+
     getVolunteerEventsAction()
-      .then(setEvents)
+      .then((res) => {
+        setEvents(res);
+        setVolunteerEvents(res);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [volunteerEvents, setVolunteerEvents]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

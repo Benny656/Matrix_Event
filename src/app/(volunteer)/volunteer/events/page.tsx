@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { getVolunteerEventsAction } from "@/actions/attendance";
+import { useStore } from "@/store/user-store";
 import Header from "@/components/layout/header";
 
 function getStatusBadge(status: string) {
@@ -21,16 +22,26 @@ function getStatusBadge(status: string) {
 
 export default function VolunteerEventsPage() {
   const router = useRouter();
-  const [events, setEvents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { volunteerEvents, setVolunteerEvents } = useStore();
+  const [events, setEvents] = useState<any[]>(volunteerEvents ?? []);
+  const [loading, setLoading] = useState(!volunteerEvents);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (volunteerEvents) {
+      setEvents(volunteerEvents);
+      setLoading(false);
+      return;
+    }
+
     getVolunteerEventsAction()
-      .then((res: any) => setEvents(res))
+      .then((res: any) => {
+        setEvents(res);
+        setVolunteerEvents(res);
+      })
       .catch(() => setError("Failed to load events"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [volunteerEvents, setVolunteerEvents]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

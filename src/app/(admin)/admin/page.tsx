@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminDashboardAction } from "@/actions/admin";
+import { useStore } from "@/store/user-store";
 import GlassNav from "@/components/shared/GlassNav";
 import SignOutButton from "@/components/shared/signout-button";
 import { InteractiveHoverButton } from "@/components/magicui/interactive-hover-button";
@@ -33,18 +34,28 @@ function StatCard({
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { adminDashboardData, setAdminDashboardData } = useStore();
   const [data, setData] = useState<{
     activeEvents: any[];
     totalUsers: number;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
+  } | null>(adminDashboardData);
+  const [loading, setLoading] = useState(!adminDashboardData);
 
   useEffect(() => {
+    if (adminDashboardData) {
+      setData(adminDashboardData);
+      setLoading(false);
+      return;
+    }
+
     getAdminDashboardAction()
-      .then(setData)
+      .then((res) => {
+        setData(res);
+        setAdminDashboardData(res);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, [adminDashboardData, setAdminDashboardData]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

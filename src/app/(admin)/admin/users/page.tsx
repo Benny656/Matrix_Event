@@ -6,6 +6,7 @@ import {
   updateUserRoleAction,
   searchUsersAction,
 } from "@/actions/user";
+import { useStore } from "@/store/user-store";
 import Header from "@/components/layout/header";
 import { ShineBorder } from "@/components/ui/shine-border";
 
@@ -28,11 +29,13 @@ const ROLES = ["STUDENT", "VOLUNTEER", "FACULTY", "ADMIN"] as const;
 
 export default function AdminUsersPage() {
   const router = useRouter();
-  const [users, setUsers] = useState<any[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const { userSearchCache, setUserSearchCache } = useStore();
+
+  const [users, setUsers] = useState<any[]>(userSearchCache?.results ?? []);
+  const [searchQuery, setSearchQuery] = useState(userSearchCache?.query ?? "");
   const [searching, setSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [lastSearchedQuery, setLastSearchedQuery] = useState("");
+  const [hasSearched, setHasSearched] = useState(!!userSearchCache);
+  const [lastSearchedQuery, setLastSearchedQuery] = useState(userSearchCache?.query ?? "");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   async function handleSearch() {
@@ -41,6 +44,7 @@ export default function AdminUsersPage() {
       setUsers([]);
       setHasSearched(false);
       setLastSearchedQuery("");
+      setUserSearchCache(null);
       return;
     }
     try {
@@ -49,6 +53,7 @@ export default function AdminUsersPage() {
       const results = await searchUsersAction(query);
       setUsers(results);
       setHasSearched(true);
+      setUserSearchCache({ query, results });
     } catch (e) {
       console.error(e);
     } finally {
@@ -61,6 +66,7 @@ export default function AdminUsersPage() {
     setUsers([]);
     setHasSearched(false);
     setLastSearchedQuery("");
+    setUserSearchCache(null);
   }
 
   async function handleRoleChange(
@@ -70,9 +76,13 @@ export default function AdminUsersPage() {
     try {
       setUpdatingId(userId);
       await updateUserRoleAction(userId, role);
-      setUsers((prev) =>
-        prev.map((u) => (u.id === userId ? { ...u, role } : u)),
-      );
+      setUsers((prev) => {
+        const updated = prev.map((u) => (u.id === userId ? { ...u, role } : u));
+        if (userSearchCache) {
+          setUserSearchCache({ ...userSearchCache, results: updated });
+        }
+        return updated;
+      });
     } catch (e) {
       console.error(e);
     } finally {

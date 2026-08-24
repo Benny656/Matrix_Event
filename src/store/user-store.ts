@@ -15,6 +15,17 @@ interface Store {
   setDashboardData: (data: { user: any; registrations: Registration[]; upcomingEvents: any[] }) => void
   invalidateDashboard: () => void
 
+  adminDashboardData: { activeEvents: any[]; totalUsers: number } | null
+  setAdminDashboardData: (data: { activeEvents: any[]; totalUsers: number } | null) => void
+  invalidateAdminDashboard: () => void
+
+  volunteerEvents: any[] | null
+  setVolunteerEvents: (events: any[] | null) => void
+  invalidateVolunteerEvents: () => void
+
+  userSearchCache: { query: string; results: any[] } | null
+  setUserSearchCache: (cache: { query: string; results: any[] } | null) => void
+
   events: Paginated<Event>
   setEvents: (items: Event[], lastId: string | null, hasMore: boolean) => void
   appendEvents: (items: Event[], lastId: string | null, hasMore: boolean) => void
@@ -50,6 +61,17 @@ export const useStore = create<Store>((set) => ({
   dashboardData: null,
   setDashboardData: (data) => set({ dashboardData: data }),
   invalidateDashboard: () => set({ dashboardData: null }),
+
+  adminDashboardData: null,
+  setAdminDashboardData: (data) => set({ adminDashboardData: data }),
+  invalidateAdminDashboard: () => set({ adminDashboardData: null }),
+
+  volunteerEvents: null,
+  setVolunteerEvents: (volunteerEvents) => set({ volunteerEvents }),
+  invalidateVolunteerEvents: () => set({ volunteerEvents: null }),
+
+  userSearchCache: null,
+  setUserSearchCache: (userSearchCache) => set({ userSearchCache }),
 
   events: empty(),
   setEvents: (items, lastId, hasMore) => set({ events: { items, lastId, hasMore } }),

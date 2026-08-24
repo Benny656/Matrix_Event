@@ -10,6 +10,8 @@ import {
   getEventCountsAction,
 } from "@/actions/admin";
 import { getEventByIdAction } from "@/actions/event";
+import { useEventStore } from "@/store/eventStore";
+import { useStore } from "@/store/user-store";
 import { v4 as uuidv4 } from "uuid";
 import type { Event } from "@/types";
 import Header from "@/components/layout/header";
@@ -39,8 +41,13 @@ export default function AdminEventDetailPage() {
   const { id: eventId } = useParams<{ id: string }>();
   const [tab, setTab] = useState<Tab>("registrations");
 
-  const [event, setEvent] = useState<Event | null>(null);
-  const [loadingEvent, setLoadingEvent] = useState(true);
+  const { events: cachedEvents, setSingleEvent, updateEvent, updateRegistrationCount } = useEventStore();
+  const { invalidateAdminDashboard } = useStore();
+
+  const cachedEvent = cachedEvents[eventId] as Event | undefined;
+
+  const [event, setEvent] = useState<Event | null>(cachedEvent ?? null);
+  const [loadingEvent, setLoadingEvent] = useState(!cachedEvent);
 
   // Registrations
   const [registrations, setRegistrations] = useState<any[]>([]);
@@ -55,19 +62,23 @@ export default function AdminEventDetailPage() {
   const [attLoaded, setAttLoaded] = useState(false);
 
   // Sessions Management
-  const [sessions, setSessions] = useState<{ id: string; title: string; startTime: string }[]>([]);
+  const [sessions, setSessions] = useState<{ id: string; title: string; startTime: string }[]>(cachedEvent?.sessions || []);
   const [savingSessions, setSavingSessions] = useState(false);
   const [sessionMsg, setSessionMsg] = useState("");
 
   // Counts
-  const [counts, setCounts] = useState<{ registrationCount: number; checkedInCount: number } | null>(null);
-  const [loadingCounts, setLoadingCounts] = useState(true);
+  const [counts, setCounts] = useState<{ registrationCount: number; checkedInCount: number } | null>(
+    cachedEvent?.registrationCount !== undefined
+      ? { registrationCount: cachedEvent.registrationCount, checkedInCount: 0 }
+      : null
+  );
+  const [loadingCounts, setLoadingCounts] = useState(!cachedEvent || cachedEvent.registrationCount === undefined);
 
   // Settings
   const [deleting, setDeleting] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
   const [togglingReg, setTogglingReg] = useState(false);
-  const [whatsappLink, setWhatsappLink] = useState("");
+  const [whatsappLink, setWhatsappLink] = useState(cachedEvent?.whatsappInviteLink || "");
   const [savingWhatsapp, setSavingWhatsapp] = useState(false);
   const [eventStatus, setEventStatus] = useState("");
 
@@ -82,6 +93,7 @@ export default function AdminEventDetailPage() {
       setLoadingCounts(true);
       const c = await getEventCountsAction(eventId);
       setCounts(c);
+      updateRegistrationCount(eventId, c.registrationCount);
     } catch (e) {
       console.error("Failed to load counts", e);
     } finally {
@@ -91,9 +103,10 @@ export default function AdminEventDetailPage() {
 
   async function fetchEventDetails() {
     try {
-      setLoadingEvent(true);
+      if (!cachedEvent) setLoadingEvent(true);
       const ev = await getEventByIdAction(eventId);
       setEvent(ev);
+      setSingleEvent(ev);
       setSessions(ev.sessions || []);
       setWhatsappLink(ev.whatsappInviteLink || "");
     } catch (e) {
@@ -153,6 +166,7 @@ export default function AdminEventDetailPage() {
       const nextState = !event.registrationOpen;
       await updateEventAction(eventId, { registrationOpen: nextState });
       setEvent((prev) => (prev ? { ...prev, registrationOpen: nextState } : null));
+      updateEvent(eventId, { registrationOpen: nextState });
     } catch (e) {
       console.error("Failed to toggle registration", e);
     } finally {
@@ -169,6 +183,7 @@ export default function AdminEventDetailPage() {
       setEvent((prev) =>
         prev ? { ...prev, whatsappInviteLink: whatsappLink.trim() || null } : null,
       );
+      updateEvent(eventId, { whatsappInviteLink: whatsappLink.trim() || null });
       setSessionMsg("WhatsApp link updated!");
       setTimeout(() => setSessionMsg(""), 3000);
     } catch (e) {
@@ -209,6 +224,7 @@ export default function AdminEventDetailPage() {
       await updateEventAction(eventId, { sessions: validSessions });
       setSessions(validSessions);
       setEvent((prev) => (prev ? { ...prev, sessions: validSessions } : null));
+      updateEvent(eventId, { sessions: validSessions });
       setSessionMsg("Sessions saved successfully!");
       setTimeout(() => setSessionMsg(""), 3000);
     } catch (e) {
@@ -223,6 +239,7 @@ export default function AdminEventDetailPage() {
     try {
       setDeleting(true);
       await deleteEventAction(eventId);
+      invalidateAdminDashboard();
       router.push("/admin/events");
     } catch {
       setDeleting(false);
@@ -235,6 +252,8 @@ export default function AdminEventDetailPage() {
       await updateEventAction(eventId, { status });
       setEventStatus(status);
       setEvent((prev) => (prev ? { ...prev, status: status as any } : null));
+      updateEvent(eventId, { status });
+      invalidateAdminDashboard();
     } finally {
       setStatusUpdating(false);
     }

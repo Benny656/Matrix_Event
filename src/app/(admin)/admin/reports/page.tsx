@@ -3,15 +3,19 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAdminEventsAction, getEventAttendanceAction } from "@/actions/admin";
+import { useEventStore } from "@/store/eventStore";
 import { exportToExcel, exportToPDF } from "@/lib/export";
 import { Sheet, FileText } from "lucide-react";
 import Header from "@/components/layout/header";
 
 export default function AdminReportsPage() {
   const router = useRouter();
-  const [events, setEvents] = useState<any[]>([]);
+  const { events: cachedEvents, setInitialEvents } = useEventStore();
+  const cachedEventsList = Object.values(cachedEvents);
+
+  const [events, setEvents] = useState<any[]>(cachedEventsList);
   const [selectedEventId, setSelectedEventId] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(cachedEventsList.length === 0);
   const [attendanceData, setAttendanceData] = useState<any[]>([]);
   const [stats, setStats] = useState<{
     total: number;
@@ -20,8 +24,17 @@ export default function AdminReportsPage() {
   const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
+    if (cachedEventsList.length > 0) {
+      setEvents(cachedEventsList);
+      setLoading(false);
+      return;
+    }
+
     getAdminEventsAction()
-      .then((res) => setEvents(res.events))
+      .then((res) => {
+        setEvents(res.events);
+        setInitialEvents(res.events, res.lastId, res.hasMore);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

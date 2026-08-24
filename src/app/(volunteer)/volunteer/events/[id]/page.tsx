@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getEventByIdAction } from "@/actions/event";
 import { getEventSessionCountsAction } from "@/actions/attendance";
+import { useStore } from "@/store/user-store";
 import type { Event } from "@/types";
 import Header from "@/components/layout/header";
 
@@ -23,9 +24,13 @@ function getStatusBadge(status: string) {
 export default function VolunteerEventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const [event, setEvent] = useState<Event | null>(null);
+  const { volunteerEvents } = useStore();
+
+  const cachedEvent = volunteerEvents?.find((e) => e.id === id) as Event | undefined;
+
+  const [event, setEvent] = useState<Event | null>(cachedEvent ?? null);
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cachedEvent);
 
   useEffect(() => {
     fetchData();
@@ -33,6 +38,7 @@ export default function VolunteerEventDetailPage() {
 
   async function fetchData() {
     try {
+      if (!cachedEvent) setLoading(true);
       const ev = await getEventByIdAction(id);
       setEvent(ev);
 
