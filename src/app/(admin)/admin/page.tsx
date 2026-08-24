@@ -44,12 +44,13 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(!adminDashboardData);
 
   useEffect(() => {
+    // Show cached data instantly (if available) while fresh fetch runs
     if (adminDashboardData) {
       setData(adminDashboardData);
       setLoading(false);
-      return;
     }
 
+    // Always fetch fresh from Firestore — never skip
     getAdminDashboardAction()
       .then((res) => {
         setData(res);
@@ -57,7 +58,7 @@ export default function AdminDashboard() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [adminDashboardData, setAdminDashboardData]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

@@ -31,7 +31,6 @@ export default function VolunteerEventsPage() {
     if (volunteerEvents) {
       setEvents(volunteerEvents);
       setLoading(false);
-      return;
     }
 
     getVolunteerEventsAction()
@@ -41,7 +40,7 @@ export default function VolunteerEventsPage() {
       })
       .catch(() => setError("Failed to load events"))
       .finally(() => setLoading(false));
-  }, [volunteerEvents, setVolunteerEvents]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">

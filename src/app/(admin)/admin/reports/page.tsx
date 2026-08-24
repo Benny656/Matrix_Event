@@ -27,7 +27,6 @@ export default function AdminReportsPage() {
     if (cachedEventsList.length > 0) {
       setEvents(cachedEventsList);
       setLoading(false);
-      return;
     }
 
     getAdminEventsAction()
@@ -37,7 +36,7 @@ export default function AdminReportsPage() {
       })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!selectedEventId) {
