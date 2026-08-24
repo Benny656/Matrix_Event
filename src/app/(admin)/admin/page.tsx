@@ -32,6 +32,8 @@ function StatCard({
   );
 }
 
+export const dynamic = 'force-dynamic';
+
 export default function AdminDashboard() {
   const router = useRouter();
   const { adminDashboardData, setAdminDashboardData } = useStore();
