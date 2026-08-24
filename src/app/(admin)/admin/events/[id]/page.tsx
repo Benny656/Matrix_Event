@@ -7,6 +7,7 @@ import {
   getEventAttendanceAction,
   updateEventAction,
   deleteEventAction,
+  getEventCountsAction,
 } from "@/actions/admin";
 import { getEventByIdAction } from "@/actions/event";
 import { v4 as uuidv4 } from "uuid";
@@ -58,6 +59,10 @@ export default function AdminEventDetailPage() {
   const [savingSessions, setSavingSessions] = useState(false);
   const [sessionMsg, setSessionMsg] = useState("");
 
+  // Counts
+  const [counts, setCounts] = useState<{ registrationCount: number; checkedInCount: number } | null>(null);
+  const [loadingCounts, setLoadingCounts] = useState(true);
+
   // Settings
   const [deleting, setDeleting] = useState(false);
   const [statusUpdating, setStatusUpdating] = useState(false);
@@ -69,7 +74,20 @@ export default function AdminEventDetailPage() {
   useEffect(() => {
     fetchEventDetails();
     fetchRegistrations();
+    fetchCounts();
   }, [eventId]);
+
+  async function fetchCounts() {
+    try {
+      setLoadingCounts(true);
+      const c = await getEventCountsAction(eventId);
+      setCounts(c);
+    } catch (e) {
+      console.error("Failed to load counts", e);
+    } finally {
+      setLoadingCounts(false);
+    }
+  }
 
   async function fetchEventDetails() {
     try {
@@ -297,6 +315,30 @@ export default function AdminEventDetailPage() {
                     : "✕ Registration: CLOSED"}
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 text-center">
+              {loadingCounts ? (
+                <div className="h-8 w-16 mx-auto bg-[hsl(var(--surface-2))] rounded-lg animate-pulse mb-1" />
+              ) : (
+                <p className="text-3xl font-bold text-[hsl(var(--accent))]">
+                  {counts?.registrationCount ?? 0}
+                </p>
+              )}
+              <p className="text-xs font-medium text-[hsl(var(--text-secondary))] mt-1">Registered</p>
+            </div>
+            <div className="glass rounded-2xl border border-[hsl(var(--border))] p-4 text-center">
+              {loadingCounts ? (
+                <div className="h-8 w-16 mx-auto bg-[hsl(var(--surface-2))] rounded-lg animate-pulse mb-1" />
+              ) : (
+                <p className="text-3xl font-bold text-emerald-500">
+                  {counts?.checkedInCount ?? 0}
+                </p>
+              )}
+              <p className="text-xs font-medium text-[hsl(var(--text-secondary))] mt-1">Checked In</p>
             </div>
           </div>
 

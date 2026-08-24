@@ -183,6 +183,27 @@ export async function getEventAttendanceAction(eventId: string) {
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
 }
 
+// ─── Event counts ─────────────────────────────────────────
+export async function getEventCountsAction(eventId: string) {
+  await requireAdmin()
+
+  const [regCountSnap, attCountSnap] = await Promise.all([
+    adminDb.collection("registrations")
+      .where("eventId", "==", eventId)
+      .count()
+      .get(),
+    adminDb.collection("attendances")
+      .where("eventId", "==", eventId)
+      .count()
+      .get(),
+  ])
+
+  return {
+    registrationCount: regCountSnap.data().count,
+    checkedInCount: attCountSnap.data().count,
+  }
+}
+
 // ─── Dashboard stats ──────────────────────────────────────
 export async function getAdminDashboardAction() {
   await requireAdmin()
