@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getEventByIdAction } from "@/actions/event";
-import { getSessionAttendanceAction } from "@/actions/attendance";
-import type { Event, Attendance } from "@/types";
+import { getEventSessionCountsAction } from "@/actions/attendance";
+import type { Event } from "@/types";
 import Header from "@/components/layout/header";
 
 function getStatusBadge(status: string) {
@@ -24,9 +24,7 @@ export default function VolunteerEventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [event, setEvent] = useState<Event | null>(null);
-  const [attendanceMap, setAttendanceMap] = useState<
-    Record<string, Attendance[]>
-  >({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,14 +37,11 @@ export default function VolunteerEventDetailPage() {
       setEvent(ev);
 
       if (ev.sessions && ev.sessions.length > 0) {
-        const results = await Promise.all(
-          ev.sessions.map((s) => getSessionAttendanceAction(s.id)),
+        const sessionCounts = await getEventSessionCountsAction(
+          id,
+          ev.sessions.map((s) => s.id),
         );
-        const map: Record<string, Attendance[]> = {};
-        ev.sessions.forEach((s, i) => {
-          map[s.id] = results[i];
-        });
-        setAttendanceMap(map);
+        setCounts(sessionCounts);
       }
     } catch (e) {
       console.error(e);
@@ -140,7 +135,7 @@ export default function VolunteerEventDetailPage() {
             </h2>
             <div className="space-y-3">
               {event.sessions.map((session) => {
-                const count = attendanceMap[session.id]?.length ?? 0;
+                const count = counts[session.id] ?? 0;
                 return (
                   <div
                     key={session.id}

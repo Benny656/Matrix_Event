@@ -89,3 +89,25 @@ export async function getSessionAttendanceAction(sessionId: string): Promise<Att
 
   return snap.docs.map((d) => ({ id: d.id, ...d.data() } as Attendance))
 }
+
+export async function getEventSessionCountsAction(
+  eventId: string,
+  sessionIds: string[]
+): Promise<Record<string, number>> {
+  const payload = await getSessionPayload()
+  if (!payload) throw new Error("Unauthorized")
+
+  const snap = await adminDb
+    .collection("attendances")
+    .where("eventId", "==", eventId)
+    .get()
+
+  // Count per session in memory — 1 read instead of N reads
+  const counts: Record<string, number> = {}
+  sessionIds.forEach((id) => (counts[id] = 0))
+  snap.docs.forEach((doc) => {
+    const sid = doc.data().sessionId
+    if (sid in counts) counts[sid]++
+  })
+  return counts
+}

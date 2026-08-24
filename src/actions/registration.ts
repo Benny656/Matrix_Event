@@ -1,5 +1,6 @@
 "use server"
 
+import { FieldValue } from "firebase-admin/firestore"
 import { adminDb } from "@/lib/firebase-admin"
 import { getCurrentUser, getSessionPayload } from "@/lib/auth-session"
 import type { Registration } from "@/types"
@@ -56,4 +57,72 @@ export async function getStudentDashboardAction() {
   const upcomingEvents = upcomingSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
 
   return { user, registrations, upcomingEvents }
+}
+
+export async function registerForEventAction(eventId: string) {
+  const session = await getSessionPayload()
+  if (!session) throw new Error("Unauthorized")
+
+  return adminDb.runTransaction(async (tx) => {
+    // Both reads happen inside the transaction for a consistent snapshot
+    const eventRef = adminDb.collection("events").doc(eventId)
+    const userRef = adminDb.collection("users").doc(session.uid)
+
+    const [eventSnap, userSnap] = await Promise.all([
+      tx.get(eventRef),
+      tx.get(userRef),
+    ])
+
+    if (!eventSnap.exists) throw new Error("Event not found")
+    const event = eventSnap.data()!
+
+    if (!event.registrationOpen) throw new Error("Registration is closed")
+
+    // getSessionPayload() only stores {uid, role, onboardingCompleted, session}
+    // — name/email/rollNumber/department are only in the users doc, read above
+    const userData = userSnap.data() ?? {}
+
+    // Duplicate prevention is fully atomic: the deterministic doc ID
+    // means tx.set() will conflict if the doc already exists.
+
+    // Atomic capacity check
+    const isWaitlisted =
+      typeof event.maxParticipants === "number" &&
+      event.maxParticipants > 0 &&
+      event.registrationCount >= event.maxParticipants
+
+    const status = isWaitlisted ? "WAITLISTED" : "REGISTERED"
+
+    // Deterministic ID: one doc per student per event, collision = already registered
+    const regRef = adminDb
+      .collection("registrations")
+      .doc(`${eventId}_${session.uid}`)
+    tx.set(regRef, {
+      eventId,
+      studentId: session.uid,
+      studentName: userData.name ?? null,
+      email: userData.email ?? null,
+      rollNumber: userData.rollNumber ?? null,
+      department: userData.department ?? null,
+      yearOfStudy: userData.yearOfStudy ?? null,
+      programType: userData.programType ?? null,
+      eventTitle: event.title,
+      eventCategory: event.category,
+      eventDate: event.date,
+      whatsappInviteLink: event.whatsappInviteLink ?? null,
+      status,
+      eventRole: "participant",
+      participantRole: "attendee",
+      createdAt: new Date().toISOString(),
+      updatedAt: null,
+    })
+
+    if (!isWaitlisted) {
+      tx.update(eventRef, {
+        registrationCount: FieldValue.increment(1),
+      })
+    }
+
+    return { status }
+  })
 }

@@ -81,6 +81,14 @@
         { "fieldPath": "sessionId", "order": "ASCENDING" },
         { "fieldPath": "studentId", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "attendances",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "eventId", "order": "ASCENDING" },
+        { "fieldPath": "checkInTime", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
