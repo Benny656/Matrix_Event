@@ -1,5 +1,6 @@
 "use server"
 
+import { unstable_noStore as noStore } from "next/cache"
 import { adminDb } from "@/lib/firebase-admin"
 import { getSessionPayload } from "@/lib/auth-session"
 import type { Event, Registration } from "@/types"
@@ -185,6 +186,7 @@ export async function getEventAttendanceAction(eventId: string) {
 
 // ─── Event counts ─────────────────────────────────────────
 export async function getEventCountsAction(eventId: string) {
+  noStore()
   await requireAdmin()
 
   const [regCountSnap, attCountSnap] = await Promise.all([
@@ -206,6 +208,7 @@ export async function getEventCountsAction(eventId: string) {
 
 // ─── Dashboard stats ──────────────────────────────────────
 export async function getAdminDashboardAction() {
+  noStore()
   await requireAdmin()
 
   const [eventsSnap, usersCountSnap] = await Promise.all([
