@@ -38,7 +38,7 @@ export async function createSession(idToken: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: EXPIRY_MS / 1000,
+    maxAge: 60 * 60 * 24 * 7,
     path: "/",
   })
 }
@@ -104,7 +104,7 @@ export async function refreshSession() {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
-    maxAge: EXPIRY_MS / 1000,
+    maxAge: 60 * 60 * 24 * 7,
     path: "/",
   })
 }
