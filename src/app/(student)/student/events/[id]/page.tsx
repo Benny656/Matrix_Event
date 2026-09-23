@@ -157,11 +157,18 @@ export default function EventDetailPage() {
         <div className="glass rounded-2xl border border-[hsl(var(--border))] p-6 sm:p-8 mb-6 relative overflow-hidden">
           <ShineBorder shineColor={["#00666B", "#39A8AD", "#76F7F7"]} />
           <div className="flex items-start justify-between gap-2 mb-4">
-            <span
-              className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[event.status] || "bg-blue-500/10 text-blue-600"}`}
-            >
-              {event.status}
-            </span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span
+                className={`text-xs font-medium px-2.5 py-1 rounded-full ${statusColors[event.status] || "bg-blue-500/10 text-blue-600"}`}
+              >
+                {event.status}
+              </span>
+              {event.registrationType === "MANDATORY" && (
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 border border-amber-500/20">
+                  📌 Mandatory
+                </span>
+              )}
+            </div>
             <span className="text-xs font-medium text-[hsl(var(--text-tertiary))] truncate">
               {event.category}
             </span>

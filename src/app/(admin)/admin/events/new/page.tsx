@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createEventAction } from "@/actions/admin";
 import { v4 as uuidv4 } from "uuid";
-import Header from "@/components/layout/header";
 import { ShineBorder } from "@/components/ui/shine-border";
 
 type Session = {
@@ -23,6 +22,7 @@ const CATEGORIES = [
 ];
 
 const YEAR_OPTIONS = ["1st Year", "2nd Year", "3rd Year", "4th Year"];
+const DEPARTMENT_OPTIONS = ["AI", "AIML"];
 
 export default function NewEventPage() {
   const router = useRouter();
@@ -40,6 +40,10 @@ export default function NewEventPage() {
   const [targetAudience, setTargetAudience] = useState<"ALL" | "STUDENTS" | "FACULTY">("ALL");
   const [programTypes, setProgramTypes] = useState<string[]>(["UG", "PG"]);
   const [years, setYears] = useState<string[]>(["ALL"]);
+  const [departments, setDepartments] = useState<string[]>([]);
+
+  // Registration type
+  const [registrationType, setRegistrationType] = useState<"SELF_REGISTERED" | "MANDATORY">("SELF_REGISTERED");
 
   const [sessions, setSessions] = useState<Session[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -90,6 +94,14 @@ export default function NewEventPage() {
     }
   }
 
+  function toggleDepartment(dept: string) {
+    if (departments.includes(dept)) {
+      setDepartments(departments.filter((d) => d !== dept));
+    } else {
+      setDepartments([...departments, dept]);
+    }
+  }
+
   function addSession() {
     setSessions((prev) => [
       ...prev,
@@ -117,6 +129,11 @@ export default function NewEventPage() {
       return;
     }
 
+    if (registrationType === "MANDATORY" && departments.length === 0) {
+      setError("Please select at least one department for a mandatory event.");
+      return;
+    }
+
     // Sessions are optional, but if added, ensure they have title & start time
     const activeSessions = sessions.filter(
       (s) => s.title.trim() !== "" || s.startTime.trim() !== "",
@@ -136,11 +153,13 @@ export default function NewEventPage() {
         description: form.description,
         capacity: Number(form.capacity) || 0,
         whatsappInviteLink: form.whatsappInviteLink.trim() || undefined,
+        registrationType,
         sessions: activeSessions,
         eligibility: {
           targetAudience,
           programTypes: programTypes.length === 0 ? ["UG", "PG"] : programTypes,
           years: years.length === 0 ? ["ALL"] : years,
+          departments: registrationType === "MANDATORY" ? departments : undefined,
         },
       });
       router.push(`/admin/events/${id}`);
@@ -223,6 +242,28 @@ export default function NewEventPage() {
                   </div>
                 </div>
 
+                {/* Registration Type */}
+                <div>
+                  <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                    Registration Type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    value={registrationType}
+                    onChange={(e) =>
+                      setRegistrationType(e.target.value as "SELF_REGISTERED" | "MANDATORY")
+                    }
+                    className="bg-[hsl(var(--surface))] border border-[hsl(var(--border))] rounded-xl px-4 py-2.5 text-sm text-[hsl(var(--text-primary))] focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:border-transparent transition-all w-full"
+                  >
+                    <option value="SELF_REGISTERED">Self Registered</option>
+                    <option value="MANDATORY">Mandatory</option>
+                  </select>
+                  {registrationType === "MANDATORY" && (
+                    <p className="mt-2 text-xs text-amber-600 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2 leading-relaxed">
+                      ⚠️ All students matching the eligibility criteria below will be <strong>auto-enrolled immediately</strong> when you create this event. This cannot be undone.
+                    </p>
+                  )}
+                </div>
+
                 <div>
                   <label className="text-xs font-medium text-[hsl(var(--text-secondary))] flex items-center gap-1.5 mb-1.5">
                     <span className="p-1 bg-[#25D366] text-white rounded-md inline-flex items-center justify-center">
@@ -280,7 +321,9 @@ export default function NewEventPage() {
                 Eligibility Criteria
               </h2>
               <p className="text-sm text-[hsl(var(--text-secondary))] mb-4">
-                Specify which students can view and register for this event.
+                {registrationType === "MANDATORY"
+                  ? "All students matching these criteria will be auto-enrolled."
+                  : "Specify which students can view and register for this event."}
               </p>
 
               <div className="space-y-4">
@@ -371,6 +414,34 @@ export default function NewEventPage() {
                     })}
                   </div>
                 </div>
+
+                {/* Department — only for Mandatory events */}
+                {registrationType === "MANDATORY" && (
+                  <div>
+                    <label className="text-xs font-medium text-[hsl(var(--text-secondary))] mb-1.5 block">
+                      Department <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {DEPARTMENT_OPTIONS.map((dept) => (
+                        <button
+                          key={dept}
+                          type="button"
+                          onClick={() => toggleDepartment(dept)}
+                          className={`px-3.5 py-1.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                            departments.includes(dept)
+                              ? "bg-[hsl(var(--accent))] text-white border border-transparent"
+                              : "bg-[hsl(var(--surface))] text-[hsl(var(--text-secondary))] border border-[hsl(var(--border))] hover:bg-[hsl(var(--surface-2))]"
+                          }`}
+                        >
+                          {dept}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-[hsl(var(--text-tertiary))] mt-1.5">
+                      Select which departments will be auto-enrolled.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -460,7 +531,11 @@ export default function NewEventPage() {
               disabled={submitting}
               className="w-full bg-[hsl(var(--accent))] text-white text-base font-semibold px-5 py-3.5 rounded-xl hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
             >
-              {submitting ? "Creating Event..." : "Create Event →"}
+              {submitting
+                ? registrationType === "MANDATORY"
+                  ? "Creating & Enrolling Students..."
+                  : "Creating Event..."
+                : "Create Event →"}
             </button>
           </div>
         </div>

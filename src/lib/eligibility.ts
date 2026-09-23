@@ -30,5 +30,8 @@ export function buildEventEligibilityTokens(eligibility?: Event["eligibility"]):
       }
     })
   }
+  if (eligibility.departments) {
+    eligibility.departments.forEach((dept) => tokens.push(`DEPT_${dept}`))
+  }
   return [...new Set(tokens)]
 }

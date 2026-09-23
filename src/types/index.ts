@@ -24,6 +24,7 @@ export interface Event {
   category: string
   coordinatorName?: string | null
   status: "UPCOMING" | "ONGOING" | "COMPLETED" | "ARCHIVED"
+  registrationType: "MANDATORY" | "SELF_REGISTERED"
   registrationOpen: boolean
   maxParticipants?: number | null
   registrationCount: number
@@ -56,6 +57,7 @@ export interface Registration {
   eventId: string
   studentId: string
   status: "REGISTERED" | "WAITLISTED" | "CANCELLED"
+  registrationType?: "MANDATORY" | "SELF_REGISTERED"
   eventRole: "participant" | "volunteer"
   participantRole: string
   studentName: string
