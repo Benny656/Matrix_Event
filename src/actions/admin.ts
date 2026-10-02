@@ -285,6 +285,15 @@ export async function updateRegistrationStatusAction(
   await adminDb.collection("registrations").doc(registrationId).update({ status })
 }
 
+export async function getAllEventRegistrationsAction(eventId: string) {
+  await requireAdmin()
+  const snap = await adminDb.collection("registrations")
+    .where("eventId", "==", eventId)
+    .orderBy("createdAt", "asc")
+    .get()
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+}
+
 // ─── Attendance export ────────────────────────────────────
 export async function getEventAttendanceAction(eventId: string) {
   await requireAdmin()

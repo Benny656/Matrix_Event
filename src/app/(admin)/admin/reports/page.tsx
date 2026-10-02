@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAdminEventsAction, getEventAttendanceAction } from "@/actions/admin";
+import { getAdminEventsAction, getEventAttendanceAction, getAllEventRegistrationsAction } from "@/actions/admin";
 import { useEventStore } from "@/store/eventStore";
 import { exportToExcel, exportToPDF } from "@/lib/export";
 import { Sheet, FileText } from "lucide-react";
@@ -22,6 +22,8 @@ export default function AdminReportsPage() {
     byMethod: Record<string, number>;
   } | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [registrationData, setRegistrationData] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<"attendance" | "registration">("attendance");
 
   useEffect(() => {
     if (cachedEventsList.length > 0) {
@@ -50,14 +52,19 @@ export default function AdminReportsPage() {
   async function fetchStats() {
     try {
       setLoadingStats(true);
-      const data = await getEventAttendanceAction(selectedEventId);
-      setAttendanceData(data);
+      const [attData, regData] = await Promise.all([
+        getEventAttendanceAction(selectedEventId),
+        getAllEventRegistrationsAction(selectedEventId)
+      ]);
+      setAttendanceData(attData);
+      setRegistrationData(regData);
+
       const byMethod: Record<string, number> = {};
-      data.forEach((a: any) => {
+      attData.forEach((a: any) => {
         const method = a.checkInMethod || a.method || "SCANNED";
         byMethod[method] = (byMethod[method] ?? 0) + 1;
       });
-      setStats({ total: data.length, byMethod });
+      setStats({ total: attData.length, byMethod });
     } catch (e) {
       console.error(e);
     } finally {
@@ -91,27 +98,45 @@ export default function AdminReportsPage() {
     });
   }
 
+  function getFormattedRegistrationRows() {
+    return registrationData.map((r: any) => ({
+      "Student Name": r.studentName ?? "",
+      "Roll Number": r.rollNumber ?? "",
+      "Year": r.yearOfStudy ?? "",
+    }));
+  }
+
   function handleExcelExport() {
-    if (!selectedEvent || attendanceData.length === 0) return;
-    const rows = getFormattedAttendanceRows();
-    const filename = `${selectedEvent.title}-attendance`
+    if (!selectedEvent) return;
+    const isAttendance = activeTab === "attendance";
+    const data = isAttendance ? attendanceData : registrationData;
+    if (data.length === 0) return;
+
+    const rows = isAttendance ? getFormattedAttendanceRows() : getFormattedRegistrationRows();
+    const filename = `${selectedEvent.title}-${isAttendance ? 'attendance' : 'registration'}`
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-");
     exportToExcel(rows, filename);
   }
 
   function handlePDFExport() {
-    if (!selectedEvent || attendanceData.length === 0) return;
-    const formatted = getFormattedAttendanceRows();
-    const title = `${selectedEvent.title} - Attendance Report`;
-    const columns = ["Student Name", "Roll Number", "Year", "Check In Time"];
-    const rows = formatted.map((r) => [
-      r["Student Name"],
-      r["Roll Number"],
-      r["Year"],
-      r["Check In Time"],
-    ]);
-    const filename = `${selectedEvent.title}-attendance`
+    if (!selectedEvent) return;
+    const isAttendance = activeTab === "attendance";
+    const data = isAttendance ? attendanceData : registrationData;
+    if (data.length === 0) return;
+
+    const formatted = isAttendance ? getFormattedAttendanceRows() : getFormattedRegistrationRows();
+    const title = `${selectedEvent.title} - ${isAttendance ? 'Attendance' : 'Registration'} Report`;
+    
+    const columns = isAttendance 
+      ? ["Student Name", "Roll Number", "Year", "Check In Time"]
+      : ["Student Name", "Roll Number", "Year"];
+
+    const rows = formatted.map((r: any) => {
+      return columns.map(col => r[col] || "");
+    });
+
+    const filename = `${selectedEvent.title}-${isAttendance ? 'attendance' : 'registration'}`
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-");
     exportToPDF(title, columns, rows, filename);
@@ -159,59 +184,107 @@ export default function AdminReportsPage() {
 
           {selectedEvent && (
             <>
+              {/* Tabs */}
+              <div className="flex items-center gap-4 mb-6 border-b border-[hsl(var(--border))]">
+                <button
+                  onClick={() => setActiveTab("attendance")}
+                  className={`pb-3 text-sm font-medium transition-colors ${
+                    activeTab === "attendance"
+                      ? "text-[hsl(var(--text-primary))] border-b-2 border-[hsl(var(--accent))]"
+                      : "text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                  }`}
+                >
+                  Attendance
+                </button>
+                <button
+                  onClick={() => setActiveTab("registration")}
+                  className={`pb-3 text-sm font-medium transition-colors ${
+                    activeTab === "registration"
+                      ? "text-[hsl(var(--text-primary))] border-b-2 border-[hsl(var(--accent))]"
+                      : "text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                  }`}
+                >
+                  Registration
+                </button>
+              </div>
+
               {/* Stats Summary */}
-              <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
-                <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
-                  Attendance Summary
-                </h2>
-                {loadingStats ? (
-                  <div className="space-y-2">
-                    {[...Array(3)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="h-12 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse"
-                      />
-                    ))}
-                  </div>
-                ) : stats ? (
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between bg-[hsl(var(--accent-subtle))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]">
-                      <p className="text-sm font-medium text-[hsl(var(--text-primary))]">
-                        Total Check-ins
-                      </p>
-                      <p className="text-3xl font-bold text-[hsl(var(--accent))]">
-                        {stats.total}
-                      </p>
+              {activeTab === "attendance" ? (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
+                  <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
+                    Attendance Summary
+                  </h2>
+                  {loadingStats ? (
+                    <div className="space-y-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="h-12 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse"
+                        />
+                      ))}
                     </div>
-                    {Object.entries(stats.byMethod).map(([method, count]) => (
-                      <div
-                        key={method}
-                        className="flex items-center justify-between bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]"
-                      >
-                        <p className="text-sm text-[hsl(var(--text-secondary))]">
-                          {method}
+                  ) : stats ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-[hsl(var(--accent-subtle))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]">
+                        <p className="text-sm font-medium text-[hsl(var(--text-primary))]">
+                          Total Check-ins
                         </p>
-                        <p className="text-lg font-semibold text-[hsl(var(--text-primary))]">
-                          {count}
+                        <p className="text-3xl font-bold text-[hsl(var(--accent))]">
+                          {stats.total}
                         </p>
                       </div>
-                    ))}
-                    <div className="flex items-center justify-between bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]"
-                    >
-                      <p className="text-sm text-[hsl(var(--text-secondary))]">
-                        Total Registrations
-                      </p>
-                      <p className="text-lg font-semibold text-[hsl(var(--text-primary))]">
-                        {selectedEvent.registrationCount ?? 0}
-                      </p>
+                      {Object.entries(stats.byMethod).map(([method, count]) => (
+                        <div
+                          key={method}
+                          className="flex items-center justify-between bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]"
+                        >
+                          <p className="text-sm text-[hsl(var(--text-secondary))]">
+                            {method}
+                          </p>
+                          <p className="text-lg font-semibold text-[hsl(var(--text-primary))]">
+                            {count}
+                          </p>
+                        </div>
+                      ))}
+                      <div className="flex items-center justify-between bg-[hsl(var(--surface))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]"
+                      >
+                        <p className="text-sm text-[hsl(var(--text-secondary))]">
+                          Total Registrations
+                        </p>
+                        <p className="text-lg font-semibold text-[hsl(var(--text-primary))]">
+                          {selectedEvent.registrationCount ?? 0}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-[hsl(var(--text-secondary))]">
-                    No attendance data yet
-                  </p>
-                )}
-              </div>
+                  ) : (
+                    <p className="text-sm text-[hsl(var(--text-secondary))]">
+                      No attendance data yet
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
+                  <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
+                    Registration Summary
+                  </h2>
+                  {loadingStats ? (
+                    <div className="space-y-2">
+                      <div className="h-12 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse" />
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-[hsl(var(--accent-subtle))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]">
+                        <p className="text-sm font-medium text-[hsl(var(--text-primary))]">
+                          Total Registrations
+                        </p>
+                        <p className="text-3xl font-bold text-[hsl(var(--accent))]">
+                          {registrationData.length}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Export Buttons */}
               <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6">
@@ -221,7 +294,7 @@ export default function AdminReportsPage() {
                 <div className="flex flex-wrap gap-3">
                   <button
                     onClick={handleExcelExport}
-                    disabled={attendanceData.length === 0}
+                    disabled={activeTab === "attendance" ? attendanceData.length === 0 : registrationData.length === 0}
                     className="flex items-center gap-2 bg-[#16a34a] text-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     <Sheet className="w-4 h-4" />
@@ -230,7 +303,7 @@ export default function AdminReportsPage() {
 
                   <button
                     onClick={handlePDFExport}
-                    disabled={attendanceData.length === 0}
+                    disabled={activeTab === "attendance" ? attendanceData.length === 0 : registrationData.length === 0}
                     className="flex items-center gap-2 bg-[#dc2626] text-white rounded-xl px-5 py-2.5 text-sm font-semibold hover:opacity-90 transition-all disabled:opacity-50 cursor-pointer"
                   >
                     <FileText className="w-4 h-4" />
