@@ -44,21 +44,23 @@ export default function AdminReportsPage() {
     if (!selectedEventId) {
       setStats(null);
       setAttendanceData([]);
+      setRegistrationData([]);
       return;
     }
     fetchStats();
   }, [selectedEventId]);
 
   async function fetchStats() {
-    try {
-      setLoadingStats(true);
-      const [attData, regData] = await Promise.all([
-        getEventAttendanceAction(selectedEventId),
-        getAllEventRegistrationsAction(selectedEventId)
-      ]);
-      setAttendanceData(attData);
-      setRegistrationData(regData);
+    setLoadingStats(true);
 
+    // Fetch registrations independently so an attendance failure doesn't zero it out
+    getAllEventRegistrationsAction(selectedEventId)
+      .then((regData) => setRegistrationData(regData))
+      .catch((e) => console.error("registrations fetch failed:", e));
+
+    try {
+      const attData = await getEventAttendanceAction(selectedEventId);
+      setAttendanceData(attData);
       const byMethod: Record<string, number> = {};
       attData.forEach((a: any) => {
         const method = a.checkInMethod || a.method || "SCANNED";
@@ -66,7 +68,8 @@ export default function AdminReportsPage() {
       });
       setStats({ total: attData.length, byMethod });
     } catch (e) {
-      console.error(e);
+      console.error("attendance fetch failed:", e);
+      setStats({ total: 0, byMethod: {} });
     } finally {
       setLoadingStats(false);
     }
