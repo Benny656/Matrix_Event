@@ -106,6 +106,7 @@ export default function AdminReportsPage() {
       "Student Name": r.studentName ?? "",
       "Roll Number": r.rollNumber ?? "",
       "Year": r.yearOfStudy ?? "",
+      "Email": r.email ?? "",
     }));
   }
 
@@ -133,7 +134,7 @@ export default function AdminReportsPage() {
     
     const columns = isAttendance 
       ? ["Student Name", "Roll Number", "Year", "Check In Time"]
-      : ["Student Name", "Roll Number", "Year"];
+      : ["Student Name", "Roll Number", "Year", "Email"];
 
     const rows = formatted.map((r: any) => {
       return columns.map(col => r[col] || "");
