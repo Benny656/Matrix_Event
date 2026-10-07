@@ -23,7 +23,7 @@ export default function AdminReportsPage() {
   } | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
   const [registrationData, setRegistrationData] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"attendance" | "registration">("attendance");
+  const [activeTab, setActiveTab] = useState<"attendance" | "registration" | "certificate">("attendance");
 
   useEffect(() => {
     if (cachedEventsList.length > 0) {
@@ -110,39 +110,52 @@ export default function AdminReportsPage() {
     }));
   }
 
+  function getFormattedCertificateRows() {
+    return registrationData.map((r: any) => ({
+      "Student Name": r.studentName ?? "",
+      "Email": r.email ?? "",
+    }));
+  }
+
   function handleExcelExport() {
     if (!selectedEvent) return;
-    const isAttendance = activeTab === "attendance";
-    const data = isAttendance ? attendanceData : registrationData;
+    const data = activeTab === "attendance" ? attendanceData : registrationData;
     if (data.length === 0) return;
 
-    const rows = isAttendance ? getFormattedAttendanceRows() : getFormattedRegistrationRows();
-    const filename = `${selectedEvent.title}-${isAttendance ? 'attendance' : 'registration'}`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-");
+    const rows =
+      activeTab === "attendance"
+        ? getFormattedAttendanceRows()
+        : activeTab === "certificate"
+        ? getFormattedCertificateRows()
+        : getFormattedRegistrationRows();
+    const label = activeTab === "attendance" ? "attendance" : activeTab === "certificate" ? "certificate" : "registration";
+    const filename = `${selectedEvent.title}-${label}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     exportToExcel(rows, filename);
   }
 
   function handlePDFExport() {
     if (!selectedEvent) return;
-    const isAttendance = activeTab === "attendance";
-    const data = isAttendance ? attendanceData : registrationData;
+    const data = activeTab === "attendance" ? attendanceData : registrationData;
     if (data.length === 0) return;
 
-    const formatted = isAttendance ? getFormattedAttendanceRows() : getFormattedRegistrationRows();
-    const title = `${selectedEvent.title} - ${isAttendance ? 'Attendance' : 'Registration'} Report`;
-    
-    const columns = isAttendance 
-      ? ["Student Name", "Roll Number", "Year", "Check In Time"]
-      : ["Student Name", "Roll Number", "Year", "Email"];
+    const formatted =
+      activeTab === "attendance"
+        ? getFormattedAttendanceRows()
+        : activeTab === "certificate"
+        ? getFormattedCertificateRows()
+        : getFormattedRegistrationRows();
 
-    const rows = formatted.map((r: any) => {
-      return columns.map(col => r[col] || "");
-    });
+    const columns =
+      activeTab === "attendance"
+        ? ["Student Name", "Roll Number", "Year", "Check In Time"]
+        : activeTab === "certificate"
+        ? ["Student Name", "Email"]
+        : ["Student Name", "Roll Number", "Year", "Email"];
 
-    const filename = `${selectedEvent.title}-${isAttendance ? 'attendance' : 'registration'}`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-");
+    const label = activeTab === "attendance" ? "Attendance" : activeTab === "certificate" ? "Certificate" : "Registration";
+    const title = `${selectedEvent.title} - ${label} Report`;
+    const rows = formatted.map((r: any) => columns.map((col) => r[col] || ""));
+    const filename = `${selectedEvent.title}-${label.toLowerCase()}`.replace(/[^a-z0-9]+/g, "-");
     exportToPDF(title, columns, rows, filename);
   }
 
@@ -210,6 +223,16 @@ export default function AdminReportsPage() {
                 >
                   Registration
                 </button>
+                <button
+                  onClick={() => setActiveTab("certificate")}
+                  className={`pb-3 text-sm font-medium transition-colors ${
+                    activeTab === "certificate"
+                      ? "text-[hsl(var(--text-primary))] border-b-2 border-[hsl(var(--accent))]"
+                      : "text-[hsl(var(--text-secondary))] hover:text-[hsl(var(--text-primary))]"
+                  }`}
+                >
+                  Certificate Det
+                </button>
               </div>
 
               {/* Stats Summary */}
@@ -266,7 +289,7 @@ export default function AdminReportsPage() {
                     </p>
                   )}
                 </div>
-              ) : (
+              ) : activeTab === "registration" ? (
                 <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
                   <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
                     Registration Summary
@@ -285,6 +308,31 @@ export default function AdminReportsPage() {
                           {registrationData.length}
                         </p>
                       </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="glass rounded-2xl border border-[hsl(var(--border))] p-5 sm:p-6 mb-6">
+                  <h2 className="text-lg font-semibold text-[hsl(var(--text-primary))] mb-4">
+                    Certificate Details
+                  </h2>
+                  {loadingStats ? (
+                    <div className="space-y-2">
+                      <div className="h-12 bg-[hsl(var(--surface-2))] rounded-xl animate-pulse" />
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between bg-[hsl(var(--accent-subtle))] rounded-xl px-4 py-3 border border-[hsl(var(--border))]">
+                        <p className="text-sm font-medium text-[hsl(var(--text-primary))]">
+                          Total Recipients
+                        </p>
+                        <p className="text-3xl font-bold text-[hsl(var(--accent))]">
+                          {registrationData.length}
+                        </p>
+                      </div>
+                      <p className="text-xs text-[hsl(var(--text-secondary))] px-1">
+                        Export includes Student Name and Email only.
+                      </p>
                     </div>
                   )}
                 </div>
